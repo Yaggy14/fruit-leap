@@ -138,7 +138,7 @@ class Game {
                 prog = { ...prog, ...parsed };
             } catch (e) { }
         }
-        if (prog.globalLives === undefined) prog.globalLives = 5;
+        prog.globalLives = 5; // Always keep 5 lives during playtesting!
         if (!prog.lastHeartRegenTime) prog.lastHeartRegenTime = Date.now();
         return prog;
     }
