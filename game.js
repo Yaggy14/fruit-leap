@@ -14,6 +14,24 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     };
 }
 
+if (typeof window.admob === 'undefined') {
+    window.admob = {
+        showRewardedAd: (onSuccess) => onSuccess && onSuccess(),
+        showInterstitialAd: (onComplete) => onComplete && onComplete()
+    };
+}
+
+if (typeof window.audio === 'undefined') {
+    window.audio = {
+        playJump: () => {},
+        playCoin: () => {},
+        playStar: () => {},
+        playHurt: () => {},
+        playWin: () => {},
+        playGameOver: () => {}
+    };
+}
+
 const I18N = {
     tr: {
         stars: "YILDIZ",
