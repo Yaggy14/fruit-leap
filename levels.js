@@ -30,22 +30,26 @@ function generate25Chapters() {
     for (let l = 1; l <= 3; l++) {
         const rng0 = createSeededRandom(9999 + l * 888);
         const mapWidth = 2600;
+        // High Air Platform offset to the right of the Air Elevator 💨
+        const highPlatform = { id: 10, x: 1350, y: 160, width: 220, height: 24 };
         const platforms = [
             { id: 0, x: 0, y: 420, width: 380, height: 120 },
             { id: 1, x: 440, y: 350, width: 220, height: 24 },
             { id: 2, x: 710, y: 320, width: 340, height: 24, vx: 0.4, range: 50 }, // 2x Slime platform
-            { id: 3, x: 1100, y: 340, width: 360, height: 24 }, // 2x Double Spikes platform
-            { id: 4, x: 1510, y: 310, width: 200, height: 24 },
-            { id: 5, x: 1760, y: 330, width: 220, height: 24 }
+            { id: 3, x: 1100, y: 340, width: 450, height: 24 }, // 2x Double Spikes + Air Elevator platform
+            highPlatform, // High Air Platform offset right! 💨
+            { id: 4, x: 1620, y: 310, width: 200, height: 24 },
+            { id: 5, x: 1870, y: 330, width: 240, height: 24 },
+            { id: 6, x: 1980, y: 170, width: 200, height: 24 } // High Platform offset right of Trampoline! 🌸
         ];
 
         const fruitCollectibles = [
             { type: 'strawberry', x: 460, y: 318, width: 24, height: 24, platformId: 1, offsetX: 20 },
             { type: 'apple', x: 520, y: 318, width: 24, height: 24, platformId: 1, offsetX: 80 },
             { type: 'banana', x: 580, y: 318, width: 24, height: 24, platformId: 1, offsetX: 140 },
-            { type: 'grapes', x: 1530, y: 278, width: 24, height: 24, platformId: 4, offsetX: 20 },
-            { type: 'orange', x: 1590, y: 278, width: 24, height: 24, platformId: 4, offsetX: 80 },
-            { type: 'watermelon', x: 1650, y: 278, width: 24, height: 24, platformId: 4, offsetX: 140 },
+            { type: 'watermelon', x: 1380, y: 128, width: 24, height: 24, platformId: 10, offsetX: 30 },
+            { type: 'grapes', x: 1460, y: 128, width: 24, height: 24, platformId: 10, offsetX: 110 },
+            { type: 'orange', x: 1640, y: 278, width: 24, height: 24, platformId: 4, offsetX: 20 },
             { type: 'star_key', x: 900, y: 200, width: 26, height: 26, platformId: 2, offsetX: 190 }
         ];
 
@@ -53,8 +57,14 @@ function generate25Chapters() {
             { x: 750, y: 296, range: 270, platformId: 2 }
         ];
 
+        // Trampoline at x: 1890 (High platform 6 is at x: 1980, offset right!) 🌸
         const bouncyPads = [
-            { id: 1, x: 1770, y: 318, width: 45, height: 12, platformId: 5 }
+            { id: 1, x: 1890, y: 318, width: 45, height: 12, platformId: 5 }
+        ];
+
+        // Air Elevator / Wind Fan at x: 1220 (High platform 10 is at x: 1350, offset right!) 💨
+        const fans = [
+            { x: 1220, y: 340, width: 60, height: 24, force: -7.5 }
         ];
 
         const portals = [
@@ -62,7 +72,7 @@ function generate25Chapters() {
                 entrancePlatformId: 1,
                 exitPlatformId: 4,
                 entrance: { x: 615, y: 305, width: 30, height: 45 },
-                exit: { x: 1515, y: 265, width: 30, height: 45 }
+                exit: { x: 1625, y: 265, width: 30, height: 45 }
             }
         ];
 
@@ -72,11 +82,11 @@ function generate25Chapters() {
 
         // Double Spikes on Platform 3
         const hazards = [
-            { x: 1180, y: 322, width: 22, height: 18, platformId: 3, offsetX: 80 },
-            { x: 1320, y: 322, width: 22, height: 18, platformId: 3, offsetX: 220 }
+            { x: 1140, y: 322, width: 22, height: 18, platformId: 3, offsetX: 40 },
+            { x: 1460, y: 322, width: 22, height: 18, platformId: 3, offsetX: 360 }
         ];
 
-        const exitPlat = { id: 999, x: 2050, y: 420, width: 450, height: 120 };
+        const exitPlat = { id: 999, x: 2280, y: 420, width: 450, height: 120 };
         platforms.push(exitPlat);
         fruitCollectibles.push({ type: 'exit', x: exitPlat.x + 200, y: 350, width: 36, height: 70, platformId: exitPlat.id, offsetX: 200 });
 
@@ -92,7 +102,7 @@ function generate25Chapters() {
             enemies: enemies,
             portals: portals,
             crates: [],
-            fans: [],
+            fans: fans,
             switches: [],
             collectibles: fruitCollectibles
         });
@@ -200,6 +210,51 @@ function generate25Chapters() {
                         height: 24,
                         platformId: platformObj.id,
                         offsetX: 35
+                    });
+                }
+
+                // Trampolines (🌸 Spring Pads) placed purposefully! High Platform is offset to the RIGHT so player launches freely into air!
+                if (!hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && bouncyPads.length < 2 && rng() > 0.50) {
+                    const highY = pY - 145 - Math.round(rng() * 25);
+                    const highPlat = {
+                        id: platformIndex++,
+                        x: platformObj.x + 130, // Offset 130px to the RIGHT of trampoline!
+                        y: highY,
+                        width: 160,
+                        height: 24
+                    };
+                    platforms.push(highPlat);
+
+                    // Place Trampoline at x: platformObj.x + 20 on main platform!
+                    bouncyPads.push({
+                        id: platformIndex++,
+                        x: platformObj.x + 20,
+                        y: pY - 12,
+                        width: 45,
+                        height: 12,
+                        platformId: platformObj.id
+                    });
+
+                    // Place bonus fruits on top of the high trampoline platform!
+                    const fruitType1 = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
+                    const fruitType2 = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
+                    fruitCollectibles.push({
+                        type: fruitType1,
+                        x: highPlat.x + 35,
+                        y: highY - 26,
+                        width: 24,
+                        height: 24,
+                        platformId: highPlat.id,
+                        offsetX: 35
+                    });
+                    fruitCollectibles.push({
+                        type: fruitType2,
+                        x: highPlat.x + 95,
+                        y: highY - 26,
+                        width: 24,
+                        height: 24,
+                        platformId: highPlat.id,
+                        offsetX: 95
                     });
                 }
 

@@ -59,6 +59,8 @@ class Player {
         this.teleportCooldown = 0;
         this.currentSkinId = 'bunny';
         this.hasGoldenKey = false;
+        this.isDead = false;
+        this.deathTimer = 0;
     }
 
     get speed() {
@@ -78,6 +80,29 @@ class Player {
         this.invincibleTimer = 0;
         this.teleportCooldown = 0;
         this.hasGoldenKey = false;
+        this.isDead = false;
+        this.deathTimer = 0;
+    }
+
+    triggerDeath(cause, onDie, particles) {
+        if (!this.isDead) {
+            this.isDead = true;
+            this.deathTimer = 2.5; // ~2.5 - 3 seconds hurt freeze!
+            this.vx = 0;
+            this.vy = -2.5; // Defeat hop
+            audio.playHurt();
+            for (let i = 0; i < 16; i++) {
+                particles.push(new Particle(
+                    this.x + this.width / 2,
+                    this.y + this.height / 2,
+                    '#ff1744',
+                    Math.random() * 4 + 2,
+                    (Math.random() - 0.5) * 5,
+                    (Math.random() - 0.5) * 5,
+                    30
+                ));
+            }
+        }
     }
 
     jump(particles) {
@@ -127,6 +152,32 @@ class Player {
     }
 
     update(keys, platforms, hazards, bouncyPads, collectibles, particles, enemies, portals, crates, fans, switches, onDie, onWin, onCollectFruit, onCollectStarKey, overheadCeilings = [], onDoorLocked = null) {
+        if (this.isDead) {
+            this.deathTimer -= 1 / 60;
+            this.vx = 0;
+            this.vy += this.gravity * 0.3; // Slow defeat fall
+            this.y += this.vy;
+
+            // Spawn hurt particle effects
+            if (Math.random() < 0.3) {
+                particles.push(new Particle(
+                    this.x + this.width / 2,
+                    this.y + this.height / 2,
+                    '#ff1744',
+                    Math.random() * 3 + 2,
+                    (Math.random() - 0.5) * 3,
+                    (Math.random() - 0.5) * 3,
+                    20
+                ));
+            }
+
+            if (this.deathTimer <= 0) {
+                this.isDead = false;
+                if (onDie) onDie();
+            }
+            return; // Freeze player inputs during 2.5-3s death timer!
+        }
+
         if (this.invincibleTimer > 0) this.invincibleTimer--;
         if (this.teleportCooldown > 0) this.teleportCooldown--;
 
@@ -274,8 +325,7 @@ class Player {
         if (this.invincibleTimer <= 0) {
             for (let enemy of enemies) {
                 if (this.checkCollision(this, enemy)) {
-                    this.invincibleTimer = 60;
-                    if (onDie) onDie();
+                    this.triggerDeath('enemy', onDie, particles);
                     return;
                 }
             }
@@ -283,12 +333,12 @@ class Player {
 
         // Void Pitfall & Hazards Detection
         if (this.y > 520) { // Pitfall below bottom platforms!
-            if (onDie) onDie();
+            this.triggerDeath('pit', onDie, particles);
             return;
         }
         for (let hazard of hazards) {
             if (this.checkCollision(this, hazard)) {
-                if (onDie) onDie();
+                this.triggerDeath('hazard', onDie, particles);
                 return;
             }
         }
@@ -488,10 +538,34 @@ class Player {
             ctx.fill();
         }
 
-        // 4. Big Shiny Anime Eyes
+        // 4. Big Shiny Anime Eyes (or Dizzy KO Eyes 😵 when dead)
         const eyeOffset = isRight ? 2.5 : -2.5;
 
-        if (skin.id !== 'unicorn' && skin.id !== 'kitty') {
+        if (this.isDead) {
+            // Dizzy KO Cross Eyes (X X) 😵
+            ctx.strokeStyle = '#ff1744';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            // Left Eye X
+            ctx.moveTo(-7 + eyeOffset, -5); ctx.lineTo(-2 + eyeOffset, 0);
+            ctx.moveTo(-2 + eyeOffset, -5); ctx.lineTo(-7 + eyeOffset, 0);
+            // Right Eye X
+            ctx.moveTo(3 + eyeOffset, -5); ctx.lineTo(8 + eyeOffset, 0);
+            ctx.moveTo(8 + eyeOffset, -5); ctx.lineTo(3 + eyeOffset, 0);
+            ctx.stroke();
+
+            // Spinning Dizzy Stars around Head 💫
+            ctx.fillStyle = '#ffeb3b';
+            const starAngle = Date.now() * 0.008;
+            for (let s = 0; s < 3; s++) {
+                const sa = starAngle + (s * Math.PI * 2 / 3);
+                const sx = Math.cos(sa) * 16;
+                const sy = -22 + Math.sin(sa) * 5;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else if (skin.id !== 'unicorn' && skin.id !== 'kitty') {
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(-5 + eyeOffset, -2, 4.5, 0, Math.PI * 2);

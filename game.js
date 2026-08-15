@@ -49,7 +49,11 @@ const I18N = {
         ch4Msg: "Rainbow Hills! Kayan zeminler başladı, dengemi korumalıyım!",
         ch5Msg: "DİKKAT! Gölge Balçıkları (👾) burada nöbet tutuyor, kafalarına zıplayıp onları yenmeliyim!",
         ch10Msg: "TEHLİKE! Çift Kırmızı Dikenler (🌵⚠️) başladı! Dikenlere dokunma, canın azalır!",
-        chGeneric: "Meyve Vadisi'ni kurtarmak için Altın Anahtarı 🔑 aramaya devam edelim! 🐰🚀"
+        chGeneric: "Meyve Vadisi'ni kurtarmak için Altın Anahtarı 🔑 aramaya devam edelim! 🐰🚀",
+        victoryTitle: "🎉 TEBRİKLER! MEYVE VADİSİ KURTULDU! 🎉",
+        victorySubtitle: "Mükemmel Başarı! Tüm Seviyeleri Tamamladın!",
+        victoryStoryText: "Piko ve cesur arkadaşları 25 Yıldız Anahtarını ve çalınan tüm sihirli meyveleri toplayıp Dev Saman Yolu Ağacı'na geri koydu! Gölge Balçıkları vadiyi terk etti ve Meyve Vadisi sonsuza dek eski neşe ve huzuruna kavuştu! 🌳✨🐰🏆",
+        victoryMainMenu: "🏠 ANA MENÜYE DÖN"
     },
     en: {
         stars: "STARS",
@@ -67,7 +71,11 @@ const I18N = {
         ch4Msg: "Rainbow Hills! Moving platforms ahead, keep your balance!",
         ch5Msg: "WARNING! Shadow Slimes (👾) are patrolling, jump on their heads to defeat them!",
         ch10Msg: "DANGER! Double Red Spikes (🌵⚠️) ahead! Avoid spikes or lose energy!",
-        chGeneric: "Let's find the Golden Key 🔑 and save Fruit Valley! 🐰🚀"
+        chGeneric: "Let's find the Golden Key 🔑 and save Fruit Valley! 🐰🚀",
+        victoryTitle: "🎉 CONGRATULATIONS! FRUIT VALLEY IS SAVED! 🎉",
+        victorySubtitle: "Outstanding Heroism! You Completed All Chapters!",
+        victoryStoryText: "Piko and his brave friends collected all 25 Golden Keys and stolen magic fruits, placing them back on the Great Milky Way Tree! The Shadow Slimes fled and Fruit Valley is restored forever! 🌳✨🐰🏆",
+        victoryMainMenu: "🏠 RETURN TO MAIN MENU"
     }
 };
 
@@ -138,7 +146,7 @@ class Game {
                 prog = { ...prog, ...parsed };
             } catch (e) { }
         }
-        prog.globalLives = 5; // Always keep 5 lives during playtesting!
+        if (prog.globalLives === undefined) prog.globalLives = 5;
         if (!prog.lastHeartRegenTime) prog.lastHeartRegenTime = Date.now();
         return prog;
     }
@@ -222,20 +230,26 @@ class Game {
         const bindTouch = (btnId, keyName) => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
+
+            const pressKey = (e) => {
+                if (e) e.preventDefault();
+                btn.classList.add('pressed');
                 this.keys[keyName] = true;
                 if (keyName === 'up' && this.state === 'PLAYING') this.player.jump(this.particles);
-            });
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
+            };
+
+            const releaseKey = (e) => {
+                if (e) e.preventDefault();
+                btn.classList.remove('pressed');
                 this.keys[keyName] = false;
-            });
-            btn.addEventListener('mousedown', () => {
-                this.keys[keyName] = true;
-                if (keyName === 'up' && this.state === 'PLAYING') this.player.jump(this.particles);
-            });
-            btn.addEventListener('mouseup', () => this.keys[keyName] = false);
+            };
+
+            btn.addEventListener('touchstart', pressKey, { passive: false });
+            btn.addEventListener('touchend', releaseKey, { passive: false });
+            btn.addEventListener('touchcancel', releaseKey, { passive: false });
+            btn.addEventListener('mousedown', pressKey);
+            btn.addEventListener('mouseup', releaseKey);
+            btn.addEventListener('mouseleave', releaseKey);
         };
 
         bindTouch('btn-left', 'left');
@@ -261,6 +275,7 @@ class Game {
         document.getElementById('btn-win-levels').addEventListener('click', () => this.showScreen('screen-chapter-select'));
         document.getElementById('btn-gameover-menu').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-no-lives-menu').addEventListener('click', () => this.showScreen('screen-main-menu'));
+        document.getElementById('btn-victory-main-menu')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
 
         const watchAdFromMenu = () => {
             admob.showRewardedAd(() => {
@@ -276,15 +291,16 @@ class Game {
                 this.progress.globalLives = Math.min(5, (this.progress.globalLives || 0) + 1);
                 this.saveProgress();
                 this.updateStatsUI();
-                document.getElementById('screen-no-lives').classList.add('hidden');
-                document.getElementById('screen-game-over').classList.add('hidden');
+                document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
 
-                if (this.currentChapterIdx !== undefined && this.currentLevelIdx !== undefined && (this.state === 'GAME_OVER' || this.state === 'PAUSED')) {
-                    const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
-                    this.player.reset(level.playerStart.x, level.playerStart.y);
-                    this.showScreen('hud-overlay');
-                    document.getElementById('hud-overlay').classList.remove('hidden');
-                    this.state = 'PLAYING';
+                if (this.pendingLevel) {
+                    const target = this.pendingLevel;
+                    this.pendingLevel = null;
+                    this.startLevel(target.chapterIdx, target.levelIdx);
+                } else if (this.currentChapterIdx !== undefined && this.currentLevelIdx !== undefined && (this.state === 'GAME_OVER' || this.state === 'PAUSED')) {
+                    this.startLevel(this.currentChapterIdx, this.currentLevelIdx);
+                } else {
+                    this.showScreen('screen-main-menu');
                 }
             });
         };
@@ -412,6 +428,7 @@ class Game {
     startLevel(chapterIdx, levelIdx) {
         this.checkHeartRegen();
         if ((this.progress.globalLives || 0) <= 0) {
+            this.pendingLevel = { chapterIdx, levelIdx };
             document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('screen-no-lives').classList.remove('hidden');
             return;
@@ -498,7 +515,9 @@ class Game {
         });
         this.particles = [];
 
-        this.totalFruits = this.collectibles.filter(c => c.type !== 'exit' && c.type !== 'star_key' && c.type !== 'key').length;
+        // Count ONLY genuine fruits for totalFruits
+        const FRUIT_TYPES_LIST = ['strawberry', 'apple', 'banana', 'grapes', 'orange', 'watermelon', 'fruit'];
+        this.totalFruits = this.collectibles.filter(c => FRUIT_TYPES_LIST.includes(c.type)).length;
         document.getElementById('hud-level-name').innerText = level.name;
         this.updateHUD();
     }
@@ -539,8 +558,20 @@ class Game {
         } else if (this.currentChapterIdx + 1 < CHAPTERS.length) {
             this.startLevel(this.currentChapterIdx + 1, 0);
         } else {
-            this.showScreen('screen-chapter-select');
+            this.showVictoryFinale();
         }
+    }
+
+    showVictoryFinale() {
+        document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('hud-overlay').classList.add('hidden');
+        this.state = 'VICTORY';
+        
+        const lData = I18N[this.lang] || I18N.tr;
+        const totalStarsSpan = document.getElementById('victory-total-stars');
+        if (totalStarsSpan) totalStarsSpan.innerText = `${this.progress.totalStars} / 75`;
+        document.getElementById('screen-game-victory')?.classList.remove('hidden');
+        audio.playWin();
     }
 
     handleDie() {
@@ -583,7 +614,7 @@ class Game {
         const lvlCode = `${this.currentChapterIdx}-${this.currentLevelIdx + 1}`;
 
         const star1 = true; // Unlock & Finish Level
-        const star2 = (this.fruitsCollected === this.totalFruits); // Collect ALL Fruits 🍓
+        const star2 = (this.totalFruits > 0 && this.fruitsCollected >= this.totalFruits); // Collect ALL Fruits 🍓
         const star3 = (this.levelTimer <= level.targetTime); // Speedrun
 
         let starsEarned = 1;
@@ -1023,16 +1054,21 @@ class Game {
                 this.ctx.beginPath(); this.ctx.arc(0, -1, 8, 0, Math.PI); this.ctx.fill();
                 this.ctx.fillStyle = '#000000'; this.ctx.fillRect(-3, 3, 2, 2); this.ctx.fillRect(2, 3, 2, 2);
             } else if (c.type === 'exit' || c.type === 'exit_door') {
-                // Taller Exit Door (🚪🔒 / 🚪✨) Sitting Flush on the Platform Surface!
+                // Taller Exit Door (🚪🔒 / 🚪✨) Sitting 100% Flush on the Platform Surface!
                 const isUnlocked = this.player.hasGoldenKey;
+                const platY = c.platformRef ? c.platformRef.y : (c.y + 50);
+                
+                this.ctx.restore();
+                this.ctx.save();
+                this.ctx.translate(c.x - this.camera.x + 15, platY - this.camera.y);
 
                 this.ctx.shadowColor = isUnlocked ? '#00f0ff' : '#ff1744';
                 this.ctx.shadowBlur = 20;
 
-                // Outer Arch Door Frame (Taller & Flush)
+                // Outer Arch Door Frame (Flush at y = 0)
                 this.ctx.fillStyle = '#3e2723';
                 this.ctx.beginPath();
-                this.ctx.roundRect(-24, -68, 48, 78, [24, 24, 0, 0]);
+                this.ctx.roundRect(-25, -78, 50, 78, [25, 25, 0, 0]);
                 this.ctx.fill();
                 this.ctx.strokeStyle = '#ffd600';
                 this.ctx.lineWidth = 3.5;
@@ -1040,39 +1076,39 @@ class Game {
 
                 if (isUnlocked) {
                     // Unlocked Cosmic Exit Portal 🚪✨
-                    const doorGrad = this.ctx.createLinearGradient(0, -65, 0, 10);
+                    const doorGrad = this.ctx.createLinearGradient(0, -74, 0, 0);
                     doorGrad.addColorStop(0, '#00f0ff');
                     doorGrad.addColorStop(0.5, '#e040fb');
                     doorGrad.addColorStop(1, '#651fff');
                     this.ctx.fillStyle = doorGrad;
                     this.ctx.beginPath();
-                    this.ctx.roundRect(-18, -62, 36, 72, [18, 18, 0, 0]);
+                    this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
                     this.ctx.fill();
 
                     // Sparkle Ring
                     this.ctx.fillStyle = '#ffffff';
                     this.ctx.beginPath();
-                    this.ctx.arc(0, -25, 8, 0, Math.PI * 2);
+                    this.ctx.arc(0, -36, 8, 0, Math.PI * 2);
                     this.ctx.fill();
                 } else {
                     // Locked Dark Wooden Door with Padlock 🚪🔒
                     this.ctx.fillStyle = '#211510';
                     this.ctx.beginPath();
-                    this.ctx.roundRect(-18, -62, 36, 72, [18, 18, 0, 0]);
+                    this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
                     this.ctx.fill();
 
                     // Golden Padlock 🔒
                     this.ctx.fillStyle = '#ffd600';
-                    this.ctx.fillRect(-8, -25, 16, 16);
+                    this.ctx.fillRect(-8, -36, 16, 16);
                     this.ctx.strokeStyle = '#ffd600';
                     this.ctx.lineWidth = 3;
                     this.ctx.beginPath();
-                    this.ctx.arc(0, -27, 6.5, Math.PI, 0);
+                    this.ctx.arc(0, -38, 6.5, Math.PI, 0);
                     this.ctx.stroke();
 
                     this.ctx.fillStyle = '#1a1a1a';
                     this.ctx.beginPath();
-                    this.ctx.arc(0, -17, 2.5, 0, Math.PI * 2);
+                    this.ctx.arc(0, -28, 2.5, 0, Math.PI * 2);
                     this.ctx.fill();
                 }
 
