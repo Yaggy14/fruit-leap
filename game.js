@@ -114,18 +114,54 @@ class Game {
         this.collectibles = [];
         this.particles = [];
 
-        this.keys = { left: false, right: false, up: false, down: false };
+        this.dpadSize = localStorage.getItem('dpad_size') || 'medium';
+        this.hapticsEnabled = localStorage.getItem('haptics_enabled') !== 'false';
 
         this.init();
     }
 
     init() {
+        this.resizeCanvas();
         this.bindEvents();
         this.updateStatsUI();
+        this.applyDPadSize(this.dpadSize);
         this.renderChapterChips();
         this.renderLevelGrid(1);
         this.renderShopGrid();
         requestAnimationFrame((t) => this.loop(t));
+    }
+
+    resizeCanvas() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5); // High-DPI Crisp HD Display Rendering!
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        this.canvas.width = Math.floor(w * dpr);
+        this.canvas.height = Math.floor(h * dpr);
+        if (this.ctx.resetTransform) {
+            this.ctx.resetTransform();
+        } else {
+            this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+        this.ctx.scale(dpr, dpr);
+    }
+
+    applyDPadSize(size) {
+        this.dpadSize = size;
+        const touchOverlay = document.getElementById('touch-controls');
+        if (touchOverlay) {
+            touchOverlay.classList.remove('dpad-small', 'dpad-medium', 'dpad-large');
+            touchOverlay.classList.add(`dpad-${size}`);
+        }
+        document.querySelectorAll('.btn-size-opt').forEach(b => b.classList.remove('active'));
+        const targetBtn = document.getElementById(`btn-dpad-${size}`);
+        if (targetBtn) targetBtn.classList.add('active');
+        localStorage.setItem('dpad_size', size);
+    }
+
+    triggerHaptic() {
+        if (this.hapticsEnabled && window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(30);
+        }
     }
 
     loadProgress() {
@@ -309,12 +345,70 @@ class Game {
         document.getElementById('btn-no-lives-ad')?.addEventListener('click', watchAdInGameRevive);
         document.getElementById('btn-ad-revive')?.addEventListener('click', watchAdInGameRevive);
 
-        // Language Selector Toggle
-        document.getElementById('btn-lang-toggle')?.addEventListener('click', () => {
+        window.addEventListener('resize', () => this.resizeCanvas());
+
+        document.getElementById('btn-settings-toggle')?.addEventListener('click', () => this.showScreen('screen-settings'));
+        document.getElementById('btn-settings-close')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
+
+        // Sound Volume Range Slider Control (0% - 100%)
+        const savedVol = parseInt(localStorage.getItem('game_volume') || '80');
+        audio.setVolume(savedVol / 100);
+        const volumeSlider = document.getElementById('slider-volume');
+        const volumeBadge = document.getElementById('volume-val-text');
+        if (volumeSlider) {
+            volumeSlider.value = savedVol;
+            if (volumeBadge) volumeBadge.innerText = `${savedVol}%`;
+            volumeSlider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                audio.setVolume(val / 100);
+                if (volumeBadge) volumeBadge.innerText = `${val}%`;
+                localStorage.setItem('game_volume', val);
+            });
+        }
+
+        // Lang Toggle
+        const updateLangBtn = () => {
+            const btn = document.getElementById('btn-toggle-lang');
+            if (btn) btn.innerText = (this.lang === 'tr') ? '🇹🇷 Türkçe' : '🇬🇧 English';
+        };
+        updateLangBtn();
+        document.getElementById('btn-toggle-lang')?.addEventListener('click', () => {
             this.lang = (this.lang === 'tr') ? 'en' : 'tr';
             localStorage.setItem('game_lang', this.lang);
             this.updateLanguageUI();
+            updateLangBtn();
         });
+
+        // D-Pad Size Buttons
+        document.getElementById('btn-dpad-small')?.addEventListener('click', () => this.applyDPadSize('small'));
+        document.getElementById('btn-dpad-medium')?.addEventListener('click', () => this.applyDPadSize('medium'));
+        document.getElementById('btn-dpad-large')?.addEventListener('click', () => this.applyDPadSize('large'));
+
+        // Haptics Toggle
+        const updateHapticsBtn = () => {
+            const btn = document.getElementById('btn-toggle-haptics');
+            if (btn) btn.innerText = this.hapticsEnabled ? '📳 Açık' : '📴 Kapalı';
+        };
+        updateHapticsBtn();
+        document.getElementById('btn-toggle-haptics')?.addEventListener('click', () => {
+            this.hapticsEnabled = !this.hapticsEnabled;
+            localStorage.setItem('haptics_enabled', this.hapticsEnabled);
+            updateHapticsBtn();
+        });
+
+        // Reset Progress
+        document.getElementById('btn-reset-progress')?.addEventListener('click', () => {
+            if (confirm("⚠️ TÜM OYUN İLERLEMENİZ VE YILDIZLARINIZ SIFIRLANACAK! Emin misiniz?")) {
+                localStorage.removeItem('fruit_leap_progress_v2');
+                this.progress = this.loadProgress();
+                this.updateStatsUI();
+                this.renderChapterChips();
+                this.renderLevelGrid(1);
+                alert("Oyun ilerlemesi sıfırlandı!");
+                this.showScreen('screen-main-menu');
+            }
+        });
+
         this.updateLanguageUI();
     }
 
@@ -324,20 +418,20 @@ class Game {
             const key = el.getAttribute('data-i18n');
             if (langData[key]) el.innerText = langData[key];
         });
-        const toggleBtn = document.getElementById('btn-lang-toggle');
-        if (toggleBtn) toggleBtn.innerText = `🌐 ${this.lang.toUpperCase()} | ${this.lang === 'tr' ? 'EN' : 'TR'}`;
     }
 
     renderChapterChips() {
         const container = document.getElementById('chapter-scroll');
+        if (!container) return;
         container.innerHTML = '';
         CHAPTERS.forEach((c) => {
             const chip = document.createElement('div');
             chip.className = `chapter-chip ${c.id === 1 ? 'active' : ''}`;
-            chip.innerText = c.id === 0 ? 'Ch.0 🧪' : `Ch.${c.id}`;
+            chip.innerText = `Ch.${c.id}`;
             chip.addEventListener('click', () => {
                 document.querySelectorAll('.chapter-chip').forEach(ch => ch.classList.remove('active'));
                 chip.classList.add('active');
+                chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                 this.renderLevelGrid(c.id);
             });
             container.appendChild(chip);
