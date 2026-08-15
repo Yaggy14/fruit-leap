@@ -415,10 +415,16 @@ class Game {
     showScreen(screenId) {
         document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
         document.getElementById('hud-overlay').classList.add('hidden');
+        document.getElementById('touch-controls')?.classList.add('hidden'); // HIDE TOUCH CONTROLS ON MENUS!
+
         const target = document.getElementById(screenId);
         if (target) target.classList.remove('hidden');
         if (screenId === 'screen-main-menu') this.state = 'MENU';
-        if (screenId === 'screen-chapter-select') this.state = 'CHAPTER_SELECT';
+        if (screenId === 'screen-chapter-select') {
+            this.state = 'CHAPTER_SELECT';
+            this.renderChapterChips();
+            this.renderLevelGrid(1);
+        }
         if (screenId === 'screen-character-shop') {
             this.state = 'SHOP';
             this.renderShopGrid();
@@ -468,6 +474,7 @@ class Game {
         this.loadLevelData();
         this.showScreen('hud-overlay');
         document.getElementById('hud-overlay').classList.remove('hidden');
+        document.getElementById('touch-controls')?.classList.remove('hidden'); // SHOW TOUCH CONTROLS IN GAME!
         this.state = 'PLAYING';
 
         // Trigger Piko Story Dialogue for Chapter
