@@ -26,9 +26,9 @@
                 <div class="stat-badge">⭐ <span id="total-stars-val">0</span> <span data-i18n="stars">STARS</span></div>
             </div>
 
-            <!-- Top-Right Corner: Settings Button ⚙️ -->
+            <!-- Top-Right Corner: Language Toggle -->
             <div class="menu-top-right">
-                <button id="btn-settings-toggle" class="settings-toggle-btn">⚙️ AYARLAR</button>
+                <button id="btn-lang-toggle" class="lang-toggle-btn">🌐 TR | EN</button>
             </div>
 
             <!-- Center Floating Content: Independent Title & Buttons -->
@@ -119,49 +119,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Settings Modal Screen ⚙️ -->
-            <div id="screen-settings" class="ui-screen hidden">
-                <div class="glass-panel modal settings-modal">
-                    <h2>⚙️ OYUN AYARLARI</h2>
-                    
-                    <div class="settings-group">
-                        <div class="setting-item vertical-setting">
-                            <div class="setting-header-row">
-                                <span class="setting-label">🔊 Ses Seviyesi:</span>
-                                <span id="volume-val-text" class="setting-value-badge">80%</span>
-                            </div>
-                            <div class="volume-slider-wrapper">
-                                <input type="range" id="slider-volume" min="0" max="100" value="80" class="custom-range-slider">
-                            </div>
-                        </div>
-
-                        <div class="setting-item">
-                            <span class="setting-label">🌐 Oyun Dili:</span>
-                            <button id="btn-toggle-lang" class="btn btn-setting-toggle">🇹🇷 Türkçe</button>
-                        </div>
-
-                        <div class="setting-item vertical-setting">
-                            <span class="setting-label">🎮 Dokunmatik Tuş Boyutu:</span>
-                            <div class="dpad-size-buttons">
-                                <button id="btn-dpad-small" class="btn btn-size-opt">KÜÇÜK</button>
-                                <button id="btn-dpad-medium" class="btn btn-size-opt active">ORTA</button>
-                                <button id="btn-dpad-large" class="btn btn-size-opt">BÜYÜK</button>
-                            </div>
-                        </div>
-
-                        <div class="setting-item">
-                            <span class="setting-label">📳 Titreşim Geribildirimi:</span>
-                            <button id="btn-toggle-haptics" class="btn btn-setting-toggle">📳 Açık</button>
-                        </div>
-                    </div>
-
-                    <div class="modal-buttons">
-                        <button id="btn-reset-progress" class="btn btn-danger-reset">⚠️ İlerlemeyi Sıfırla</button>
-                        <button id="btn-settings-close" class="btn btn-secondary btn-bottom">KAPAT</button>
-                    </div>
-                </div>
-            </div>
-
             <div id="screen-chapter-select" class="ui-screen hidden">
                 <div class="glass-panel modal-large">
                     <h2>Select Chapter</h2>

@@ -3,7 +3,6 @@ class AudioManager {
     constructor() {
         this.ctx = null;
         this.muted = false;
-        this.volume = 0.8; // Default 80% Volume Level
     }
 
     init() {
@@ -13,12 +12,8 @@ class AudioManager {
         }
     }
 
-    setVolume(val) {
-        this.volume = Math.max(0, Math.min(1, val));
-    }
-
     playJump() {
-        if (this.muted || this.volume <= 0) return;
+        if (this.muted) return;
         this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -27,8 +22,7 @@ class AudioManager {
         osc.frequency.setValueAtTime(175, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(750, this.ctx.currentTime + 0.13);
 
-        const v = 0.18 * this.volume;
-        gain.gain.setValueAtTime(v, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.13);
 
         osc.connect(gain);
@@ -39,7 +33,7 @@ class AudioManager {
     }
 
     playCoin() {
-        if (this.muted || this.volume <= 0) return;
+        if (this.muted) return;
         this.init();
         const osc1 = this.ctx.createOscillator();
         const osc2 = this.ctx.createOscillator();
@@ -54,8 +48,7 @@ class AudioManager {
         osc2.frequency.setValueAtTime(1975.53, this.ctx.currentTime); // B6
         osc2.frequency.setValueAtTime(2637.02, this.ctx.currentTime + 0.07); // E7
 
-        const v = 0.22 * this.volume;
-        gain.gain.setValueAtTime(v, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
 
         osc1.connect(gain);
@@ -69,7 +62,7 @@ class AudioManager {
     }
 
     playStar() {
-        if (this.muted || this.volume <= 0) return;
+        if (this.muted) return;
         this.init();
         const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
         notes.forEach((freq, idx) => {
@@ -78,8 +71,7 @@ class AudioManager {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.05);
 
-            const v = 0.2 * this.volume;
-            gain.gain.setValueAtTime(v, this.ctx.currentTime + idx * 0.05);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.05);
             gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.05 + 0.12);
 
             osc.connect(gain);
@@ -91,7 +83,7 @@ class AudioManager {
     }
 
     playHurt() {
-        if (this.muted || this.volume <= 0) return;
+        if (this.muted) return;
         this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -100,8 +92,7 @@ class AudioManager {
         osc.frequency.setValueAtTime(260, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.25);
 
-        const v = 0.35 * this.volume;
-        gain.gain.setValueAtTime(v, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
 
         osc.connect(gain);
@@ -112,7 +103,7 @@ class AudioManager {
     }
 
     playWin() {
-        if (this.muted || this.volume <= 0) return;
+        if (this.muted) return;
         this.init();
         const arpeggio = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]; // Fanfare
         arpeggio.forEach((freq, idx) => {
@@ -121,8 +112,7 @@ class AudioManager {
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
 
-            const v = 0.25 * this.volume;
-            gain.gain.setValueAtTime(v, this.ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.08);
             gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.08 + 0.35);
 
             osc.connect(gain);
