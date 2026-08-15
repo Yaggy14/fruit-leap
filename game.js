@@ -667,14 +667,139 @@ class Game {
         admob.showInterstitialAd();
     }
 
+    drawMenuBackground() {
+        const time = Date.now() * 0.0025;
+        
+        // 1. Vibrant Sunny Sky Gradient (Azure Blue -> Sky Blue -> Meadow Mint)
+        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        skyGrad.addColorStop(0, '#0284c7'); // Deep Azure Blue
+        skyGrad.addColorStop(0.5, '#38bdf8'); // Bright Sky Blue
+        skyGrad.addColorStop(1, '#a7f3d0'); // Soft Meadow Mint
+        this.ctx.fillStyle = skyGrad;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // 2. Bright Golden Sun ☀️
+        this.ctx.fillStyle = '#fde047';
+        this.ctx.beginPath();
+        this.ctx.arc(this.canvas.width * 0.88, 70, 42, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // 3. Fluffy Animated White Clouds ☁️
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        for (let i = 0; i < 6; i++) {
+            let cx = (i * 180 + time * 20) % (this.canvas.width + 120) - 60;
+            let cy = 45 + (i % 3) * 28;
+            this.ctx.beginPath();
+            this.ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+            this.ctx.arc(cx + 22, cy - 10, 28, 0, Math.PI * 2);
+            this.ctx.arc(cx + 48, cy, 22, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+
+        // 4. Parallax Back Rolling Hills (#059669)
+        this.ctx.fillStyle = '#059669';
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, this.canvas.height);
+        for (let x = 0; x <= this.canvas.width; x += 15) {
+            const hy = this.canvas.height - 120 + Math.sin(time * 0.4 + x * 0.006) * 28;
+            this.ctx.lineTo(x, hy);
+        }
+        this.ctx.lineTo(this.canvas.width, this.canvas.height);
+        this.ctx.fill();
+
+        // 5. Parallax Front Lush Green Meadow (#10b981)
+        this.ctx.fillStyle = '#10b981';
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, this.canvas.height);
+        for (let x = 0; x <= this.canvas.width; x += 15) {
+            const hy = this.canvas.height - 75 + Math.sin(time * 0.8 + x * 0.01 + 1.5) * 18;
+            this.ctx.lineTo(x, hy);
+        }
+        this.ctx.lineTo(this.canvas.width, this.canvas.height);
+        this.ctx.fill();
+
+        // 6. Blooming Flowers 🌸 🌼 on the Meadow
+        const flowers = ['🌸', '🌼', '🌺', '🌱'];
+        this.ctx.font = '18px sans-serif';
+        for (let fl = 0; fl < 12; fl++) {
+            const flX = fl * 85 + 20;
+            const flY = this.canvas.height - 45 + Math.sin(fl * 1.5) * 8;
+            this.ctx.fillText(flowers[fl % flowers.length], flX, flY);
+        }
+
+        // 7. Floating Animated Magic Fruits 🍓🍎🍌🍉🍇🍊
+        const fruits = ['🍓', '🍎', '🍌', '🍉', '🍇', '🍊'];
+        this.ctx.font = '30px sans-serif';
+        for (let f = 0; f < 8; f++) {
+            const fx = (f * 125 + time * 32) % (this.canvas.width + 60) - 30;
+            const fy = 85 + Math.sin(time * 1.8 + f) * 22 + (f % 3) * 35;
+            this.ctx.fillText(fruits[f % fruits.length], fx, fy);
+        }
+
+        // 8. Animated Piko Bunny 🐰 Bouncing Happily on the Meadow Grass!
+        const bunnyX = this.canvas.width * 0.12;
+        const bunnyJumpY = Math.abs(Math.sin(time * 3.5)) * 30;
+        const bunnyY = this.canvas.height - 90 - bunnyJumpY;
+
+        this.ctx.save();
+        this.ctx.translate(bunnyX, bunnyY);
+
+        // Bunny Shadow on Grass
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        this.ctx.beginPath();
+        this.ctx.ellipse(0, 26 + bunnyJumpY * 0.6, 18 - bunnyJumpY * 0.2, 6, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Draw Player Body (using equipped skin body color)
+        const skin = CHARACTER_SKINS.find(s => s.id === (this.progress.equippedSkin || 'bunny')) || CHARACTER_SKINS[0];
+        
+        // Body Circle
+        this.ctx.fillStyle = skin.bodyColor || '#ff80ab';
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.lineWidth = 2.5;
+        this.ctx.stroke();
+
+        // Ears
+        this.ctx.fillStyle = skin.earColor || '#ff4081';
+        this.ctx.fillRect(-10, -28, 6, 14);
+        this.ctx.fillRect(4, -28, 6, 14);
+
+        // Eyes (Shiny Anime Eyes)
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.beginPath();
+        this.ctx.arc(-5, -3, 4, 0, Math.PI * 2);
+        this.ctx.arc(5, -3, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.fillStyle = '#1e1b4b';
+        this.ctx.beginPath();
+        this.ctx.arc(-4, -3, 2.4, 0, Math.PI * 2);
+        this.ctx.arc(6, -3, 2.4, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Cheeks
+        this.ctx.fillStyle = 'rgba(255, 64, 129, 0.6)';
+        this.ctx.beginPath();
+        this.ctx.arc(-9, 3, 3, 0, Math.PI * 2);
+        this.ctx.arc(9, 3, 3, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.restore();
+    }
+
     loop(timestamp) {
         this.updateStatsUI();
         if (this.state === 'PLAYING') {
             this.levelTimer += 1 / 60;
             this.updateHUD();
             this.update();
+            this.draw();
+        } else {
+            this.drawMenuBackground();
         }
-        this.draw();
         requestAnimationFrame((t) => this.loop(t));
     }
 

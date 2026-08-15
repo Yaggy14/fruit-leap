@@ -1,7 +1,6 @@
 // 25 Chapters Level Generator + Chapter 0 Test Playground, Double Spikes, Moving Attached Portals & Crouching Ceilings
 
 const CHAPTER_THEMES = [
-    { name: "Test Playground", bg: "#1a1c2e", skyGradient: ["#0f172a", "#3b82f6"], platformColor: "#06b6d4", platformBorder: "#0891b2", hazardColor: "#ff4d4d", liquidColor: "rgba(6, 182, 212, 0.4)", slimeColor: { start: "#76ff03", mid: "#00e676", end: "#00b0ff", glow: "#76ff03", horn: "#ff4081" } },
     { name: "Sunny Meadow", bg: "#00b4d8", skyGradient: ["#0077b6", "#a0ecff"], platformColor: "#38ef7d", platformBorder: "#11998e", hazardColor: "#ff4d4d", liquidColor: "rgba(0, 180, 216, 0.45)", slimeColor: { start: "#ff007f", mid: "#e040fb", end: "#7c4dff", glow: "#ff007f", horn: "#76ff03" } },
     { name: "Candy Kingdom", bg: "#ec407a", skyGradient: ["#ad1457", "#ff80ab"], platformColor: "#ffb74d", platformBorder: "#f57c00", hazardColor: "#ff1744", liquidColor: "rgba(236, 64, 122, 0.45)", slimeColor: { start: "#00f0ff", mid: "#00b0ff", end: "#3d5afe", glow: "#00f0ff", horn: "#ffd600" } },
     { name: "Cloud Paradise", bg: "#7e57c2", skyGradient: ["#4527a0", "#d1c4e9"], platformColor: "#29b6f6", platformBorder: "#0288d1", hazardColor: "#ff3d00", liquidColor: "rgba(126, 87, 194, 0.45)", slimeColor: { start: "#ffd600", mid: "#ffab00", end: "#ff6d00", glow: "#ffd600", horn: "#e040fb" } },
@@ -24,100 +23,9 @@ function createSeededRandom(seed) {
 function generate25Chapters() {
     const chapters = [];
 
-    // --- CHAPTER 0: TEST PLAYGROUND 🧪 ---
-    const ch0Theme = CHAPTER_THEMES[0];
-    const ch0Levels = [];
-    for (let l = 1; l <= 3; l++) {
-        const rng0 = createSeededRandom(9999 + l * 888);
-        const mapWidth = 2600;
-        // High Air Platform offset to the right of the Air Elevator 💨
-        const highPlatform = { id: 10, x: 1350, y: 160, width: 220, height: 24 };
-        const platforms = [
-            { id: 0, x: 0, y: 420, width: 380, height: 120 },
-            { id: 1, x: 440, y: 350, width: 220, height: 24 },
-            { id: 2, x: 710, y: 320, width: 340, height: 24, vx: 0.4, range: 50 }, // 2x Slime platform
-            { id: 3, x: 1100, y: 340, width: 450, height: 24 }, // 2x Double Spikes + Air Elevator platform
-            highPlatform, // High Air Platform offset right! 💨
-            { id: 4, x: 1620, y: 310, width: 200, height: 24 },
-            { id: 5, x: 1870, y: 330, width: 240, height: 24 },
-            { id: 6, x: 1980, y: 170, width: 200, height: 24 } // High Platform offset right of Trampoline! 🌸
-        ];
-
-        const fruitCollectibles = [
-            { type: 'strawberry', x: 460, y: 318, width: 24, height: 24, platformId: 1, offsetX: 20 },
-            { type: 'apple', x: 520, y: 318, width: 24, height: 24, platformId: 1, offsetX: 80 },
-            { type: 'banana', x: 580, y: 318, width: 24, height: 24, platformId: 1, offsetX: 140 },
-            { type: 'watermelon', x: 1380, y: 128, width: 24, height: 24, platformId: 10, offsetX: 30 },
-            { type: 'grapes', x: 1460, y: 128, width: 24, height: 24, platformId: 10, offsetX: 110 },
-            { type: 'orange', x: 1640, y: 278, width: 24, height: 24, platformId: 4, offsetX: 20 },
-            { type: 'star_key', x: 900, y: 200, width: 26, height: 26, platformId: 2, offsetX: 190 }
-        ];
-
-        const enemies = [
-            { x: 750, y: 296, range: 270, platformId: 2 }
-        ];
-
-        // Trampoline at x: 1890 (High platform 6 is at x: 1980, offset right!) 🌸
-        const bouncyPads = [
-            { id: 1, x: 1890, y: 318, width: 45, height: 12, platformId: 5 }
-        ];
-
-        // Air Elevator / Wind Fan at x: 1220 (High platform 10 is at x: 1350, offset right!) 💨
-        const fans = [
-            { x: 1220, y: 340, width: 60, height: 24, force: -7.5 }
-        ];
-
-        const portals = [
-            {
-                entrancePlatformId: 1,
-                exitPlatformId: 4,
-                entrance: { x: 615, y: 305, width: 30, height: 45 },
-                exit: { x: 1625, y: 265, width: 30, height: 45 }
-            }
-        ];
-
-        const overheadCeilings = [
-            { id: 99, x: 475, y: 302, width: 110, height: 24, platformId: 1, offsetX: 35 }
-        ];
-
-        // Double Spikes on Platform 3
-        const hazards = [
-            { x: 1140, y: 322, width: 22, height: 18, platformId: 3, offsetX: 40 },
-            { x: 1460, y: 322, width: 22, height: 18, platformId: 3, offsetX: 360 }
-        ];
-
-        const exitPlat = { id: 999, x: 2280, y: 420, width: 450, height: 120 };
-        platforms.push(exitPlat);
-        fruitCollectibles.push({ type: 'exit', x: exitPlat.x + 200, y: 350, width: 36, height: 70, platformId: exitPlat.id, offsetX: 200 });
-
-        ch0Levels.push({
-            name: `Ch.0-${l}: Test Sahası`,
-            targetTime: 30,
-            mapWidth: exitPlat.x + exitPlat.width + 200,
-            playerStart: { x: 50, y: 350 },
-            platforms: platforms,
-            hazards: hazards,
-            overheadCeilings: overheadCeilings,
-            bouncyPads: bouncyPads,
-            enemies: enemies,
-            portals: portals,
-            crates: [],
-            fans: fans,
-            switches: [],
-            collectibles: fruitCollectibles
-        });
-    }
-
-    chapters.push({
-        id: 0,
-        title: `Chapter 0: ${ch0Theme.name}`,
-        theme: ch0Theme,
-        levels: ch0Levels
-    });
-
     // --- CHAPTERS 1 TO 25 ---
     for (let c = 1; c <= 25; c++) {
-        const themeIdx = ((c - 1) % (CHAPTER_THEMES.length - 1)) + 1;
+        const themeIdx = (c - 1) % CHAPTER_THEMES.length;
         const themeObj = CHAPTER_THEMES[themeIdx];
 
         const levels = [];

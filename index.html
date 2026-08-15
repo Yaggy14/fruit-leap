@@ -18,22 +18,36 @@
             </div>
         </div>
 
-        <!-- Main Menu -->
+        <!-- Main Menu Screen -->
         <div id="screen-main-menu" class="ui-screen">
-            <div class="glass-panel">
+            <!-- Top-Left Corner: Lives & Stars Badges -->
+            <div class="menu-top-left">
+                <div class="stat-badge energy-badge">❤️ <span id="global-lives-val">5/5</span> <span id="lives-timer-val" class="timer-tag">MAX</span></div>
+                <div class="stat-badge">⭐ <span id="total-stars-val">0</span> <span data-i18n="stars">STARS</span></div>
+            </div>
+
+            <!-- Top-Right Corner: Language Toggle -->
+            <div class="menu-top-right">
                 <button id="btn-lang-toggle" class="lang-toggle-btn">🌐 TR | EN</button>
-                <h1 class="game-title">Fruit Leap<br><span class="subtitle">Bunny & Friends</span></h1>
-                <div class="main-stats">
-                    <div class="stat-badge energy-badge">❤️ <span id="global-lives-val">5/5</span> <span id="lives-timer-val" class="timer-tag">MAX</span></div>
-                    <div class="stat-badge">⭐ <span id="total-stars-val">0</span> <span data-i18n="stars">STARS</span></div>
+            </div>
+
+            <!-- Center Floating Content: Independent Title & Buttons -->
+            <div class="menu-center-floating">
+                <div class="logo-title-box">
+                    <h1 class="game-title">Fruit Leap</h1>
+                    <span class="game-subtitle">Bunny & Friends</span>
                 </div>
-                <div class="menu-buttons">
-                    <button id="btn-play-game" class="btn btn-primary" data-i18n="playGame">▶ PLAY GAME</button>
-                    <button id="btn-story-intro" class="btn btn-secondary" data-i18n="storyQuest">📖 STORY & QUEST</button>
-                    <button id="btn-chapter-select" class="btn btn-secondary" data-i18n="chapters">🗺️ CHAPTERS</button>
-                    <button id="btn-character-shop" class="btn btn-secondary" data-i18n="shop">🛍️ CHARACTER SHOP</button>
-                    <button id="btn-main-free-life" class="btn btn-ad-gold" data-i18n="freeLife">📺 FREE LIFE (+1 ❤️)</button>
+                <div class="menu-buttons-independent">
+                    <button id="btn-play-game" class="btn btn-primary-play" data-i18n="playGame">▶ PLAY GAME</button>
+                    <button id="btn-story-intro" class="btn btn-story" data-i18n="storyQuest">📖 STORY & QUEST</button>
+                    <button id="btn-chapter-select" class="btn btn-chapters" data-i18n="chapters">🗺️ CHAPTERS</button>
+                    <button id="btn-character-shop" class="btn btn-shop-neon" data-i18n="shop">🛍️ CHARACTER SHOP</button>
                 </div>
+            </div>
+
+            <!-- Bottom-Right Corner: Free Life Ad Button -->
+            <div class="menu-bottom-right">
+                <button id="btn-main-free-life" class="btn btn-ad-gold" data-i18n="freeLife">📺 FREE LIFE (+1 ❤️)</button>
             </div>
         </div>
 
@@ -46,9 +60,11 @@
                 <div class="hud-item energy-badge"><span class="hud-icon">❤️</span> <span id="hud-lives">5/5</span></div>
                 <button id="btn-pause-hud" class="hud-btn">⏸️</button>
             </div>
-            <div class="hud-level-tag" id="hud-level-name">Chapter 1 - Level 1</div>
+            
+            <!-- Bottom-Center Level Name Tag -->
+            <div class="hud-level-tag bottom-center-tag" id="hud-level-name">Chapter 1 - Level 1</div>
 
-            <!-- Piko Story Dialogue Speech Bubble -->
+            <!-- Compact Piko Story Dialogue Speech Bubble -->
             <div id="piko-speech-bubble" class="piko-bubble hidden">
                 <div class="piko-avatar">🐰</div>
                 <div class="piko-text-wrapper">
