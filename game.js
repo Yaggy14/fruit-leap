@@ -425,7 +425,26 @@ class Game {
         }
     }
 
+    requestMobileLandscape() {
+        try {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            } else if (screen.mozOrientation && screen.mozOrientation.lock) {
+                screen.mozOrientation.lock('landscape').catch(() => {});
+            } else if (screen.msOrientation && screen.msOrientation.lock) {
+                screen.msOrientation.lock('landscape').catch(() => {});
+            }
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(() => {});
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen().catch(() => {});
+            }
+        } catch (e) {}
+    }
+
     startLevel(chapterIdx, levelIdx) {
+        this.requestMobileLandscape();
         this.checkHeartRegen();
         if ((this.progress.globalLives || 0) <= 0) {
             this.pendingLevel = { chapterIdx, levelIdx };
@@ -715,8 +734,18 @@ class Game {
             if (this.particles[i].life <= 0) this.particles.splice(i, 1);
         }
 
-        this.camera.x += (this.player.x - this.camera.x - 300) * 0.1;
+        // Smooth Camera X & Y tracking so Player & Map Bottom are ALWAYS 100% centered & visible!
+        const targetCamX = this.player.x - this.canvas.width * 0.35;
+        this.camera.x += (targetCamX - this.camera.x) * 0.12;
         if (this.camera.x < 0) this.camera.x = 0;
+        if (this.camera.x > this.levelMapWidth - this.canvas.width) {
+            this.camera.x = Math.max(0, this.levelMapWidth - this.canvas.width);
+        }
+
+        // Dynamic Camera Y Tracking keeps player vertically centered & ground platform visible on mobile screens!
+        const targetCamY = Math.max(0, this.player.y - this.canvas.height * 0.55);
+        this.camera.y += (targetCamY - this.camera.y) * 0.10;
+        if (this.camera.y < 0) this.camera.y = 0;
     }
 
     draw() {
