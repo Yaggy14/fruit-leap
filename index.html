@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fruit Leap: Bunny & Friends</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,19 +23,38 @@
         <div id="screen-main-menu" class="ui-screen">
             <!-- Top-Left Corner: Lives & Stars Badges -->
             <div class="menu-top-left">
-                <div class="stat-badge energy-badge">❤️ <span id="global-lives-val">5/5</span> <span id="lives-timer-val" class="timer-tag">MAX</span></div>
-                <div class="stat-badge">⭐ <span id="total-stars-val">0</span> <span data-i18n="stars">STARS</span></div>
+                <div class="menu-badge life-badge">
+                    <span class="badge-icon">❤️</span>
+                    <span id="global-lives-val" class="badge-val">5/5</span>
+                    <span id="lives-timer-val" class="badge-timer">MAX</span>
+                </div>
+                <div class="menu-badge star-badge">
+                    <span class="badge-icon">⭐</span>
+                    <span id="total-stars-val" class="badge-val">0</span>
+                    <span class="badge-label" data-i18n="stars">STARS</span>
+                </div>
             </div>
 
             <!-- Top-Right Corner: Settings -->
             <div class="menu-top-right">
-                <button id="btn-settings-main" class="lang-toggle-btn">⚙️ Ayarlar</button>
+                <button id="btn-settings-main" class="settings-top-btn" data-i18n="settings">⚙️ Ayarlar</button>
             </div>
 
             <!-- Center Floating Content: Independent Title & Buttons -->
             <div class="menu-center-floating">
                 <div class="logo-title-box">
-                    <h1 class="game-title">Fruit Leap</h1>
+                    <h1 class="game-title arched-title">
+                        <span style="--r:-20deg; --y: 16px;">F</span>
+                        <span style="--r:-15deg; --y: 9px;">r</span>
+                        <span style="--r:-10deg; --y: 4px;">u</span>
+                        <span style="--r:-5deg;  --y: 1px;">i</span>
+                        <span style="--r:0deg;   --y: 0px;">t</span>
+                        <span style="width: 10px;"></span>
+                        <span style="--r:5deg;   --y: 1px;">L</span>
+                        <span style="--r:10deg;  --y: 4px;">e</span>
+                        <span style="--r:15deg;  --y: 9px;">a</span>
+                        <span style="--r:20deg;  --y: 16px;">p</span>
+                    </h1>
                     <span class="game-subtitle">Bunny & Friends</span>
                 </div>
                 <div class="menu-buttons-independent">
@@ -81,8 +101,8 @@
                 <button id="btn-right" class="touch-btn dpad-btn">▶</button>
             </div>
             <div class="controls-right touch-group">
-                <button id="btn-crouch" class="touch-btn action-crouch-btn">▼ DUCK</button>
-                <button id="btn-jump" class="touch-btn action-jump-btn">▲ JUMP</button>
+                <button id="btn-crouch" class="touch-btn action-crouch-btn"><span class="btn-sub-icon">▼</span><span class="btn-sub-text">DUCK</span></button>
+                <button id="btn-jump" class="touch-btn action-jump-btn"><span class="btn-sub-icon">▲</span><span class="btn-sub-text">JUMP</span></button>
             </div>
         </div>
 
@@ -226,39 +246,46 @@
 
             <!-- Level Win 3-Star Screen -->
             <div id="screen-win" class="ui-screen hidden">
-                <div class="glass-panel modal win-modal">
-                    <div class="win-stars-arch">
-                        <div class="arch-star" id="arch-star-1" style="--start-rot: -20deg; --start-y: 15px; --end-scale: 1;">⭐</div>
-                        <div class="arch-star" id="arch-star-2" style="--start-rot: 0deg; --start-y: -10px; --end-scale: 1.25;">⭐</div>
-                        <div class="arch-star" id="arch-star-3" style="--start-rot: 20deg; --start-y: 15px; --end-scale: 1;">⭐</div>
+                <div class="glass-panel modal win-modal" style="max-width: 650px; padding: 15px 25px;">
+                    <div class="win-stars-arch" style="height: 70px; margin-bottom: -5px;">
+                        <div class="arch-star" id="arch-star-1" style="--start-rot: -20deg; --start-y: 10px; --end-scale: 0.9;">⭐</div>
+                        <div class="arch-star" id="arch-star-2" style="--start-rot: 0deg; --start-y: -10px; --end-scale: 1.15;">⭐</div>
+                        <div class="arch-star" id="arch-star-3" style="--start-rot: 20deg; --start-y: 10px; --end-scale: 0.9;">⭐</div>
                     </div>
-                    <h2 class="win-title" style="margin-top: 10px;">LEVEL CLEARED!</h2>
+                    <h2 class="win-title" style="margin-top: 5px; font-size: 1.8rem; margin-bottom: 10px;">LEVEL CLEARED!</h2>
                     
-                    <div class="star-checklist" style="margin-top: 20px;">
-                        <div class="star-req-item" id="req-star-1">
-                            <span class="req-check">⬜</span>
-                            <span class="req-text">Finish Level</span>
-                        </div>
-                        <div class="star-req-item" id="req-star-2">
-                            <span class="req-check">⬜</span>
-                            <span class="req-text">Collect ALL Fruits (🍓)</span>
-                        </div>
-                        <div class="star-req-item" id="req-star-3">
-                            <span class="req-check">⬜</span>
-                            <span class="req-text">Speedrun (<span id="win-target-time">0</span>s)</span>
-                        </div>
-                    </div>
+                    <div style="display: flex; gap: 20px; align-items: stretch;">
+                        <!-- Left: Checklist & Stats -->
+                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px;">
+                            <div class="star-checklist" style="margin-top: 0;">
+                                <div class="star-req-item" id="req-star-1" style="padding: 6px 10px;">
+                                    <span class="req-check">⬜</span>
+                                    <span class="req-text" style="font-size: 0.85rem;">Finish Level</span>
+                                </div>
+                                <div class="star-req-item" id="req-star-2" style="padding: 6px 10px;">
+                                    <span class="req-check">⬜</span>
+                                    <span class="req-text" style="font-size: 0.85rem;">Collect ALL Fruits (🍓)</span>
+                                </div>
+                                <div class="star-req-item" id="req-star-3" style="padding: 6px 10px;">
+                                    <span class="req-check">⬜</span>
+                                    <span class="req-text" style="font-size: 0.85rem;">Speedrun (<span id="win-target-time">0</span>s)</span>
+                                </div>
+                            </div>
 
-                    <div class="score-summary">
-                        <p>Fruits Collected: <strong id="win-fruits-count">0 / 0</strong></p>
-                        <p>Time Taken: <strong id="win-time">0.0s</strong></p>
-                    </div>
-                    <div class="modal-actions" style="display: flex; flex-direction: column; gap: 14px; margin-top: 20px;">
-                        <button id="btn-next-level" class="btn btn-primary-play" style="width: 100%;">🚀 NEXT LEVEL</button>
-                        <button id="btn-win-restart" class="btn btn-chapters" style="width: 100%;">🔄 RETRY</button>
-                        <div style="display: flex; gap: 14px; width: 100%;">
-                            <button id="btn-win-levels" class="btn btn-story" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;">🗺️ LEVELS</button>
-                            <button id="btn-win-main-menu" class="btn btn-shop-neon" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;">🏠 MENU</button>
+                            <div class="score-summary" style="margin-top: 0; padding: 8px; font-size: 0.85rem; display: flex; justify-content: space-around;">
+                                <span>🍓 <strong id="win-fruits-count">0 / 0</strong></span>
+                                <span>⏱️ <strong id="win-time">0.0s</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Buttons -->
+                        <div class="modal-actions" style="flex: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 0; justify-content: center;">
+                            <button id="btn-next-level" class="btn btn-primary-play" style="width: 100%; padding: 12px;">🚀 NEXT LEVEL</button>
+                            <button id="btn-win-restart" class="btn btn-chapters" style="width: 100%; padding: 10px;">🔄 RETRY</button>
+                            <div style="display: flex; gap: 10px; width: 100%;">
+                                <button id="btn-win-levels" class="btn btn-story" style="flex: 1; padding: 8px; font-size: 0.8rem;">🗺️ LEVELS</button>
+                                <button id="btn-win-main-menu" class="btn btn-shop-neon" style="flex: 1; padding: 8px; font-size: 0.8rem;">🏠 MENU</button>
+                            </div>
                         </div>
                     </div>
                 </div>

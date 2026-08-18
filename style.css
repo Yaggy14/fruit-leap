@@ -106,6 +106,37 @@ body {
     background: #000;
 }
 
+.settings-top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e2238;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    padding: 8px 18px;
+    border-radius: 24px;
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.settings-top-btn:hover {
+    background: #2a3152;
+    border-color: #00e676;
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 230, 118, 0.45);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.settings-top-btn:active {
+    transform: translateY(1px) scale(0.97);
+}
+
 .lang-toggle-btn {
     position: absolute;
     top: 16px;
@@ -202,6 +233,48 @@ canvas {
 }
 
 /* Energy & Ad Buttons */
+.menu-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 16px;
+    border-radius: 24px;
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.menu-badge:hover {
+    transform: translateY(-2px);
+}
+.life-badge {
+    background: #2a1525;
+    border: 2px solid #ff4081;
+    color: #ff80ab;
+}
+.life-badge .badge-timer {
+    font-size: 0.75rem;
+    background: #ff4081;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 2px;
+    font-weight: 800;
+}
+.star-badge {
+    background: #2b2512;
+    border: 2px solid #ffd600;
+    color: #ffe57f;
+}
+.star-badge .badge-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #ffd600;
+    font-weight: 800;
+}
+
 .energy-badge {
     background: rgba(255, 42, 109, 0.15) !important;
     border: 1px solid rgba(255, 42, 109, 0.4) !important;
@@ -297,6 +370,19 @@ canvas {
     letter-spacing: 2px;
 }
 
+.arched-title {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 14px;
+    padding-bottom: 4px;
+}
+.arched-title span {
+    display: inline-block;
+    transform: rotate(var(--r)) translateY(var(--y));
+    transform-origin: bottom center;
+}
+
 .game-subtitle {
     display: inline-block;
     background: linear-gradient(135deg, #ffd600 0%, #ffab00 100%);
@@ -305,7 +391,7 @@ canvas {
     font-weight: 900;
     font-size: 1.15rem;
     letter-spacing: 3px;
-    margin-top: 4px;
+    margin-top: 8px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
@@ -764,10 +850,11 @@ canvas {
     border-radius: 14px;
     padding: 14px;
     margin: 14px 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #e0e0e0;
+    box-shadow: 0 8px 20px rgba(255, 0, 127, 0.6);
 }
+
+
+
 
 /* Ergonomic Mobile Touch Controls Overlay */
 .touch-overlay {
@@ -818,12 +905,42 @@ canvas {
     box-shadow: 0 0 16px rgba(0, 240, 255, 0.8);
 }
 
+.action-jump-btn, .action-crouch-btn {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 2px !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+}
+
+.action-jump-btn .btn-sub-icon, .action-crouch-btn .btn-sub-icon {
+    font-size: 1.05rem;
+    line-height: 1;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.action-jump-btn .btn-sub-text, .action-crouch-btn .btn-sub-text {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    display: block;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
 .action-jump-btn {
-    width: 78px;
-    height: 78px;
+    width: 76px;
+    height: 76px;
     background: rgba(118, 255, 3, 0.35);
     border-color: #76ff03;
-    font-size: 1rem;
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
@@ -835,11 +952,12 @@ canvas {
 }
 
 .action-crouch-btn {
-    width: 68px;
-    height: 68px;
+    width: 70px;
+    height: 70px;
     background: rgba(255, 171, 0, 0.3);
     border-color: #ffab00;
-    font-size: 0.85rem;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .action-crouch-btn:active, .action-crouch-btn.pressed {

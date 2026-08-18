@@ -82,6 +82,7 @@ class Player {
         this.hasGoldenKey = false;
         this.isDead = false;
         this.deathTimer = 0;
+        this.isEnteringDoor = false;
     }
 
     triggerDeath(cause, onDie, particles) {
@@ -106,7 +107,7 @@ class Player {
     }
 
     jump(particles) {
-        if (this.isCrouching) return;
+        if (this.isDead || this.isEnteringDoor || this.isCrouching) return;
         if (this.grounded) {
             this.vy = this.jumpForce;
             this.grounded = false;
@@ -173,9 +174,39 @@ class Player {
 
             if (this.deathTimer <= 0) {
                 this.isDead = false;
+                this.deathTimer = 1.0;
+                this.vy = 0;
                 if (onDie) onDie();
             }
             return; // Freeze player inputs during 2.5-3s death timer!
+        }
+
+        let simKeys = { ...keys };
+        if (this.isEnteringDoor) {
+            simKeys = { left: false, right: false, up: false, down: false };
+            const dir = Math.sign(this.doorTargetX - this.x);
+            if (Math.abs(this.x - this.doorTargetX) > 2) {
+                if (dir < 0) simKeys.left = true;
+                if (dir > 0) simKeys.right = true;
+            } else {
+                this.x = this.doorTargetX;
+                this.vx = 0;
+                if (!this.entryTimer) this.entryTimer = 30;
+                
+                this.entryTimer--;
+                const oldH = this.height;
+                const oldW = this.width;
+                this.width *= 0.92; // shrink faster
+                this.height *= 0.92;
+                this.y += (oldH - this.height);
+                this.x += (oldW - this.width) / 2;
+
+                if (this.entryTimer <= 0) {
+                    this.isEnteringDoor = false;
+                    this.entryTimer = 30;
+                    if (this.onWinCallback) this.onWinCallback();
+                }
+            }
         }
 
         if (this.invincibleTimer > 0) this.invincibleTimer--;
@@ -183,7 +214,7 @@ class Player {
 
         const underCeiling = this.isUnderOverheadCeiling(platforms, overheadCeilings);
 
-        if (keys.down && this.grounded) {
+        if (simKeys.down && this.grounded) {
             if (!this.isCrouching) {
                 this.isCrouching = true;
                 this.y += 14;
@@ -200,11 +231,11 @@ class Player {
             this.height = 36;
         }
 
-        if (!underCeiling || keys.down) {
-            if (keys.left) {
+        if (!underCeiling || simKeys.down) {
+            if (simKeys.left) {
                 this.vx = -this.speed;
                 this.facing = 'left';
-            } else if (keys.right) {
+            } else if (simKeys.right) {
                 this.vx = this.speed;
                 this.facing = 'right';
             } else {
@@ -355,9 +386,13 @@ class Player {
                         this.vx = 0;
                         if (onDoorLocked) onDoorLocked();
                     } else {
+                        // Start door entering sequence instead of instant win
                         item.collected = true;
+                        item.doorOpen = true; // For renderer
+                        this.isEnteringDoor = true;
+                        this.doorTargetX = item.x + (item.width / 2) - (this.width / 2);
+                        this.onWinCallback = onWin;
                         audio.playWin();
-                        if (onWin) onWin();
                     }
                 } else if (item.type === 'golden_key' || item.type === 'star_key' || item.type === 'key') {
                     item.collected = true;

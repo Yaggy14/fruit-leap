@@ -1161,28 +1161,7 @@ class Game {
         this.ctx.stroke();
         this.ctx.restore();
 
-        // Chapter 1 Level 1 Double Jump Tutorial Banner
-        if (this.currentChapterIdx === 0 && this.currentLevelIdx === 0) {
-            this.ctx.save();
-            this.ctx.shadowColor = "rgba(124, 77, 255, 0.5)";
-            this.ctx.shadowBlur = 15;
-            this.ctx.fillStyle = 'rgba(20, 24, 45, 0.90)';
-            this.ctx.beginPath();
-            this.ctx.roundRect(380 - this.camera.x, 170, 500, 70, 14);
-            this.ctx.fill();
-            this.ctx.strokeStyle = '#ffd600';
-            this.ctx.lineWidth = 2.5;
-            this.ctx.stroke();
 
-            this.ctx.fillStyle = '#00e5ff';
-            this.ctx.font = '800 13px Outfit, sans-serif';
-            this.ctx.fillText('⚡ TUTORIAL GUIDE ⚡', 395 - this.camera.x, 192);
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '600 14px Outfit, sans-serif';
-            this.ctx.fillText('Tap JUMP once to Jump, and tap JUMP again in mid-air', 395 - this.camera.x, 212);
-            this.ctx.fillText('to DOUBLE JUMP across wide gaps! 🐰🚀', 395 - this.camera.x, 230);
-            this.ctx.restore();
-        }
 
         // Textured Platforms with Grass Trim & Shadows
         this.platforms.forEach(p => {
@@ -1347,7 +1326,7 @@ class Game {
 
         // Collectibles
         this.collectibles.forEach(c => {
-            if (c.collected) return;
+            if (c.collected && c.type !== 'exit' && c.type !== 'exit_door') return;
             this.ctx.save();
             this.ctx.translate(c.x - this.camera.x + 10, c.y - this.camera.y + 10);
             
@@ -1415,7 +1394,7 @@ class Game {
                 this.ctx.fillStyle = '#000000'; this.ctx.fillRect(-3, 3, 2, 2); this.ctx.fillRect(2, 3, 2, 2);
             } else if (c.type === 'exit' || c.type === 'exit_door') {
                 // Taller Exit Door (🚪🔒 / 🚪✨) Sitting 100% Flush on the Platform Surface!
-                const isUnlocked = this.player.hasGoldenKey;
+                const isUnlocked = this.player.hasGoldenKey || c.doorOpen;
                 const platY = c.platformRef ? c.platformRef.y : (c.y + 50);
                 
                 this.ctx.restore();
@@ -1434,42 +1413,78 @@ class Game {
                 this.ctx.lineWidth = 3.5;
                 this.ctx.stroke();
 
-                if (isUnlocked) {
-                    // Unlocked Cosmic Exit Portal 🚪✨
-                    const doorGrad = this.ctx.createLinearGradient(0, -74, 0, 0);
-                    doorGrad.addColorStop(0, '#00f0ff');
-                    doorGrad.addColorStop(0.5, '#e040fb');
-                    doorGrad.addColorStop(1, '#651fff');
-                    this.ctx.fillStyle = doorGrad;
-                    this.ctx.beginPath();
-                    this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
-                    this.ctx.fill();
+                // Inner Portal Void (Always there, but covered by door)
+                const doorGrad = this.ctx.createLinearGradient(0, -74, 0, 0);
+                doorGrad.addColorStop(0, '#00f0ff');
+                doorGrad.addColorStop(0.5, '#e040fb');
+                doorGrad.addColorStop(1, '#651fff');
+                this.ctx.fillStyle = doorGrad;
+                this.ctx.beginPath();
+                this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
+                this.ctx.fill();
 
-                    // Sparkle Ring
+                if (c.doorOpen) {
+                    // Portal Sparkles swirling faster
                     this.ctx.fillStyle = '#ffffff';
                     this.ctx.beginPath();
-                    this.ctx.arc(0, -36, 8, 0, Math.PI * 2);
+                    this.ctx.arc(0, -36, 8 + Math.random()*4, 0, Math.PI * 2);
                     this.ctx.fill();
-                } else {
-                    // Locked Dark Wooden Door with Padlock 🚪🔒
-                    this.ctx.fillStyle = '#211510';
-                    this.ctx.beginPath();
-                    this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
-                    this.ctx.fill();
+                }
 
-                    // Golden Padlock 🔒
-                    this.ctx.fillStyle = '#ffd600';
-                    this.ctx.fillRect(-8, -36, 16, 16);
-                    this.ctx.strokeStyle = '#ffd600';
-                    this.ctx.lineWidth = 3;
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, -38, 6.5, Math.PI, 0);
-                    this.ctx.stroke();
+                // Door Opening Animation Progress (0 to 1)
+                let openProgress = 0;
+                if (c.doorOpen && this.player.entryTimer) {
+                    openProgress = 1 - (this.player.entryTimer / 30);
+                }
 
-                    this.ctx.fillStyle = '#1a1a1a';
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, -28, 2.5, 0, Math.PI * 2);
-                    this.ctx.fill();
+                // Apply clipping mask for the sliding doors
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
+                this.ctx.clip();
+
+                // Wooden Door Halves (Sliding apart)
+                const slideDist = 19 * openProgress; // slides up to 19px left and right
+
+                this.ctx.fillStyle = '#211510';
+                
+                // Left Half
+                this.ctx.beginPath();
+                this.ctx.roundRect(-19 - slideDist, -72, 19, 72, [19, 0, 0, 0]);
+                this.ctx.fill();
+                
+                // Right Half
+                this.ctx.beginPath();
+                this.ctx.roundRect(0 + slideDist, -72, 19, 72, [0, 19, 0, 0]);
+                this.ctx.fill();
+                
+                this.ctx.restore(); // Remove clipping mask
+
+                if (!c.doorOpen) {
+                    if (isUnlocked) {
+                        // Unlocked but not entered: Green glowing lock 🔓
+                        this.ctx.fillStyle = '#00e676';
+                        this.ctx.shadowColor = '#00e676';
+                        this.ctx.shadowBlur = 10;
+                        this.ctx.fillRect(-8, -36, 16, 16);
+                        this.ctx.shadowBlur = 0;
+                        this.ctx.fillStyle = '#1a1a1a';
+                        this.ctx.fillRect(-2, -32, 4, 8);
+                    } else {
+                        // Locked: Golden Padlock 🔒
+                        this.ctx.fillStyle = '#ffd600';
+                        this.ctx.fillRect(-8, -36, 16, 16);
+                        this.ctx.strokeStyle = '#ffd600';
+                        this.ctx.lineWidth = 3;
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, -38, 6.5, Math.PI, 0);
+                        this.ctx.stroke();
+
+                        this.ctx.fillStyle = '#1a1a1a';
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, -28, 2.5, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
                 }
 
                 this.ctx.shadowBlur = 0;
