@@ -96,6 +96,11 @@ class Game {
         this.fruitsCollected = 0;
         this.totalFruits = 0;
 
+        // Fixed timestep physics properties (60Hz target)
+        this.lastTime = 0;
+        this.accumulator = 0;
+        this.fixedStep = 1 / 60;
+
         this.progress = this.loadProgress();
 
         this.player = new Player(50, 350);
@@ -125,6 +130,18 @@ class Game {
         this.renderChapterChips();
         this.renderLevelGrid(1);
         this.renderShopGrid();
+
+        // Autoplay policy workaround: play menu BGM on first interaction if we're in a menu state
+        const startInitialBGM = () => {
+            if (this.state === 'MENU' || this.state === 'SHOP' || this.state === 'CHAPTER_SELECT') {
+                audio.playBGM('menu');
+            }
+            document.removeEventListener('click', startInitialBGM);
+            document.removeEventListener('touchstart', startInitialBGM);
+        };
+        document.addEventListener('click', startInitialBGM);
+        document.addEventListener('touchstart', startInitialBGM);
+
         requestAnimationFrame((t) => this.loop(t));
     }
 
@@ -273,6 +290,7 @@ class Game {
         document.getElementById('btn-next-level').addEventListener('click', () => this.loadNextLevel());
         document.getElementById('btn-win-restart').addEventListener('click', () => this.restartLevel());
         document.getElementById('btn-win-levels').addEventListener('click', () => this.showScreen('screen-chapter-select'));
+        document.getElementById('btn-win-main-menu')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-gameover-menu').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-no-lives-menu').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-victory-main-menu')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
@@ -315,7 +333,83 @@ class Game {
             localStorage.setItem('game_lang', this.lang);
             this.updateLanguageUI();
         });
+
+        // Settings Menu Logic
+        document.getElementById('btn-settings-main')?.addEventListener('click', () => this.showScreen('screen-settings'));
+        
+        document.getElementById('btn-settings-pause')?.addEventListener('click', () => {
+            document.getElementById('screen-pause').classList.add('hidden');
+            document.getElementById('screen-settings').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-settings-close')?.addEventListener('click', () => {
+            if (this.state === 'PAUSED') {
+                document.getElementById('screen-settings').classList.add('hidden');
+                document.getElementById('screen-pause').classList.remove('hidden');
+            } else {
+                this.showScreen('screen-main-menu');
+            }
+        });
+
+        const volSlider = document.getElementById('volume-slider');
+        if (volSlider) {
+            volSlider.value = audio.globalVolume;
+            volSlider.addEventListener('input', (e) => {
+                audio.setVolume(parseFloat(e.target.value));
+            });
+        }
+
+        const bgmSlider = document.getElementById('bgm-volume-slider');
+        if (bgmSlider) {
+            bgmSlider.value = audio.musicVolume;
+            bgmSlider.addEventListener('input', (e) => {
+                audio.setMusicVolume(parseFloat(e.target.value));
+            });
+        }
+
+        const sizeSelect = document.getElementById('settings-controls-size');
+        if (sizeSelect) {
+            const savedSize = localStorage.getItem('game_controls_size') || 'medium';
+            sizeSelect.value = savedSize;
+            this.applyControlsSize(savedSize);
+            sizeSelect.addEventListener('change', (e) => {
+                const newSize = e.target.value;
+                localStorage.setItem('game_controls_size', newSize);
+                this.applyControlsSize(newSize);
+            });
+        }
+
+        const langSelect = document.getElementById('settings-lang-select');
+        if (langSelect) {
+            langSelect.addEventListener('change', (e) => {
+                this.lang = e.target.value;
+                localStorage.setItem('game_lang', this.lang);
+                this.updateLanguageUI();
+            });
+        }
+
         this.updateLanguageUI();
+    }
+
+    applyControlsSize(size) {
+        const dpadBtns = document.querySelectorAll('.dpad-btn');
+        const jumpBtns = document.querySelectorAll('.action-jump-btn, .action-crouch-btn');
+        
+        let scale = 1.0;
+        if (size === 'small') scale = 0.8;
+        if (size === 'large') scale = 1.3;
+        
+        dpadBtns.forEach(btn => {
+            btn.style.width = `${60 * scale}px`;
+            btn.style.height = `${60 * scale}px`;
+            btn.style.fontSize = `${24 * scale}px`;
+        });
+        
+        jumpBtns.forEach(btn => {
+            btn.style.width = `${70 * scale}px`;
+            btn.style.height = `${70 * scale}px`;
+            btn.style.fontSize = `${16 * scale}px`;
+        });
     }
 
     updateLanguageUI() {
@@ -326,6 +420,9 @@ class Game {
         });
         const toggleBtn = document.getElementById('btn-lang-toggle');
         if (toggleBtn) toggleBtn.innerText = `🌐 ${this.lang.toUpperCase()} | ${this.lang === 'tr' ? 'EN' : 'TR'}`;
+        
+        const langSelect = document.getElementById('settings-lang-select');
+        if (langSelect) langSelect.value = this.lang;
     }
 
     renderChapterChips() {
@@ -419,14 +516,19 @@ class Game {
 
         const target = document.getElementById(screenId);
         if (target) target.classList.remove('hidden');
-        if (screenId === 'screen-main-menu') this.state = 'MENU';
+        if (screenId === 'screen-main-menu') {
+            this.state = 'MENU';
+            audio.playBGM('menu');
+        }
         if (screenId === 'screen-chapter-select') {
             this.state = 'CHAPTER_SELECT';
+            audio.playBGM('menu');
             this.renderChapterChips();
             this.renderLevelGrid(1);
         }
         if (screenId === 'screen-character-shop') {
             this.state = 'SHOP';
+            audio.playBGM('menu');
             this.renderShopGrid();
         }
     }
@@ -471,11 +573,16 @@ class Game {
         this.levelTimer = 0;
         this.fruitsCollected = 0;
 
+        // Pre-fill accumulator for frame 1 physics execution
+        this.lastTime = performance.now();
+        this.accumulator = this.fixedStep;
+
         this.loadLevelData();
         this.showScreen('hud-overlay');
         document.getElementById('hud-overlay').classList.remove('hidden');
         document.getElementById('touch-controls')?.classList.remove('hidden'); // SHOW TOUCH CONTROLS IN GAME!
         this.state = 'PLAYING';
+        audio.playBGM('game');
 
         // Trigger Piko Story Dialogue for Chapter
         const lData = I18N[this.lang] || I18N.tr;
@@ -624,6 +731,7 @@ class Game {
         this.updateHUD();
 
         if (this.progress.globalLives <= 0) {
+            audio.playBGM(null); // Stop BGM for game over
             audio.playGameOver();
             this.state = 'GAME_OVER';
             document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
@@ -635,6 +743,7 @@ class Game {
     }
 
     handleWin() {
+        audio.playBGM(null); // Stop BGM to hear the win fanfare
         this.state = 'WIN';
         const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
         const lvlCode = `${this.currentChapterIdx}-${this.currentLevelIdx + 1}`;
@@ -791,11 +900,26 @@ class Game {
     }
 
     loop(timestamp) {
+        if (!this.lastTime) this.lastTime = timestamp;
+        let deltaTime = (timestamp - this.lastTime) / 1000;
+        this.lastTime = timestamp;
+
+        // Cap deltaTime to prevent spiral of death on lag spikes
+        if (deltaTime > 0.25) deltaTime = 0.25;
+
         this.updateStatsUI();
         if (this.state === 'PLAYING') {
-            this.levelTimer += 1 / 60;
+            this.accumulator += deltaTime;
+
+            // Run update multiple times if running on low Hz display,
+            // or fewer times (skipping frames) on high Hz displays (90Hz, 120Hz)
+            while (this.accumulator >= this.fixedStep) {
+                this.levelTimer += this.fixedStep;
+                this.update();
+                this.accumulator -= this.fixedStep;
+            }
+
             this.updateHUD();
-            this.update();
             this.draw();
         } else {
             this.drawMenuBackground();

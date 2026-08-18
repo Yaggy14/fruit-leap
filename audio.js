@@ -3,6 +3,68 @@ class AudioManager {
     constructor() {
         this.ctx = null;
         this.muted = false;
+        this.globalVolume = parseFloat(localStorage.getItem('game_volume') ?? '1.0');
+        this.musicVolume = parseFloat(localStorage.getItem('game_music_volume') ?? '1.0');
+        this.currentBGM = null;
+    }
+
+    setVolume(val) {
+        this.globalVolume = val;
+        localStorage.setItem('game_volume', val);
+        this.muted = (val === 0);
+        this.updateBGMVolume();
+        
+        if (!this.muted && this.currentBGM) {
+            const track = this.currentBGM;
+            this.currentBGM = null; // force playBGM to trigger
+            this.playBGM(track);
+        }
+    }
+
+    setMusicVolume(val) {
+        this.musicVolume = val;
+        localStorage.setItem('game_music_volume', val);
+        this.updateBGMVolume();
+    }
+
+    updateBGMVolume() {
+        const menuAudio = document.getElementById('bgm-menu');
+        const gameAudio = document.getElementById('bgm-game');
+        // BGM is typically kept a bit quieter than SFX (e.g. 40% of global)
+        const bgmVol = this.globalVolume * this.musicVolume * 0.4;
+        if (menuAudio) menuAudio.volume = bgmVol;
+        if (gameAudio) gameAudio.volume = bgmVol;
+        
+        if (this.muted) {
+            if (menuAudio) menuAudio.pause();
+            if (gameAudio) gameAudio.pause();
+        }
+    }
+
+    playBGM(trackName) {
+        const menuAudio = document.getElementById('bgm-menu');
+        const gameAudio = document.getElementById('bgm-game');
+        if (!menuAudio || !gameAudio) return;
+
+        this.updateBGMVolume();
+
+        if (trackName === 'menu') {
+            if (this.currentBGM !== 'menu' || menuAudio.paused) {
+                gameAudio.pause();
+                if (!this.muted) menuAudio.play().catch(() => {});
+                this.currentBGM = 'menu';
+            }
+        } else if (trackName === 'game') {
+            if (this.currentBGM !== 'game' || gameAudio.paused) {
+                menuAudio.pause();
+                if (!this.muted) gameAudio.play().catch(() => {});
+                this.currentBGM = 'game';
+            }
+        } else {
+            menuAudio.pause();
+            gameAudio.pause();
+            this.currentBGM = null;
+        }
     }
 
     init() {
@@ -22,7 +84,7 @@ class AudioManager {
         osc.frequency.setValueAtTime(175, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(750, this.ctx.currentTime + 0.13);
 
-        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.18 * this.globalVolume, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.13);
 
         osc.connect(gain);
@@ -48,7 +110,7 @@ class AudioManager {
         osc2.frequency.setValueAtTime(1975.53, this.ctx.currentTime); // B6
         osc2.frequency.setValueAtTime(2637.02, this.ctx.currentTime + 0.07); // E7
 
-        gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.22 * this.globalVolume, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
 
         osc1.connect(gain);
@@ -71,7 +133,7 @@ class AudioManager {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.05);
 
-            gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.05);
+            gain.gain.setValueAtTime(0.2 * this.globalVolume, this.ctx.currentTime + idx * 0.05);
             gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.05 + 0.12);
 
             osc.connect(gain);
@@ -92,7 +154,7 @@ class AudioManager {
         osc.frequency.setValueAtTime(260, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.25);
 
-        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.35 * this.globalVolume, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
 
         osc.connect(gain);
@@ -112,7 +174,7 @@ class AudioManager {
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
 
-            gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.25 * this.globalVolume, this.ctx.currentTime + idx * 0.08);
             gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.08 + 0.35);
 
             osc.connect(gain);
@@ -133,7 +195,7 @@ class AudioManager {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.15);
 
-            gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.15);
+            gain.gain.setValueAtTime(0.25 * this.globalVolume, this.ctx.currentTime + idx * 0.15);
             gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.15 + 0.2);
 
             osc.connect(gain);

@@ -1,12 +1,12 @@
 // Player & Entities Physics Engine with Matched Callback Signatures & Strict Collision Handling
 
 const CHARACTER_SKINS = [
-    { id: 'bunny', name: 'Fluffy Bunny', icon: '🐰', bodyColor: '#ff80ab', earColor: '#ff4081', priceStars: 0, perk: 'Speed 4.8', baseSpeed: 4.8 },
-    { id: 'bear', name: 'Teddy Bear', icon: '🐻', bodyColor: '#8d6e63', earColor: '#5d4037', priceStars: 5, perk: 'Speed 5.0', baseSpeed: 5.0 },
-    { id: 'kitty', name: 'Cute Kitty', icon: '🐱', bodyColor: '#ffe082', earColor: '#ffb300', priceStars: 15, perk: 'Speed 5.4', baseSpeed: 5.4 },
-    { id: 'fox', name: 'Foxy Hero', icon: '🦊', bodyColor: '#ff7043', earColor: '#d84315', priceStars: 30, perk: 'Speed 5.8', baseSpeed: 5.8 },
-    { id: 'panda', name: 'Panda Pal', icon: '🐼', bodyColor: '#f5f5f5', earColor: '#212121', priceStars: 45, perk: 'Speed 6.2', baseSpeed: 6.2 },
-    { id: 'unicorn', name: 'Magic Unicorn', icon: '🦄', bodyColor: '#f8bbd0', earColor: '#ea80fc', priceStars: 60, perk: 'Speed 6.8', baseSpeed: 6.8 }
+    { id: 'bunny', name: 'Fluffy Bunny', icon: '🐰', bodyColor: '#ff80ab', earColor: '#ff4081', priceStars: 0, perk: 'Speed 3.8', baseSpeed: 3.8 },
+    { id: 'bear', name: 'Teddy Bear', icon: '🐻', bodyColor: '#8d6e63', earColor: '#5d4037', priceStars: 5, perk: 'Speed 4.0', baseSpeed: 4.0 },
+    { id: 'kitty', name: 'Cute Kitty', icon: '🐱', bodyColor: '#ffe082', earColor: '#ffb300', priceStars: 15, perk: 'Speed 4.2', baseSpeed: 4.2 },
+    { id: 'fox', name: 'Foxy Hero', icon: '🦊', bodyColor: '#ff7043', earColor: '#d84315', priceStars: 30, perk: 'Speed 4.5', baseSpeed: 4.5 },
+    { id: 'panda', name: 'Panda Pal', icon: '🐼', bodyColor: '#f5f5f5', earColor: '#212121', priceStars: 45, perk: 'Speed 4.8', baseSpeed: 4.8 },
+    { id: 'unicorn', name: 'Magic Unicorn', icon: '🦄', bodyColor: '#f8bbd0', earColor: '#ea80fc', priceStars: 60, perk: 'Speed 5.2', baseSpeed: 5.2 }
 ];
 
 class Particle {
@@ -48,8 +48,8 @@ class Player {
         this.height = 36;
         this.vx = 0;
         this.vy = 0;
-        this.jumpForce = -14.2; // Snappy jump force
-        this.gravity = 0.95; // Stronger gravity for tight non-floaty landing
+        this.jumpForce = -15.5; // Slightly stronger to compensate for increased gravity
+        this.gravity = 1.35; // Stronger gravity for snappier non-floaty jumps
 
         this.grounded = false;
         this.canDoubleJump = true;

@@ -575,11 +575,13 @@ canvas {
 /* Chapter Scroll bar */
 .chapter-scroll {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
-    overflow-x: auto;
     width: 100%;
+    max-width: 500px;
     padding: 10px 0;
-    margin-bottom: 16px;
+    margin: 0 auto 16px auto;
 }
 
 .chapter-chip {
@@ -605,6 +607,7 @@ canvas {
     gap: 16px;
     width: 100%;
     max-width: 500px;
+    margin: 0 auto;
 }
 
 .level-card {
@@ -709,6 +712,26 @@ canvas {
 }
 
 /* Modals */
+.glass-panel {
+    background: rgba(18, 22, 40, 0.95);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 28px;
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modal {
+    max-width: 400px;
+}
+
+.modal-large {
+    max-width: 750px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
 .modal-card {
     background: rgba(18, 22, 40, 0.95);
     border: 1px solid var(--card-border);
