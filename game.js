@@ -53,7 +53,16 @@ const I18N = {
         victoryTitle: "🎉 TEBRİKLER! MEYVE VADİSİ KURTULDU! 🎉",
         victorySubtitle: "Mükemmel Başarı! Tüm Seviyeleri Tamamladın!",
         victoryStoryText: "Piko ve cesur arkadaşları 25 Yıldız Anahtarını ve çalınan tüm sihirli meyveleri toplayıp Dev Saman Yolu Ağacı'na geri koydu! Gölge Balçıkları vadiyi terk etti ve Meyve Vadisi sonsuza dek eski neşe ve huzuruna kavuştu! 🌳✨🐰🏆",
-        victoryMainMenu: "🏠 ANA MENÜYE DÖN"
+        victoryMainMenu: "🏠 ANA MENÜYE DÖN",
+        settingsTitle: "⚙️ AYARLAR",
+        masterVolume: "🔊 Genel Ses",
+        musicVolume: "🎵 Müzik Sesi",
+        controlsSize: "🕹️ Tuş Boyutu",
+        language: "🌐 Dil",
+        sizeSmall: "Küçük",
+        sizeMedium: "Orta",
+        sizeLarge: "Büyük",
+        close: "✔ Kapat"
     },
     en: {
         stars: "STARS",
@@ -75,7 +84,16 @@ const I18N = {
         victoryTitle: "🎉 CONGRATULATIONS! FRUIT VALLEY IS SAVED! 🎉",
         victorySubtitle: "Outstanding Heroism! You Completed All Chapters!",
         victoryStoryText: "Piko and his brave friends collected all 25 Golden Keys and stolen magic fruits, placing them back on the Great Milky Way Tree! The Shadow Slimes fled and Fruit Valley is restored forever! 🌳✨🐰🏆",
-        victoryMainMenu: "🏠 RETURN TO MAIN MENU"
+        victoryMainMenu: "🏠 RETURN TO MAIN MENU",
+        settingsTitle: "⚙️ SETTINGS",
+        masterVolume: "🔊 Master Volume",
+        musicVolume: "🎵 Music Volume",
+        controlsSize: "🕹️ Controls Size",
+        language: "🌐 Language",
+        sizeSmall: "Small",
+        sizeMedium: "Medium",
+        sizeLarge: "Large",
+        close: "✔ Close"
     }
 };
 
@@ -367,26 +385,47 @@ class Game {
             });
         }
 
-        const sizeSelect = document.getElementById('settings-controls-size');
-        if (sizeSelect) {
-            const savedSize = localStorage.getItem('game_controls_size') || 'medium';
-            sizeSelect.value = savedSize;
-            this.applyControlsSize(savedSize);
-            sizeSelect.addEventListener('change', (e) => {
-                const newSize = e.target.value;
+        // Size Buttons
+        const savedSize = localStorage.getItem('game_controls_size') || 'medium';
+        this.applyControlsSize(savedSize);
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            if (btn.dataset.size === savedSize) btn.classList.add('btn-active');
+            else btn.classList.add('btn-inactive');
+            
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.size-btn').forEach(b => {
+                    b.classList.remove('btn-active');
+                    b.classList.add('btn-inactive');
+                });
+                const selectedBtn = e.target;
+                selectedBtn.classList.remove('btn-inactive');
+                selectedBtn.classList.add('btn-active');
+                
+                const newSize = selectedBtn.dataset.size;
                 localStorage.setItem('game_controls_size', newSize);
                 this.applyControlsSize(newSize);
             });
-        }
+        });
 
-        const langSelect = document.getElementById('settings-lang-select');
-        if (langSelect) {
-            langSelect.addEventListener('change', (e) => {
-                this.lang = e.target.value;
+        // Language Buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            if (btn.dataset.lang === this.lang) btn.classList.add('btn-active');
+            else btn.classList.add('btn-inactive');
+            
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.lang-btn').forEach(b => {
+                    b.classList.remove('btn-active');
+                    b.classList.add('btn-inactive');
+                });
+                const selectedBtn = e.target;
+                selectedBtn.classList.remove('btn-inactive');
+                selectedBtn.classList.add('btn-active');
+                
+                this.lang = selectedBtn.dataset.lang;
                 localStorage.setItem('game_lang', this.lang);
                 this.updateLanguageUI();
             });
-        }
+        });
 
         this.updateLanguageUI();
     }
@@ -665,11 +704,13 @@ class Game {
     pauseGame() {
         this.state = 'PAUSED';
         document.getElementById('screen-pause').classList.remove('hidden');
+        document.getElementById('touch-controls')?.classList.add('hidden');
     }
 
     resumeGame() {
         this.state = 'PLAYING';
         document.getElementById('screen-pause').classList.add('hidden');
+        document.getElementById('touch-controls')?.classList.remove('hidden');
     }
 
     restartLevel() {
@@ -736,6 +777,7 @@ class Game {
             this.state = 'GAME_OVER';
             document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('screen-game-over').classList.remove('hidden');
+            document.getElementById('touch-controls')?.classList.add('hidden');
         } else {
             const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
             this.player.reset(level.playerStart.x, level.playerStart.y);
@@ -768,11 +810,44 @@ class Game {
         document.getElementById('win-fruits-count').innerText = `${this.fruitsCollected} / ${this.totalFruits}`;
         document.getElementById('win-time').innerText = `${this.levelTimer.toFixed(1)}s`;
 
-        document.getElementById('req-star-1').className = `star-req-item ${star1 ? 'completed' : ''}`;
-        document.getElementById('req-star-2').className = `star-req-item ${star2 ? 'completed' : ''}`;
-        document.getElementById('req-star-3').className = `star-req-item ${star3 ? 'completed' : ''}`;
+        document.getElementById('req-star-1').className = 'star-req-item';
+        document.getElementById('req-star-2').className = 'star-req-item';
+        document.getElementById('req-star-3').className = 'star-req-item';
+        
+        document.querySelector('#req-star-1 .req-check').innerText = star1 ? '✅' : '⬜';
+        document.querySelector('#req-star-2 .req-check').innerText = star2 ? '✅' : '⬜';
+        document.querySelector('#req-star-3 .req-check').innerText = star3 ? '✅' : '⬜';
+
+        document.getElementById('arch-star-1').className = 'arch-star';
+        document.getElementById('arch-star-2').className = 'arch-star';
+        document.getElementById('arch-star-3').className = 'arch-star';
 
         document.getElementById('screen-win').classList.remove('hidden');
+        document.getElementById('touch-controls')?.classList.add('hidden');
+        
+        // Staggered Arch Star Animation
+        setTimeout(() => {
+            if (star1) {
+                document.getElementById('arch-star-1').classList.add('earned');
+                document.getElementById('req-star-1').classList.add('completed');
+                audio.playStar();
+            }
+        }, 500);
+        setTimeout(() => {
+            if (star2) {
+                document.getElementById('arch-star-2').classList.add('earned');
+                document.getElementById('req-star-2').classList.add('completed');
+                audio.playStar();
+            }
+        }, 1100);
+        setTimeout(() => {
+            if (star3) {
+                document.getElementById('arch-star-3').classList.add('earned');
+                document.getElementById('req-star-3').classList.add('completed');
+                audio.playStar();
+            }
+        }, 1700);
+
         admob.showInterstitialAd();
     }
 

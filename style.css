@@ -846,3 +846,149 @@ canvas {
     background: rgba(255, 171, 0, 0.7);
     border-color: #ffab00;
 }
+
+/* Responsive UI Scaling */
+html {
+    font-size: 16px; /* Base for desktop / large tablet */
+}
+
+@media screen and (max-width: 1024px), screen and (max-height: 700px) {
+    html {
+        font-size: 14px; /* Medium devices / smaller tablets */
+    }
+}
+
+@media screen and (max-width: 750px), screen and (max-height: 450px) {
+    html {
+        font-size: 11px; /* Mobile landscape phones */
+    }
+    
+    .glass-panel {
+        padding: 16px;
+    }
+    
+    .modal-card {
+        padding: 16px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+    }
+
+    .level-grid {
+        gap: 10px;
+    }
+    
+    .level-card {
+        padding: 8px;
+    }
+
+    .chapter-scroll {
+        gap: 6px;
+        padding: 6px 0;
+        margin: 0 auto 10px auto;
+    }
+    
+    .chapter-chip {
+        padding: 6px 12px;
+    }
+    
+    .story-card {
+        padding: 10px;
+    }
+    
+    .story-icon {
+        font-size: 2rem;
+    }
+
+    .hud-overlay {
+        padding: 8px 12px;
+    }
+    
+    .hud-item {
+        padding: 4px 10px;
+    }
+    
+    .hud-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .game-title {
+        font-size: 2.2rem;
+    }
+    
+    .menu-buttons-independent {
+        gap: 10px;
+    }
+}
+
+
+@keyframes starPop {
+    0% { transform: scale(0); opacity: 0; filter: drop-shadow(0 0 0px #ffd600); }
+    50% { transform: scale(1.6); opacity: 1; filter: drop-shadow(0 0 16px #ffd600); }
+    100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 8px #ffd600); }
+}
+
+.star-icon {
+    display: inline-block;
+}
+
+.star-req-item.completed.animate-pop .star-icon {
+    animation: starPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+
+/* Win Stars Arch */
+.win-stars-arch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 5px;
+    height: 90px;
+}
+
+.arch-star {
+    font-size: 3.5rem;
+    opacity: 0.2;
+    filter: grayscale(100%);
+    transform: rotate(var(--start-rot)) translateY(var(--start-y)) scale(var(--end-scale));
+    transform-origin: center center;
+    display: inline-block;
+}
+
+#arch-star-2 {
+    z-index: 2;
+}
+
+.arch-star.earned {
+    animation: archStarPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes archStarPop {
+    0% { transform: scale(0) rotate(var(--start-rot)) translateY(var(--start-y)); opacity: 0; filter: drop-shadow(0 0 0px #ffd600) brightness(1); }
+    50% { transform: scale(calc(var(--end-scale) * 1.6)) rotate(var(--start-rot)) translateY(var(--start-y)); opacity: 1; filter: drop-shadow(0 0 30px #ffffff) brightness(1.5); }
+    100% { transform: scale(var(--end-scale)) rotate(var(--start-rot)) translateY(var(--start-y)); opacity: 1; filter: drop-shadow(0 0 15px #ffd600) brightness(1); }
+}
+
+.star-req-item.completed .req-check {
+    filter: drop-shadow(0 0 4px #00e676);
+}
+
+
+/* Segmented Button States */
+.btn-inactive {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: none !important;
+}
+
+.btn-active {
+    background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4) !important;
+}
+
