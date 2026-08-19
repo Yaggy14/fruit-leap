@@ -292,9 +292,9 @@ class Game {
         bindTouch('btn-crouch', 'down');
         bindTouch('btn-jump', 'up');
 
-        document.getElementById('btn-play-game').addEventListener('click', () => this.startLevel(0, 0));
+        document.getElementById('btn-play-game').addEventListener('click', () => this.resumeGamePlay());
         document.getElementById('btn-story-intro').addEventListener('click', () => this.showScreen('screen-story-intro'));
-        document.getElementById('btn-start-adventure').addEventListener('click', () => this.startLevel(0, 0));
+        document.getElementById('btn-start-adventure').addEventListener('click', () => this.resumeGamePlay());
         document.getElementById('btn-story-back').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-character-shop').addEventListener('click', () => this.showScreen('screen-character-shop'));
         document.getElementById('btn-chapter-select').addEventListener('click', () => this.showScreen('screen-chapter-select'));
@@ -590,6 +590,38 @@ class Game {
         } catch (e) {}
     }
 
+    resumeGamePlay() {
+        let nextChapterIdx = 0;
+        let nextLevelIdx = 0;
+        
+        let foundCompleted = false;
+        for (let c = CHAPTERS.length - 1; c >= 0; c--) {
+            const chap = CHAPTERS[c];
+            for (let l = chap.levels.length - 1; l >= 0; l--) {
+                const lvlCode = `${chap.id}-${l + 1}`;
+                const buggedCode = `${c}-${l + 1}`;
+                if (this.progress.levelStars[lvlCode] > 0 || this.progress.levelStars[buggedCode] > 0) {
+                    nextChapterIdx = c;
+                    nextLevelIdx = l + 1;
+                    if (nextLevelIdx >= chap.levels.length) {
+                        nextChapterIdx = c + 1;
+                        nextLevelIdx = 0;
+                    }
+                    foundCompleted = true;
+                    break;
+                }
+            }
+            if (foundCompleted) break;
+        }
+
+        if (nextChapterIdx >= CHAPTERS.length) {
+            nextChapterIdx = CHAPTERS.length - 1;
+            nextLevelIdx = CHAPTERS[nextChapterIdx].levels.length - 1;
+        }
+        
+        this.startLevel(nextChapterIdx, nextLevelIdx);
+    }
+
     startLevel(chapterIdx, levelIdx) {
         this.requestMobileLandscape();
         this.checkHeartRegen();
@@ -788,7 +820,7 @@ class Game {
         audio.playBGM(null); // Stop BGM to hear the win fanfare
         this.state = 'WIN';
         const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
-        const lvlCode = `${this.currentChapterIdx}-${this.currentLevelIdx + 1}`;
+        const lvlCode = `${CHAPTERS[this.currentChapterIdx].id}-${this.currentLevelIdx + 1}`;
 
         const star1 = true; // Unlock & Finish Level
         const star2 = (this.totalFruits > 0 && this.fruitsCollected >= this.totalFruits); // Collect ALL Fruits 🍓
@@ -1358,40 +1390,83 @@ class Game {
 
                 this.ctx.shadowBlur = 0;
             } else if (c.type === 'strawberry') {
-                this.ctx.fillStyle = '#ff1744';
+                const grad = this.ctx.createRadialGradient(-3, -1, 2, 0, 2, 10);
+                grad.addColorStop(0, '#ff4d6d');
+                grad.addColorStop(0.7, '#d90429');
+                grad.addColorStop(1, '#800f2f');
+                this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 2, 10, 0, Math.PI * 2); this.ctx.fill();
-                this.ctx.fillStyle = '#76ff03'; this.ctx.fillRect(-5, -10, 10, 5);
-                this.ctx.fillStyle = '#ffeb3b'; this.ctx.fillRect(-2, 0, 2, 2); this.ctx.fillRect(3, 4, 2, 2);
-            } else if (c.type === 'apple') {
-                this.ctx.fillStyle = '#ff3d00';
-                this.ctx.beginPath(); this.ctx.arc(0, 0, 10, 0, Math.PI * 2); this.ctx.fill();
-                this.ctx.fillStyle = '#4caf50'; this.ctx.fillRect(0, -12, 5, 4);
-                this.ctx.fillStyle = '#795548'; this.ctx.fillRect(-1, -12, 2, 4);
-            } else if (c.type === 'banana') {
-                this.ctx.fillStyle = '#ffea00';
+                this.ctx.fillStyle = '#ffeb3b';
+                this.ctx.fillRect(-3, -2, 1.5, 1.5); this.ctx.fillRect(3, 1, 1.5, 1.5); this.ctx.fillRect(-1, 5, 1.5, 1.5);
+                this.ctx.fillStyle = '#55a630';
                 this.ctx.beginPath();
-                this.ctx.ellipse(0, 0, 11, 5, Math.PI / 4, 0, Math.PI * 2);
+                this.ctx.moveTo(0, 0); this.ctx.lineTo(-6, -8); this.ctx.lineTo(-2, -5); this.ctx.lineTo(0, -9); this.ctx.lineTo(2, -5); this.ctx.lineTo(6, -8);
+                this.ctx.fill();
+            } else if (c.type === 'apple') {
+                const grad = this.ctx.createRadialGradient(-2, -2, 2, 0, 0, 10);
+                grad.addColorStop(0, '#ff5252');
+                grad.addColorStop(0.7, '#d50000');
+                grad.addColorStop(1, '#8e0000');
+                this.ctx.fillStyle = grad;
+                this.ctx.beginPath(); this.ctx.arc(0, 0, 10, 0, Math.PI * 2); this.ctx.fill();
+                this.ctx.strokeStyle = '#5d4037';
+                this.ctx.beginPath(); this.ctx.moveTo(0, -9); this.ctx.quadraticCurveTo(3, -13, 2, -14); this.ctx.lineWidth=2; this.ctx.stroke();
+                this.ctx.fillStyle = '#64dd17';
+                this.ctx.beginPath(); this.ctx.ellipse(3, -11, 4, 2, Math.PI/4, 0, Math.PI * 2); this.ctx.fill();
+            } else if (c.type === 'banana') {
+                const grad = this.ctx.createLinearGradient(-8, -4, 8, 4);
+                grad.addColorStop(0, '#ffea00');
+                grad.addColorStop(0.8, '#ffd600');
+                grad.addColorStop(1, '#f57f17');
+                this.ctx.fillStyle = grad;
+                this.ctx.beginPath();
+                this.ctx.moveTo(-9, -5);
+                this.ctx.quadraticCurveTo(0, 8, 9, 5);
+                this.ctx.quadraticCurveTo(2, 12, -9, -5);
                 this.ctx.fill();
                 this.ctx.fillStyle = '#5d4037';
-                this.ctx.fillRect(-7, 4, 3, 3);
+                this.ctx.beginPath(); this.ctx.arc(-9, -5, 1.5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(9, 5, 1, 0, Math.PI*2); this.ctx.fill();
             } else if (c.type === 'grapes') {
-                this.ctx.fillStyle = '#aa00ff';
-                this.ctx.beginPath();
-                this.ctx.arc(-4, -2, 5, 0, Math.PI * 2);
-                this.ctx.arc(4, -2, 5, 0, Math.PI * 2);
-                this.ctx.arc(0, 4, 5, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.fillStyle = '#64dd17'; this.ctx.fillRect(-2, -9, 4, 4);
+                const drawGrape = (gx, gy) => {
+                    const grad = this.ctx.createRadialGradient(gx-1, gy-1, 1, gx, gy, 4);
+                    grad.addColorStop(0, '#e040fb');
+                    grad.addColorStop(0.7, '#aa00ff');
+                    grad.addColorStop(1, '#4a148c');
+                    this.ctx.fillStyle = grad;
+                    this.ctx.beginPath(); this.ctx.arc(gx, gy, 4, 0, Math.PI * 2); this.ctx.fill();
+                };
+                drawGrape(0, -6); drawGrape(-4, -2); drawGrape(4, -2); drawGrape(-2, 3); drawGrape(2, 3); drawGrape(0, 7);
+                this.ctx.fillStyle = '#64dd17';
+                this.ctx.beginPath(); this.ctx.ellipse(0, -10, 4, 2, 0, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.fillStyle = '#5d4037';
+                this.ctx.fillRect(-1, -11, 2, 3);
             } else if (c.type === 'orange') {
-                this.ctx.fillStyle = '#ff9100';
+                const grad = this.ctx.createRadialGradient(-3, -3, 2, 0, 0, 10);
+                grad.addColorStop(0, '#ffab40');
+                grad.addColorStop(0.7, '#ff6d00');
+                grad.addColorStop(1, '#e65100');
+                this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 0, 10, 0, Math.PI * 2); this.ctx.fill();
-                this.ctx.fillStyle = '#76ff03'; this.ctx.fillRect(0, -11, 4, 3);
+                this.ctx.fillStyle = '#e65100';
+                this.ctx.beginPath(); this.ctx.arc(-2, 2, 0.5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(3, 1, 0.5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(1, 4, 0.5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.fillStyle = '#64dd17';
+                this.ctx.beginPath(); this.ctx.ellipse(0, -10, 4, 2, -Math.PI/6, 0, Math.PI*2); this.ctx.fill();
             } else if (c.type === 'watermelon') {
-                this.ctx.fillStyle = '#2e7d32';
+                const grad = this.ctx.createLinearGradient(0, -11, 0, 0);
+                grad.addColorStop(0, '#2e7d32');
+                grad.addColorStop(0.5, '#4caf50');
+                grad.addColorStop(1, '#a5d6a7');
+                this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 0, 11, 0, Math.PI); this.ctx.fill();
-                this.ctx.fillStyle = '#ff2a6d';
+                this.ctx.fillStyle = '#ff1744';
                 this.ctx.beginPath(); this.ctx.arc(0, -1, 8, 0, Math.PI); this.ctx.fill();
-                this.ctx.fillStyle = '#000000'; this.ctx.fillRect(-3, 3, 2, 2); this.ctx.fillRect(2, 3, 2, 2);
+                this.ctx.fillStyle = '#212121';
+                this.ctx.beginPath(); this.ctx.ellipse(-3, -3, 1.5, 2, Math.PI/6, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.ellipse(3, -3, 1.5, 2, -Math.PI/6, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.ellipse(0, -6, 1.5, 2, 0, 0, Math.PI*2); this.ctx.fill();
             } else if (c.type === 'exit' || c.type === 'exit_door') {
                 // Taller Exit Door (🚪🔒 / 🚪✨) Sitting 100% Flush on the Platform Surface!
                 const isUnlocked = this.player.hasGoldenKey || c.doorOpen;

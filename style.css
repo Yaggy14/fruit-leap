@@ -530,6 +530,11 @@ canvas {
     overflow-y: auto;
 }
 
+#screen-main-menu {
+    background: transparent;
+    backdrop-filter: none;
+}
+
 .logo-box {
     text-align: center;
     margin-bottom: 24px;

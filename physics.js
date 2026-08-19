@@ -48,7 +48,7 @@ class Player {
         this.height = 36;
         this.vx = 0;
         this.vy = 0;
-        this.jumpForce = -15.5; // Slightly stronger to compensate for increased gravity
+        this.jumpForce = -16.0; // Slightly stronger to compensate for increased gravity
         this.gravity = 1.35; // Stronger gravity for snappier non-floaty jumps
 
         this.grounded = false;
@@ -307,7 +307,7 @@ class Player {
             if (this.checkCollision(this, pad)) {
                 if (this.vy >= 0) {
                     this.y = pad.y - this.height;
-                    this.vy = -16.5; // Powerful spring bounce!
+                    this.vy = -28.5; // VERY powerful spring bounce!
                     this.grounded = false;
                     this.canDoubleJump = true;
                     audio.playJump();

@@ -245,10 +245,10 @@ function generate25Chapters() {
                 }
             }
 
-            // Final Exit Goal
-            const exitPlat = { id: platformIndex++, x: curX + 100, y: 420, width: 450, height: 120 };
+            // Final Exit Goal (Elevated higher than start for climbing feel)
+            const exitPlat = { id: platformIndex++, x: curX + 100, y: 340, width: 450, height: 120 };
             platforms.push(exitPlat);
-            fruitCollectibles.push({ type: 'exit', x: exitPlat.x + 200, y: 350, width: 36, height: 70, platformId: exitPlat.id, offsetX: 200 });
+            fruitCollectibles.push({ type: 'exit', x: exitPlat.x + 200, y: 270, width: 36, height: 70, platformId: exitPlat.id, offsetX: 200 });
 
             // Fallback Mid-Map Star Key if missing
             if (!starPlaced) {
