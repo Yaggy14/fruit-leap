@@ -40,6 +40,55 @@ const I18N = {
         chapters: "🗺️ CHAPTERLAR",
         shop: "🛍️ KARAKTER MARKETİ",
         freeLife: "📺 ÜCRETSİZ CAN (+1 ❤️)",
+        settings: "⚙️ Ayarlar",
+
+        // Story Modal
+        storyTitle: "✨ PİKO'NUN EFSANESİ ✨",
+        storyCard1Title: "1. Meyve Vadisi",
+        storyCard1Text: "Meyve Vadisi'nin neşesi ve yaşam kaynağı, gökyüzündeki Dev Saman Yolu Meyve Ağacı'ydı...",
+        storyCard2Title: "2. Çalınan Yıldızlar",
+        storyCard2Text: "Bir gece kötü Gölge Balçıkları (Slime'lar) ağacın büyülü 25 Yıldız Anahtarını ve meyvelerini çalıp boyut portallarına saçtı!",
+        storyCard3Title: "3. Cesur Tavşan Piko",
+        storyCard3Text: "Tavşan Piko pelerinini taktı! Portallardan geçip 25 Yıldız Anahtarını toplamak ve vadisini kurtarmak için yola çıkıyor!",
+        startAdventure: "🚀 MACERAYA BAŞLA!",
+        mainMenu: "🏠 Ana Menü",
+
+        // Pause Modal
+        paused: "DURDURULDU",
+        resume: "▶ DEVAM ET",
+        restartLevel: "🔄 YENİDEN BAŞLAT",
+        pauseSettings: "⚙️ AYARLAR",
+        pauseMenu: "🏠 MENÜ",
+
+        // Chapter Select
+        selectChapter: "Bölüm Seç",
+        backToMenu: "Ana Menüye Dön",
+
+        // Out of Lives
+        outOfLivesTitle: "CANIN BİTTİ! ❤️",
+        outOfLivesDesc: "Oynamak için en az 1 Canın olmalı. Canlar her 30 dakikada 1 yenilenir!",
+        nextLifeIn: "Sıradaki Can:",
+        watchAdLife: "📺 Reklam İzle (+1 Can)",
+
+        // Shop
+        characterShop: "Karakter Marketi",
+
+        // Win Screen
+        winLevelCleared: "BÖLÜM GEÇİLDİ!",
+        winFinishLevel: "Bölümü Bitir",
+        winCollectFruits: "TÜM Meyveleri Topla (🍓)",
+        winSpeedrun: "Hızlı Koşu",
+        winNextLevel: "🚀 SONRAKİ BÖLÜM",
+        winRetry: "🔄 TEKRAR DENE",
+        winLevels: "🗺️ BÖLÜMLER",
+        winMenu: "🏠 MENÜ",
+
+        // Game Over
+        gameOverTitle: "CANIN TÜKENDİ!",
+        gameOverDesc: "Bu deneme için tüm canların bitti!",
+        adRevive: "📺 Reklam İzle (+1 Can)",
+
+        // Gameplay Dialogues
         doorLockedMsg: "Kapı Kilitli 🔒! Bölümü geçmek için önce haritanın ortasındaki Altın Anahtarı 🔑 bulmalıyız!",
         keyFoundMsg: "Altın Anahtarı 🔑 Buldun! Şimdi bölüm sonundaki kilitli kapıyı açabilirsin! 🚪✨",
         ch0Msg: "Chapter 0 Test Sahasına Hoş Geldin! Burada yeni özellikleri deneyebilirsin! 🧪🐰🚀",
@@ -50,10 +99,14 @@ const I18N = {
         ch5Msg: "DİKKAT! Gölge Balçıkları (👾) burada nöbet tutuyor, kafalarına zıplayıp onları yenmeliyim!",
         ch10Msg: "TEHLİKE! Çift Kırmızı Dikenler (🌵⚠️) başladı! Dikenlere dokunma, canın azalır!",
         chGeneric: "Meyve Vadisi'ni kurtarmak için Altın Anahtarı 🔑 aramaya devam edelim! 🐰🚀",
+        
+        // Victory
         victoryTitle: "🎉 TEBRİKLER! MEYVE VADİSİ KURTULDU! 🎉",
         victorySubtitle: "Mükemmel Başarı! Tüm Seviyeleri Tamamladın!",
         victoryStoryText: "Piko ve cesur arkadaşları 25 Yıldız Anahtarını ve çalınan tüm sihirli meyveleri toplayıp Dev Saman Yolu Ağacı'na geri koydu! Gölge Balçıkları vadiyi terk etti ve Meyve Vadisi sonsuza dek eski neşe ve huzuruna kavuştu! 🌳✨🐰🏆",
         victoryMainMenu: "🏠 ANA MENÜYE DÖN",
+        
+        // Settings
         settingsTitle: "⚙️ AYARLAR",
         masterVolume: "🔊 Genel Ses",
         musicVolume: "🎵 Müzik Sesi",
@@ -71,6 +124,55 @@ const I18N = {
         chapters: "🗺️ CHAPTERS",
         shop: "🛍️ CHARACTER SHOP",
         freeLife: "📺 FREE LIFE (+1 ❤️)",
+        settings: "⚙️ Settings",
+
+        // Story Modal
+        storyTitle: "✨ THE LEGEND OF PIKO ✨",
+        storyCard1Title: "1. Fruit Valley",
+        storyCard1Text: "The joy and life source of Fruit Valley was the Giant Milky Way Tree in the sky...",
+        storyCard2Title: "2. The Stolen Stars",
+        storyCard2Text: "One night, the evil Shadow Slimes stole the 25 Star Keys and magic fruits, scattering them into portals!",
+        storyCard3Title: "3. Brave Bunny Piko",
+        storyCard3Text: "Bunny Piko wore his cape! He embarks on a quest through portals to collect all 25 Star Keys and save his valley!",
+        startAdventure: "🚀 START ADVENTURE!",
+        mainMenu: "🏠 Main Menu",
+
+        // Pause Modal
+        paused: "PAUSED",
+        resume: "▶ RESUME",
+        restartLevel: "🔄 RESTART LEVEL",
+        pauseSettings: "⚙️ SETTINGS",
+        pauseMenu: "🏠 MENU",
+
+        // Chapter Select
+        selectChapter: "Select Chapter",
+        backToMenu: "Back to Menu",
+
+        // Out of Lives
+        outOfLivesTitle: "OUT OF LIVES! ❤️",
+        outOfLivesDesc: "You need at least 1 Life to play. Lives regenerate 1 every 30 minutes!",
+        nextLifeIn: "Next Life In:",
+        watchAdLife: "📺 Watch Ad (+1 Life)",
+
+        // Shop
+        characterShop: "Character Shop",
+
+        // Win Screen
+        winLevelCleared: "LEVEL CLEARED!",
+        winFinishLevel: "Finish Level",
+        winCollectFruits: "Collect ALL Fruits (🍓)",
+        winSpeedrun: "Speedrun",
+        winNextLevel: "🚀 NEXT LEVEL",
+        winRetry: "🔄 RETRY",
+        winLevels: "🗺️ LEVELS",
+        winMenu: "🏠 MENU",
+
+        // Game Over
+        gameOverTitle: "OUT OF LIVES!",
+        gameOverDesc: "You ran out of lives for this run!",
+        adRevive: "📺 Watch Ad (+1 Life)",
+
+        // Gameplay Dialogues
         doorLockedMsg: "Door is Locked 🔒! Find the Golden Key 🔑 mid-map to open!",
         keyFoundMsg: "You found the Golden Key 🔑! Now you can open the exit door! 🚪✨",
         ch0Msg: "Welcome to Chapter 0 Test Playground! Try all new features here! 🧪🐰🚀",
@@ -81,10 +183,14 @@ const I18N = {
         ch5Msg: "WARNING! Shadow Slimes (👾) are patrolling, jump on their heads to defeat them!",
         ch10Msg: "DANGER! Double Red Spikes (🌵⚠️) ahead! Avoid spikes or lose energy!",
         chGeneric: "Let's find the Golden Key 🔑 and save Fruit Valley! 🐰🚀",
+
+        // Victory
         victoryTitle: "🎉 CONGRATULATIONS! FRUIT VALLEY IS SAVED! 🎉",
         victorySubtitle: "Outstanding Heroism! You Completed All Chapters!",
         victoryStoryText: "Piko and his brave friends collected all 25 Golden Keys and stolen magic fruits, placing them back on the Great Milky Way Tree! The Shadow Slimes fled and Fruit Valley is restored forever! 🌳✨🐰🏆",
         victoryMainMenu: "🏠 RETURN TO MAIN MENU",
+
+        // Settings
         settingsTitle: "⚙️ SETTINGS",
         masterVolume: "🔊 Master Volume",
         musicVolume: "🎵 Music Volume",
@@ -120,6 +226,11 @@ class Game {
         this.fixedStep = 1 / 60;
 
         this.progress = this.loadProgress();
+
+        // High-Performance Zero-Allocation Rendering Cache
+        this.cache = {
+            gradients: {}
+        };
 
         this.player = new Player(50, 350);
         this.player.currentSkinId = this.progress.equippedSkin || 'bunny';
@@ -161,6 +272,13 @@ class Game {
         document.addEventListener('touchstart', startInitialBGM);
 
         requestAnimationFrame((t) => this.loop(t));
+    }
+
+    getCachedGradient(key, factory) {
+        if (!this.cache.gradients[key]) {
+            this.cache.gradients[key] = factory(this.ctx);
+        }
+        return this.cache.gradients[key];
     }
 
     loadProgress() {
@@ -314,6 +432,13 @@ class Game {
         document.getElementById('btn-victory-main-menu')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
 
         const watchAdFromMenu = () => {
+            if ((this.progress.globalLives || 0) >= 5) {
+                const msg = (this.lang === 'tr') 
+                    ? '❤️ Canınız zaten dolu! (5/5)' 
+                    : '❤️ Lives are already full! (5/5)';
+                this.showToast(msg);
+                return;
+            }
             admob.showRewardedAd(() => {
                 this.progress.globalLives = Math.min(5, (this.progress.globalLives || 0) + 1);
                 this.saveProgress();
@@ -432,22 +557,36 @@ class Game {
 
     applyControlsSize(size) {
         const dpadBtns = document.querySelectorAll('.dpad-btn');
-        const jumpBtns = document.querySelectorAll('.action-jump-btn, .action-crouch-btn');
+        const jumpBtns = document.querySelectorAll('.action-jump-btn');
+        const crouchBtns = document.querySelectorAll('.action-crouch-btn');
         
-        let scale = 1.0;
-        if (size === 'small') scale = 0.8;
-        if (size === 'large') scale = 1.3;
+        let scale = 1.35;
+        if (size === 'small') scale = 1.0;
+        else if (size === 'medium') scale = 1.35;
+        else if (size === 'large') scale = 1.75;
         
         dpadBtns.forEach(btn => {
-            btn.style.width = `${60 * scale}px`;
-            btn.style.height = `${60 * scale}px`;
-            btn.style.fontSize = `${24 * scale}px`;
+            btn.style.width = `${Math.round(64 * scale)}px`;
+            btn.style.height = `${Math.round(64 * scale)}px`;
+            btn.style.fontSize = `${Math.round(24 * scale)}px`;
         });
         
         jumpBtns.forEach(btn => {
-            btn.style.width = `${70 * scale}px`;
-            btn.style.height = `${70 * scale}px`;
-            btn.style.fontSize = `${16 * scale}px`;
+            btn.style.width = `${Math.round(76 * scale)}px`;
+            btn.style.height = `${Math.round(76 * scale)}px`;
+            const icon = btn.querySelector('.btn-sub-icon');
+            const txt = btn.querySelector('.btn-sub-text');
+            if (icon) icon.style.fontSize = `${(1.05 * scale).toFixed(2)}rem`;
+            if (txt) txt.style.fontSize = `${(0.68 * scale).toFixed(2)}rem`;
+        });
+
+        crouchBtns.forEach(btn => {
+            btn.style.width = `${Math.round(70 * scale)}px`;
+            btn.style.height = `${Math.round(70 * scale)}px`;
+            const icon = btn.querySelector('.btn-sub-icon');
+            const txt = btn.querySelector('.btn-sub-text');
+            if (icon) icon.style.fontSize = `${(1.05 * scale).toFixed(2)}rem`;
+            if (txt) txt.style.fontSize = `${(0.68 * scale).toFixed(2)}rem`;
         });
     }
 
@@ -461,7 +600,17 @@ class Game {
         if (toggleBtn) toggleBtn.innerText = `🌐 ${this.lang.toUpperCase()} | ${this.lang === 'tr' ? 'EN' : 'TR'}`;
         
         const langSelect = document.getElementById('settings-lang-select');
-        if (langSelect) langSelect.value = this.lang;
+        if (langSelect) {
+            langSelect.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.dataset.lang === this.lang) {
+                    btn.classList.add('btn-active');
+                    btn.classList.remove('btn-inactive');
+                } else {
+                    btn.classList.remove('btn-active');
+                    btn.classList.add('btn-inactive');
+                }
+            });
+        }
     }
 
     renderChapterChips() {
@@ -883,28 +1032,99 @@ class Game {
         admob.showInterstitialAd();
     }
 
+    showToast(msg) {
+        let toast = document.getElementById('game-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'game-toast';
+            toast.className = 'game-toast';
+            const container = document.getElementById('game-container') || document.body;
+            container.appendChild(toast);
+        }
+        toast.innerText = msg;
+        toast.classList.remove('show');
+        void toast.offsetWidth; // trigger reflow
+        toast.classList.add('show');
+        clearTimeout(this._toastTimeout);
+        this._toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
+    }
+
     drawMenuBackground() {
-        const time = Date.now() * 0.0025;
+        const time = Date.now() * 0.002;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
         
         // 1. Vibrant Sunny Sky Gradient (Azure Blue -> Sky Blue -> Meadow Mint)
-        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        skyGrad.addColorStop(0, '#0284c7'); // Deep Azure Blue
-        skyGrad.addColorStop(0.5, '#38bdf8'); // Bright Sky Blue
-        skyGrad.addColorStop(1, '#a7f3d0'); // Soft Meadow Mint
+        const skyGrad = this.getCachedGradient('menu_sky_grad', (ctx) => {
+            const g = ctx.createLinearGradient(0, 0, 0, h);
+            g.addColorStop(0, '#0284c7'); // Deep Azure Blue
+            g.addColorStop(0.5, '#38bdf8'); // Bright Sky Blue
+            g.addColorStop(1, '#a7f3d0'); // Soft Meadow Mint
+            return g;
+        });
         this.ctx.fillStyle = skyGrad;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, w, h);
 
-        // 2. Bright Golden Sun ☀️
+        // 2. Bright Golden Sun with Rotating Radiant Rays ☀️
+        const sunX = w * 0.86;
+        const sunY = 72;
+
+        // Rotating Sunbeams
+        this.ctx.save();
+        this.ctx.translate(sunX, sunY);
+        this.ctx.rotate(time * 0.15);
+        this.ctx.fillStyle = 'rgba(254, 240, 138, 0.18)';
+        for (let r = 0; r < 8; r++) {
+            this.ctx.rotate(Math.PI / 4);
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, 0);
+            this.ctx.lineTo(-14, 90);
+            this.ctx.lineTo(14, 90);
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+
+        // Sun Glow Halo
+        const sunGlow = this.getCachedGradient('menu_sun_glow', (ctx) => {
+            const g = ctx.createRadialGradient(0, 0, 10, 0, 0, 65);
+            g.addColorStop(0, 'rgba(255, 235, 59, 0.9)');
+            g.addColorStop(0.5, 'rgba(255, 214, 0, 0.35)');
+            g.addColorStop(1, 'rgba(255, 214, 0, 0)');
+            return g;
+        });
+        this.ctx.save();
+        this.ctx.translate(sunX, sunY);
+        this.ctx.fillStyle = sunGlow;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 65, 0, Math.PI * 2);
+        this.ctx.fill();
+        // Golden Sun Core
         this.ctx.fillStyle = '#fde047';
         this.ctx.beginPath();
-        this.ctx.arc(this.canvas.width * 0.88, 70, 42, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, 36, 0, Math.PI * 2);
         this.ctx.fill();
+        this.ctx.restore();
 
-        // 3. Fluffy Animated White Clouds ☁️
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-        for (let i = 0; i < 6; i++) {
-            let cx = (i * 180 + time * 20) % (this.canvas.width + 120) - 60;
-            let cy = 45 + (i % 3) * 28;
+        // 3. Layered Parallax Clouds ☁️
+        // Distant slow clouds
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+        for (let i = 0; i < 4; i++) {
+            let cx = (i * 240 + time * 12) % (w + 140) - 70;
+            let cy = 35 + (i % 2) * 25;
+            this.ctx.beginPath();
+            this.ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+            this.ctx.arc(cx + 18, cy - 8, 22, 0, Math.PI * 2);
+            this.ctx.arc(cx + 38, cy, 18, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        // Near fluffy clouds
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        for (let i = 0; i < 5; i++) {
+            let cx = (i * 190 + time * 24) % (w + 130) - 65;
+            let cy = 55 + (i % 3) * 26;
             this.ctx.beginPath();
             this.ctx.arc(cx, cy, 22, 0, Math.PI * 2);
             this.ctx.arc(cx + 22, cy - 10, 28, 0, Math.PI * 2);
@@ -912,98 +1132,157 @@ class Game {
             this.ctx.fill();
         }
 
-        // 4. Parallax Back Rolling Hills (#059669)
+        // 4. Distant Azure Mountains 🏔️
+        this.ctx.fillStyle = '#38bdf8';
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 30) {
+            const my = h - 160 + Math.sin(x * 0.004) * 45 + Math.cos(x * 0.008) * 25;
+            this.ctx.lineTo(x, my);
+        }
+        this.ctx.lineTo(w, h);
+        this.ctx.fill();
+
+        // 5. Parallax Mid Rolling Hills (#059669)
         this.ctx.fillStyle = '#059669';
         this.ctx.beginPath();
-        this.ctx.moveTo(0, this.canvas.height);
-        for (let x = 0; x <= this.canvas.width; x += 15) {
-            const hy = this.canvas.height - 120 + Math.sin(time * 0.4 + x * 0.006) * 28;
+        this.ctx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 15) {
+            const hy = h - 118 + Math.sin(time * 0.4 + x * 0.006) * 26;
             this.ctx.lineTo(x, hy);
         }
-        this.ctx.lineTo(this.canvas.width, this.canvas.height);
+        this.ctx.lineTo(w, h);
         this.ctx.fill();
 
-        // 5. Parallax Front Lush Green Meadow (#10b981)
+        // 6. Parallax Front Lush Green Meadow (#10b981)
         this.ctx.fillStyle = '#10b981';
         this.ctx.beginPath();
-        this.ctx.moveTo(0, this.canvas.height);
-        for (let x = 0; x <= this.canvas.width; x += 15) {
-            const hy = this.canvas.height - 75 + Math.sin(time * 0.8 + x * 0.01 + 1.5) * 18;
+        this.ctx.moveTo(0, h);
+        for (let x = 0; x <= w; x += 15) {
+            const hy = h - 75 + Math.sin(time * 0.8 + x * 0.01 + 1.5) * 18;
             this.ctx.lineTo(x, hy);
         }
-        this.ctx.lineTo(this.canvas.width, this.canvas.height);
+        this.ctx.lineTo(w, h);
         this.ctx.fill();
 
-        // 6. Blooming Flowers 🌸 🌼 on the Meadow
-        const flowers = ['🌸', '🌼', '🌺', '🌱'];
-        this.ctx.font = '18px sans-serif';
-        for (let fl = 0; fl < 12; fl++) {
-            const flX = fl * 85 + 20;
-            const flY = this.canvas.height - 45 + Math.sin(fl * 1.5) * 8;
-            this.ctx.fillText(flowers[fl % flowers.length], flX, flY);
+        // 7. Ground-Integrated Blooming Flowers & Grass Tufts 🌸🌼🌷
+        const flowerPalette = [
+            { petal: '#f43f5e', center: '#fde047', type: 'rose' },
+            { petal: '#ffffff', center: '#eab308', type: 'daisy' },
+            { petal: '#a855f7', center: '#facc15', type: 'violet' },
+            { petal: '#fb923c', center: '#713f12', type: 'sunflower' },
+            { petal: '#ec4899', center: '#fef08a', type: 'tulip' }
+        ];
+
+        for (let fl = 0; fl < 16; fl++) {
+            const flX = 25 + fl * 60;
+            const groundY = h - 75 + Math.sin(time * 0.8 + flX * 0.01 + 1.5) * 18;
+            const fInfo = flowerPalette[fl % flowerPalette.length];
+            const stemH = 14 + (fl % 3) * 4;
+            const sway = Math.sin(time * 2.2 + fl * 0.8) * 3;
+
+            this.ctx.save();
+            
+            // Grass tuft at the base
+            this.ctx.strokeStyle = '#059669';
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(flX - 4, groundY + 2);
+            this.ctx.lineTo(flX - 8, groundY - 7);
+            this.ctx.moveTo(flX + 4, groundY + 2);
+            this.ctx.lineTo(flX + 8, groundY - 7);
+            this.ctx.stroke();
+
+            // Stem rising from the ground
+            this.ctx.strokeStyle = '#15803d';
+            this.ctx.lineWidth = 2.2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(flX, groundY + 1);
+            this.ctx.quadraticCurveTo(flX + sway * 0.5, groundY - stemH * 0.5, flX + sway, groundY - stemH);
+            this.ctx.stroke();
+
+            // Little green leaves
+            this.ctx.fillStyle = '#22c55e';
+            this.ctx.beginPath();
+            this.ctx.ellipse(flX + sway * 0.4 - 4, groundY - stemH * 0.45, 4, 2, -Math.PI / 4, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.ellipse(flX + sway * 0.4 + 4, groundY - stemH * 0.45, 4, 2, Math.PI * 4, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Flower Head
+            const headX = flX + sway;
+            const headY = groundY - stemH;
+
+            // Petals
+            this.ctx.fillStyle = fInfo.petal;
+            for (let p = 0; p < 5; p++) {
+                const angle = (p * Math.PI * 2) / 5 + time * 0.5;
+                const px = headX + Math.cos(angle) * 5.5;
+                const py = headY + Math.sin(angle) * 5.5;
+                this.ctx.beginPath();
+                this.ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+
+            // Flower Center
+            this.ctx.fillStyle = fInfo.center;
+            this.ctx.beginPath();
+            this.ctx.arc(headX, headY, 3.5, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.restore();
         }
 
-        // 7. Floating Animated Magic Fruits 🍓🍎🍌🍉🍇🍊
-        const fruits = ['🍓', '🍎', '🍌', '🍉', '🍇', '🍊'];
-        this.ctx.font = '30px sans-serif';
-        for (let f = 0; f < 8; f++) {
-            const fx = (f * 125 + time * 32) % (this.canvas.width + 60) - 30;
-            const fy = 85 + Math.sin(time * 1.8 + f) * 22 + (f % 3) * 35;
-            this.ctx.fillText(fruits[f % fruits.length], fx, fy);
+        // 8. Animated Butterflies 🦋 Fluttering Playfully
+        for (let b = 0; b < 3; b++) {
+            const bx = (b * 280 + time * 38) % (w + 60) - 30;
+            const by = h - 110 + Math.sin(time * 3 + b * 2) * 22;
+            const flap = Math.sin(time * 12 + b * 3) * 0.7;
+            this.ctx.save();
+            this.ctx.translate(bx, by);
+            this.ctx.fillStyle = b === 0 ? '#ff4081' : (b === 1 ? '#00e5ff' : '#ffd600');
+            // Left Wing
+            this.ctx.beginPath();
+            this.ctx.ellipse(-3, 0, 4 * Math.abs(flap), 6, -0.3, 0, Math.PI * 2);
+            this.ctx.fill();
+            // Right Wing
+            this.ctx.beginPath();
+            this.ctx.ellipse(3, 0, 4 * Math.abs(flap), 6, 0.3, 0, Math.PI * 2);
+            this.ctx.fill();
+            // Body
+            this.ctx.fillStyle = '#212121';
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
         }
 
-        // 8. Animated Piko Bunny 🐰 Bouncing Happily on the Meadow Grass!
-        const bunnyX = this.canvas.width * 0.12;
-        const bunnyJumpY = Math.abs(Math.sin(time * 3.5)) * 30;
-        const bunnyY = this.canvas.height - 90 - bunnyJumpY;
+        // 9. Animated Equipped Hero Bouncing Happily on the Meadow!
+        const heroX = w * 0.14;
+        const jumpY = Math.abs(Math.sin(time * 3.5)) * 26;
+        const groundY = h - 75 + Math.sin(time * 0.8 + heroX * 0.01 + 1.5) * 18;
+        const heroY = groundY - 20 - jumpY;
 
-        this.ctx.save();
-        this.ctx.translate(bunnyX, bunnyY);
-
-        // Bunny Shadow on Grass
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        // Shadow on ground
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
         this.ctx.beginPath();
-        this.ctx.ellipse(0, 26 + bunnyJumpY * 0.6, 18 - bunnyJumpY * 0.2, 6, 0, 0, Math.PI * 2);
+        this.ctx.ellipse(heroX, groundY + 4, 18 - jumpY * 0.2, 5.5, 0, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Draw Player Body (using equipped skin body color)
-        const skin = CHARACTER_SKINS.find(s => s.id === (this.progress.equippedSkin || 'bunny')) || CHARACTER_SKINS[0];
-        
-        // Body Circle
-        this.ctx.fillStyle = skin.bodyColor || '#ff80ab';
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, 18, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.strokeStyle = '#ffffff';
-        this.ctx.lineWidth = 2.5;
-        this.ctx.stroke();
-
-        // Ears
-        this.ctx.fillStyle = skin.earColor || '#ff4081';
-        this.ctx.fillRect(-10, -28, 6, 14);
-        this.ctx.fillRect(4, -28, 6, 14);
-
-        // Eyes (Shiny Anime Eyes)
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.beginPath();
-        this.ctx.arc(-5, -3, 4, 0, Math.PI * 2);
-        this.ctx.arc(5, -3, 4, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        this.ctx.fillStyle = '#1e1b4b';
-        this.ctx.beginPath();
-        this.ctx.arc(-4, -3, 2.4, 0, Math.PI * 2);
-        this.ctx.arc(6, -3, 2.4, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        // Cheeks
-        this.ctx.fillStyle = 'rgba(255, 64, 129, 0.6)';
-        this.ctx.beginPath();
-        this.ctx.arc(-9, 3, 3, 0, Math.PI * 2);
-        this.ctx.arc(9, 3, 3, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        this.ctx.restore();
+        // Render the equipped character using Player.draw!
+        if (this.player) {
+            const origX = this.player.x, origY = this.player.y, origFacing = this.player.facing, origSkin = this.player.currentSkinId;
+            this.player.x = heroX - this.player.width / 2;
+            this.player.y = heroY - this.player.height / 2;
+            this.player.facing = 'right';
+            this.player.currentSkinId = this.progress.equippedSkin || 'bunny';
+            this.player.draw(this.ctx, { x: 0, y: 0 });
+            this.player.x = origX;
+            this.player.y = origY;
+            this.player.facing = origFacing;
+            this.player.currentSkinId = origSkin;
+        }
     }
 
     loop(timestamp) {
@@ -1114,10 +1393,14 @@ class Game {
     draw() {
         const theme = CHAPTERS[this.currentChapterIdx]?.theme || CHAPTERS[0].theme;
 
-        // Rich Atmospheric Sky Gradient
-        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        skyGrad.addColorStop(0, theme.skyGradient ? theme.skyGradient[0] : theme.bg);
-        skyGrad.addColorStop(1, theme.skyGradient ? theme.skyGradient[1] : "#ffffff");
+        // Rich Atmospheric Sky Gradient (Cached per theme)
+        const themeKey = theme.name || 'default';
+        const skyGrad = this.getCachedGradient('sky_' + themeKey, (ctx) => {
+            const g = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+            g.addColorStop(0, theme.skyGradient ? theme.skyGradient[0] : theme.bg);
+            g.addColorStop(1, theme.skyGradient ? theme.skyGradient[1] : "#ffffff");
+            return g;
+        });
         this.ctx.fillStyle = skyGrad;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -1263,23 +1546,27 @@ class Game {
             const hy = h.y - this.camera.y;
 
             this.ctx.save();
+            this.ctx.translate(hx, hy);
             // Glow shadow
             this.ctx.shadowColor = '#ff1744';
             this.ctx.shadowBlur = 10;
 
-            const spikeGradient = this.ctx.createLinearGradient(hx, hy + h.height, hx, hy);
-            spikeGradient.addColorStop(0, '#1a1a1a');
-            spikeGradient.addColorStop(0.6, '#d50000');
-            spikeGradient.addColorStop(1, '#ff5252');
+            const spikeGradient = this.getCachedGradient('spike_metal_grad', (ctx) => {
+                const g = ctx.createLinearGradient(0, 18, 0, 0);
+                g.addColorStop(0, '#1a1a1a');
+                g.addColorStop(0.6, '#d50000');
+                g.addColorStop(1, '#ff5252');
+                return g;
+            });
 
             this.ctx.fillStyle = spikeGradient;
             this.ctx.strokeStyle = '#ffd600';
             this.ctx.lineWidth = 1.5;
 
             this.ctx.beginPath();
-            this.ctx.moveTo(hx, hy + h.height);
-            this.ctx.lineTo(hx + h.width / 2, hy);
-            this.ctx.lineTo(hx + h.width, hy + h.height);
+            this.ctx.moveTo(0, h.height);
+            this.ctx.lineTo(h.width / 2, 0);
+            this.ctx.lineTo(h.width, h.height);
             this.ctx.closePath();
             this.ctx.fill();
             this.ctx.stroke();
@@ -1390,10 +1677,13 @@ class Game {
 
                 this.ctx.shadowBlur = 0;
             } else if (c.type === 'strawberry') {
-                const grad = this.ctx.createRadialGradient(-3, -1, 2, 0, 2, 10);
-                grad.addColorStop(0, '#ff4d6d');
-                grad.addColorStop(0.7, '#d90429');
-                grad.addColorStop(1, '#800f2f');
+                const grad = this.getCachedGradient('strawberry_grad', (ctx) => {
+                    const g = ctx.createRadialGradient(-3, -1, 2, 0, 2, 10);
+                    g.addColorStop(0, '#ff4d6d');
+                    g.addColorStop(0.7, '#d90429');
+                    g.addColorStop(1, '#800f2f');
+                    return g;
+                });
                 this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 2, 10, 0, Math.PI * 2); this.ctx.fill();
                 this.ctx.fillStyle = '#ffeb3b';
@@ -1403,10 +1693,13 @@ class Game {
                 this.ctx.moveTo(0, 0); this.ctx.lineTo(-6, -8); this.ctx.lineTo(-2, -5); this.ctx.lineTo(0, -9); this.ctx.lineTo(2, -5); this.ctx.lineTo(6, -8);
                 this.ctx.fill();
             } else if (c.type === 'apple') {
-                const grad = this.ctx.createRadialGradient(-2, -2, 2, 0, 0, 10);
-                grad.addColorStop(0, '#ff5252');
-                grad.addColorStop(0.7, '#d50000');
-                grad.addColorStop(1, '#8e0000');
+                const grad = this.getCachedGradient('apple_grad', (ctx) => {
+                    const g = ctx.createRadialGradient(-2, -2, 2, 0, 0, 10);
+                    g.addColorStop(0, '#ff5252');
+                    g.addColorStop(0.7, '#d50000');
+                    g.addColorStop(1, '#8e0000');
+                    return g;
+                });
                 this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 0, 10, 0, Math.PI * 2); this.ctx.fill();
                 this.ctx.strokeStyle = '#5d4037';
@@ -1414,27 +1707,60 @@ class Game {
                 this.ctx.fillStyle = '#64dd17';
                 this.ctx.beginPath(); this.ctx.ellipse(3, -11, 4, 2, Math.PI/4, 0, Math.PI * 2); this.ctx.fill();
             } else if (c.type === 'banana') {
-                const grad = this.ctx.createLinearGradient(-8, -4, 8, 4);
-                grad.addColorStop(0, '#ffea00');
-                grad.addColorStop(0.8, '#ffd600');
-                grad.addColorStop(1, '#f57f17');
-                this.ctx.fillStyle = grad;
+                // 1. Banana Body Gradient (Bright vivid golden yellow)
+                const grad = this.getCachedGradient('banana_grad', (ctx) => {
+                    const g = ctx.createLinearGradient(-9, -9, 9, 9);
+                    g.addColorStop(0, '#fffb7d');
+                    g.addColorStop(0.35, '#ffea00');
+                    g.addColorStop(0.85, '#ffd600');
+                    g.addColorStop(1, '#ffab00');
+                    return g;
+                });
+                
+                // Banana Crescent Arch Path
                 this.ctx.beginPath();
-                this.ctx.moveTo(-9, -5);
-                this.ctx.quadraticCurveTo(0, 8, 9, 5);
-                this.ctx.quadraticCurveTo(2, 12, -9, -5);
+                this.ctx.moveTo(-10, -5);
+                this.ctx.bezierCurveTo(-4, -12, 6, -8, 12, 4); // outer curve
+                this.ctx.quadraticCurveTo(13, 7, 10, 7);       // bottom tip curve
+                this.ctx.bezierCurveTo(4, -1, -3, -4, -9, -3); // inner crescent curve
+                this.ctx.closePath();
+                this.ctx.fillStyle = grad;
                 this.ctx.fill();
-                this.ctx.fillStyle = '#5d4037';
-                this.ctx.beginPath(); this.ctx.arc(-9, -5, 1.5, 0, Math.PI*2); this.ctx.fill();
-                this.ctx.beginPath(); this.ctx.arc(9, 5, 1, 0, Math.PI*2); this.ctx.fill();
+
+                // 2. Glossy Highlight Streak
+                this.ctx.beginPath();
+                this.ctx.moveTo(-7, -7);
+                this.ctx.bezierCurveTo(-2, -9.5, 4, -6.5, 8, 2);
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+                this.ctx.lineWidth = 1.6;
+                this.ctx.lineCap = 'round';
+                this.ctx.stroke();
+
+                // 3. Green-Yellow Base & Dark Brown Stem
+                this.ctx.fillStyle = '#c0ca33'; // greenish base
+                this.ctx.fillRect(-11, -6, 2.5, 3);
+                this.ctx.fillStyle = '#4e342e'; // dark stem
+                this.ctx.fillRect(-13, -7.5, 2.5, 2.5);
+
+                // 4. Dark Bottom Tip
+                this.ctx.fillStyle = '#3e2723';
+                this.ctx.beginPath();
+                this.ctx.arc(11.5, 5.5, 1.2, 0, Math.PI * 2);
+                this.ctx.fill();
             } else if (c.type === 'grapes') {
+                const grapeGrad = this.getCachedGradient('grape_grad', (ctx) => {
+                    const g = ctx.createRadialGradient(-1, -1, 1, 0, 0, 4);
+                    g.addColorStop(0, '#e040fb');
+                    g.addColorStop(0.7, '#aa00ff');
+                    g.addColorStop(1, '#4a148c');
+                    return g;
+                });
                 const drawGrape = (gx, gy) => {
-                    const grad = this.ctx.createRadialGradient(gx-1, gy-1, 1, gx, gy, 4);
-                    grad.addColorStop(0, '#e040fb');
-                    grad.addColorStop(0.7, '#aa00ff');
-                    grad.addColorStop(1, '#4a148c');
-                    this.ctx.fillStyle = grad;
-                    this.ctx.beginPath(); this.ctx.arc(gx, gy, 4, 0, Math.PI * 2); this.ctx.fill();
+                    this.ctx.save();
+                    this.ctx.translate(gx, gy);
+                    this.ctx.fillStyle = grapeGrad;
+                    this.ctx.beginPath(); this.ctx.arc(0, 0, 4, 0, Math.PI * 2); this.ctx.fill();
+                    this.ctx.restore();
                 };
                 drawGrape(0, -6); drawGrape(-4, -2); drawGrape(4, -2); drawGrape(-2, 3); drawGrape(2, 3); drawGrape(0, 7);
                 this.ctx.fillStyle = '#64dd17';
@@ -1442,10 +1768,13 @@ class Game {
                 this.ctx.fillStyle = '#5d4037';
                 this.ctx.fillRect(-1, -11, 2, 3);
             } else if (c.type === 'orange') {
-                const grad = this.ctx.createRadialGradient(-3, -3, 2, 0, 0, 10);
-                grad.addColorStop(0, '#ffab40');
-                grad.addColorStop(0.7, '#ff6d00');
-                grad.addColorStop(1, '#e65100');
+                const grad = this.getCachedGradient('orange_grad', (ctx) => {
+                    const g = ctx.createRadialGradient(-3, -3, 2, 0, 0, 10);
+                    g.addColorStop(0, '#ffab40');
+                    g.addColorStop(0.7, '#ff6d00');
+                    g.addColorStop(1, '#e65100');
+                    return g;
+                });
                 this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 0, 10, 0, Math.PI * 2); this.ctx.fill();
                 this.ctx.fillStyle = '#e65100';
@@ -1455,10 +1784,13 @@ class Game {
                 this.ctx.fillStyle = '#64dd17';
                 this.ctx.beginPath(); this.ctx.ellipse(0, -10, 4, 2, -Math.PI/6, 0, Math.PI*2); this.ctx.fill();
             } else if (c.type === 'watermelon') {
-                const grad = this.ctx.createLinearGradient(0, -11, 0, 0);
-                grad.addColorStop(0, '#2e7d32');
-                grad.addColorStop(0.5, '#4caf50');
-                grad.addColorStop(1, '#a5d6a7');
+                const grad = this.getCachedGradient('watermelon_grad', (ctx) => {
+                    const g = ctx.createLinearGradient(0, -11, 0, 0);
+                    g.addColorStop(0, '#2e7d32');
+                    g.addColorStop(0.5, '#4caf50');
+                    g.addColorStop(1, '#a5d6a7');
+                    return g;
+                });
                 this.ctx.fillStyle = grad;
                 this.ctx.beginPath(); this.ctx.arc(0, 0, 11, 0, Math.PI); this.ctx.fill();
                 this.ctx.fillStyle = '#ff1744';
@@ -1468,98 +1800,197 @@ class Game {
                 this.ctx.beginPath(); this.ctx.ellipse(3, -3, 1.5, 2, -Math.PI/6, 0, Math.PI*2); this.ctx.fill();
                 this.ctx.beginPath(); this.ctx.ellipse(0, -6, 1.5, 2, 0, 0, Math.PI*2); this.ctx.fill();
             } else if (c.type === 'exit' || c.type === 'exit_door') {
-                // Taller Exit Door (🚪🔒 / 🚪✨) Sitting 100% Flush on the Platform Surface!
+                // 🚪✨ Theme-Fitted Magical Kingdom Star Gate Portal Door!
                 const isUnlocked = this.player.hasGoldenKey || c.doorOpen;
                 const platY = c.platformRef ? c.platformRef.y : (c.y + 50);
+                const time = Date.now();
                 
                 this.ctx.restore();
                 this.ctx.save();
                 this.ctx.translate(c.x - this.camera.x + 15, platY - this.camera.y);
 
-                this.ctx.shadowColor = isUnlocked ? '#00f0ff' : '#ff1744';
-                this.ctx.shadowBlur = 20;
+                // Portal Aura Glow
+                this.ctx.shadowColor = isUnlocked ? '#00f0ff' : '#ffab00';
+                this.ctx.shadowBlur = isUnlocked ? 24 : 12;
 
-                // Outer Arch Door Frame (Flush at y = 0)
-                this.ctx.fillStyle = '#3e2723';
+                // 1. Royal Stone Pillars Arch Frame (Amethyst & Gold)
+                this.ctx.fillStyle = '#1e1b4b'; // Royal Midnight Stone
                 this.ctx.beginPath();
-                this.ctx.roundRect(-25, -78, 50, 78, [25, 25, 0, 0]);
+                this.ctx.roundRect(-27, -80, 54, 80, [27, 27, 0, 0]);
                 this.ctx.fill();
-                this.ctx.strokeStyle = '#ffd600';
+
+                // Ornate Golden Arch Border
+                this.ctx.strokeStyle = '#ffd700';
                 this.ctx.lineWidth = 3.5;
                 this.ctx.stroke();
 
-                // Inner Portal Void (Always there, but covered by door)
-                const doorGrad = this.ctx.createLinearGradient(0, -74, 0, 0);
-                doorGrad.addColorStop(0, '#00f0ff');
-                doorGrad.addColorStop(0.5, '#e040fb');
-                doorGrad.addColorStop(1, '#651fff');
+                // Inner Arch Gold Inlay
+                this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.4)';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.beginPath();
+                this.ctx.roundRect(-23, -76, 46, 76, [23, 23, 0, 0]);
+                this.ctx.stroke();
+
+                // 2. Apex Keystone Gem (Pulsing Star Crystal 💎)
+                this.ctx.save();
+                const gemGlow = isUnlocked ? '#00f0ff' : '#ffd600';
+                this.ctx.shadowColor = gemGlow;
+                this.ctx.shadowBlur = 12;
+                this.ctx.fillStyle = isUnlocked ? '#00e5ff' : '#ff9100';
+                this.ctx.beginPath();
+                // 4-point Diamond Crystal at Top Apex
+                this.ctx.moveTo(0, -84);
+                this.ctx.lineTo(6, -78);
+                this.ctx.lineTo(0, -72);
+                this.ctx.lineTo(-6, -78);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.arc(0, -78, 1.8, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+
+                // 3. Inner Cosmic Portal Void
+                const doorGrad = this.getCachedGradient('magical_door_portal_grad', (ctx) => {
+                    const g = ctx.createLinearGradient(0, -74, 0, 0);
+                    g.addColorStop(0, '#00f0ff');
+                    g.addColorStop(0.4, '#e040fb');
+                    g.addColorStop(0.8, '#7c4dff');
+                    g.addColorStop(1, '#1a0033');
+                    return g;
+                });
                 this.ctx.fillStyle = doorGrad;
                 this.ctx.beginPath();
-                this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
+                this.ctx.roundRect(-20, -73, 40, 73, [20, 20, 0, 0]);
                 this.ctx.fill();
 
-                if (c.doorOpen) {
-                    // Portal Sparkles swirling faster
-                    this.ctx.fillStyle = '#ffffff';
+                // Swirling Cosmic Vortex Rings inside portal
+                if (isUnlocked) {
+                    this.ctx.save();
                     this.ctx.beginPath();
-                    this.ctx.arc(0, -36, 8 + Math.random()*4, 0, Math.PI * 2);
-                    this.ctx.fill();
+                    this.ctx.roundRect(-20, -73, 40, 73, [20, 20, 0, 0]);
+                    this.ctx.clip();
+
+                    // Swirling Nebula Rings
+                    const rot = time * 0.003;
+                    this.ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.ellipse(0, -36, 14, 22, rot, 0, Math.PI * 2);
+                    this.ctx.stroke();
+
+                    this.ctx.strokeStyle = 'rgba(224, 64, 251, 0.45)';
+                    this.ctx.beginPath();
+                    this.ctx.ellipse(0, -36, 10, 16, -rot * 1.3, 0, Math.PI * 2);
+                    this.ctx.stroke();
+
+                    // Sparkling Stardust Particles
+                    this.ctx.fillStyle = '#ffffff';
+                    for (let sp = 0; sp < 4; sp++) {
+                        const spA = rot * 2 + sp * (Math.PI / 2);
+                        const spX = Math.cos(spA) * (6 + sp * 2.5);
+                        const spY = -36 + Math.sin(spA) * (10 + sp * 3);
+                        this.ctx.beginPath();
+                        this.ctx.arc(spX, spY, 1.2 + (sp % 2) * 0.8, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                    this.ctx.restore();
                 }
 
-                // Door Opening Animation Progress (0 to 1)
+                // 4. Sliding Fantasy Doors Progress (0 to 1)
                 let openProgress = 0;
                 if (c.doorOpen && this.player.entryTimer) {
                     openProgress = 1 - (this.player.entryTimer / 30);
                 }
 
-                // Apply clipping mask for the sliding doors
+                // Apply clipping mask for door panels
                 this.ctx.save();
                 this.ctx.beginPath();
-                this.ctx.roundRect(-19, -72, 38, 72, [19, 19, 0, 0]);
+                this.ctx.roundRect(-20, -73, 40, 73, [20, 20, 0, 0]);
                 this.ctx.clip();
 
-                // Wooden Door Halves (Sliding apart)
-                const slideDist = 19 * openProgress; // slides up to 19px left and right
+                const slideDist = 20 * openProgress; // slides up to 20px left and right
 
-                this.ctx.fillStyle = '#211510';
+                // Midnight Indigo Fantasy Panels with Golden Filigree
+                this.ctx.fillStyle = '#0f172a';
                 
-                // Left Half
+                // Left Panel
                 this.ctx.beginPath();
-                this.ctx.roundRect(-19 - slideDist, -72, 19, 72, [19, 0, 0, 0]);
+                this.ctx.roundRect(-20 - slideDist, -73, 20, 73, [20, 0, 0, 0]);
                 this.ctx.fill();
+                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.stroke();
+
+                // Left Filigree Arc
+                this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.5)';
+                this.ctx.beginPath();
+                this.ctx.arc(-10 - slideDist, -36, 6, 0, Math.PI * 2);
+                this.ctx.stroke();
                 
-                // Right Half
+                // Right Panel
+                this.ctx.fillStyle = '#0f172a';
                 this.ctx.beginPath();
-                this.ctx.roundRect(0 + slideDist, -72, 19, 72, [0, 19, 0, 0]);
+                this.ctx.roundRect(0 + slideDist, -73, 20, 73, [0, 20, 0, 0]);
                 this.ctx.fill();
+                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.stroke();
+
+                // Right Filigree Arc
+                this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.5)';
+                this.ctx.beginPath();
+                this.ctx.arc(10 + slideDist, -36, 6, 0, Math.PI * 2);
+                this.ctx.stroke();
                 
                 this.ctx.restore(); // Remove clipping mask
 
+                // 5. Golden Star Emblem Lock Badge (When not opened)
                 if (!c.doorOpen) {
+                    this.ctx.save();
+                    this.ctx.translate(0, -36);
+
                     if (isUnlocked) {
-                        // Unlocked but not entered: Green glowing lock 🔓
-                        this.ctx.fillStyle = '#00e676';
-                        this.ctx.shadowColor = '#00e676';
-                        this.ctx.shadowBlur = 10;
-                        this.ctx.fillRect(-8, -36, 16, 16);
-                        this.ctx.shadowBlur = 0;
-                        this.ctx.fillStyle = '#1a1a1a';
-                        this.ctx.fillRect(-2, -32, 4, 8);
+                        // Unlocked: Glowing Cyan Star Sigil 🌟
+                        this.ctx.shadowColor = '#00f0ff';
+                        this.ctx.shadowBlur = 14;
+                        this.ctx.fillStyle = '#00f0ff';
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, 0, 7, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.fillStyle = '#ffffff';
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, 0, 3, 0, Math.PI * 2);
+                        this.ctx.fill();
                     } else {
-                        // Locked: Golden Padlock 🔒
-                        this.ctx.fillStyle = '#ffd600';
-                        this.ctx.fillRect(-8, -36, 16, 16);
+                        // Locked: Golden Star Padlock 🔒✨
+                        this.ctx.shadowColor = '#ffd600';
+                        this.ctx.shadowBlur = 10;
+
+                        // Padlock Shackle
                         this.ctx.strokeStyle = '#ffd600';
                         this.ctx.lineWidth = 3;
                         this.ctx.beginPath();
-                        this.ctx.arc(0, -38, 6.5, Math.PI, 0);
+                        this.ctx.arc(0, -6, 6, Math.PI, 0);
                         this.ctx.stroke();
 
-                        this.ctx.fillStyle = '#1a1a1a';
+                        // Padlock Body (Golden Star Shield)
+                        this.ctx.fillStyle = '#ffb300';
                         this.ctx.beginPath();
-                        this.ctx.arc(0, -28, 2.5, 0, Math.PI * 2);
+                        this.ctx.roundRect(-8, -2, 16, 15, 4);
+                        this.ctx.fill();
+                        this.ctx.strokeStyle = '#ffe082';
+                        this.ctx.lineWidth = 1.5;
+                        this.ctx.stroke();
+
+                        // Glowing Ruby Keyhole Center
+                        this.ctx.fillStyle = '#ff1744';
+                        this.ctx.beginPath();
+                        this.ctx.arc(0, 4, 2.5, 0, Math.PI * 2);
                         this.ctx.fill();
                     }
+                    this.ctx.restore();
                 }
 
                 this.ctx.shadowBlur = 0;

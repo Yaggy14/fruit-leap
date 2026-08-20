@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <div id="game-container">
@@ -78,7 +78,12 @@
                 <div class="hud-item"><span class="hud-icon">🔑</span> <span id="hud-star-key">0 / 1</span></div>
                 <div class="hud-item"><span class="hud-icon">⏱️</span> <span id="hud-timer">0.0s</span></div>
                 <div class="hud-item energy-badge"><span class="hud-icon">❤️</span> <span id="hud-lives">5/5</span></div>
-                <button id="btn-pause-hud" class="hud-btn">⏸️</button>
+                <button id="btn-pause-hud" class="hud-btn" title="Pause" aria-label="Pause">
+                    <div class="pause-bars">
+                        <span class="pause-bar"></span>
+                        <span class="pause-bar"></span>
+                    </div>
+                </button>
             </div>
             
             <!-- Bottom-Center Level Name Tag -->
@@ -115,33 +120,33 @@
             <!-- Story Intro Modal Screen -->
             <div id="screen-story-intro" class="ui-screen hidden">
                 <div class="glass-panel modal-large story-modal">
-                    <h2>✨ THE LEGEND OF PIKO ✨</h2>
+                    <h2 data-i18n="storyTitle">✨ THE LEGEND OF PIKO ✨</h2>
                     <div class="story-cards-wrapper">
                         <div class="story-card">
                             <div class="story-icon">🌳✨</div>
-                            <h3>1. Meyve Vadisi</h3>
-                            <p>Meyve Vadisi'nin neşesi ve yaşam kaynağı, gökyüzündeki Dev Saman Yolu Meyve Ağacı'ydı...</p>
+                            <h3 data-i18n="storyCard1Title">1. Fruit Valley</h3>
+                            <p data-i18n="storyCard1Text">Meyve Vadisi'nin neşesi ve yaşam kaynağı, gökyüzündeki Dev Saman Yolu Meyve Ağacı'ydı...</p>
                         </div>
                         <div class="story-card">
                             <div class="story-icon">👾🔮</div>
-                            <h3>2. Çalınan Yıldızlar</h3>
-                            <p>Bir gece kötü Gölge Balçıkları (Slime'lar) ağacın büyülü 25 Yıldız Anahtarını ve meyvelerini çalıp boyut portallarına saçtı!</p>
+                            <h3 data-i18n="storyCard2Title">2. The Stolen Stars</h3>
+                            <p data-i18n="storyCard2Text">Bir gece kötü Gölge Balçıkları (Slime'lar) ağacın büyülü 25 Yıldız Anahtarını ve meyvelerini çalıp boyut portallarına saçtı!</p>
                         </div>
                         <div class="story-card">
                             <div class="story-icon">🐰🏆</div>
-                            <h3>3. Cesur Tavşan Piko</h3>
-                            <p>Tavşan Piko pelerinini taktı! Portallardan geçip 25 Yıldız Anahtarını toplamak ve vadisini kurtarmak için yola çıkıyor!</p>
+                            <h3 data-i18n="storyCard3Title">3. Brave Bunny Piko</h3>
+                            <p data-i18n="storyCard3Text">Tavşan Piko pelerinini taktı! Portallardan geçip 25 Yıldız Anahtarını toplamak ve vadisini kurtarmak için yola çıkıyor!</p>
                         </div>
                     </div>
                     <div class="modal-buttons">
-                        <button id="btn-start-adventure" class="btn btn-primary">🚀 MACERAYA BAŞLA!</button>
-                        <button id="btn-story-back" class="btn btn-secondary">🏠 Ana Menü</button>
+                        <button id="btn-start-adventure" class="btn btn-primary" data-i18n="startAdventure">🚀 MACERAYA BAŞLA!</button>
+                        <button id="btn-story-back" class="btn btn-secondary" data-i18n="mainMenu">🏠 Ana Menü</button>
                     </div>
                 </div>
             </div>
             <div id="screen-chapter-select" class="ui-screen hidden">
                 <div class="glass-panel modal-large">
-                    <h2>Select Chapter</h2>
+                    <h2 data-i18n="selectChapter">Select Chapter</h2>
                     <div class="menu-sub-energy energy-badge">
                         ❤️ <span id="select-global-lives-val">5/5</span> (<span id="select-lives-timer-val">MAX</span>)
                     </div>
@@ -151,19 +156,19 @@
                     <div class="level-grid" id="level-grid">
                         <!-- Level Cards Gen -->
                     </div>
-                    <button id="btn-back-main" class="btn btn-secondary btn-bottom">Back to Menu</button>
+                    <button id="btn-back-main" class="btn btn-secondary btn-bottom" data-i18n="backToMenu">Back to Menu</button>
                 </div>
             </div>
 
             <!-- Out of Lives Modal -->
             <div id="screen-no-lives" class="ui-screen hidden">
                 <div class="glass-panel modal">
-                    <h2>OUT OF LIVES! ❤️</h2>
-                    <p>You need at least 1 Life to play. Lives regenerate 1 every 30 minutes!</p>
-                    <div class="no-lives-timer">Next Life In: <strong id="modal-lives-timer">30:00</strong></div>
+                    <h2 data-i18n="outOfLivesTitle">OUT OF LIVES! ❤️</h2>
+                    <p data-i18n="outOfLivesDesc">You need at least 1 Life to play. Lives regenerate 1 every 30 minutes!</p>
+                    <div class="no-lives-timer"><span data-i18n="nextLifeIn">Next Life In:</span> <strong id="modal-lives-timer">30:00</strong></div>
                     <div class="modal-buttons">
-                        <button id="btn-no-lives-ad" class="btn btn-primary btn-ad-gold">📺 Watch Ad (+1 Life)</button>
-                        <button id="btn-no-lives-menu" class="btn btn-secondary">🏠 Main Menu</button>
+                        <button id="btn-no-lives-ad" class="btn btn-primary btn-ad-gold" data-i18n="watchAdLife">📺 Watch Ad (+1 Life)</button>
+                        <button id="btn-no-lives-menu" class="btn btn-secondary" data-i18n="mainMenu">🏠 Main Menu</button>
                     </div>
                 </div>
             </div>
@@ -171,24 +176,24 @@
             <!-- Character Shop Screen -->
             <div id="screen-character-shop" class="ui-screen hidden">
                 <div class="glass-panel modal-large shop-modal">
-                    <h2>Character Shop</h2>
+                    <h2 data-i18n="characterShop">Character Shop</h2>
                     <div class="shop-grid" id="shop-grid">
                         <!-- Skin Cards Gen -->
                     </div>
-                    <button id="btn-shop-back" class="btn btn-secondary btn-bottom">Back to Menu</button>
+                    <button id="btn-shop-back" class="btn btn-secondary btn-bottom" data-i18n="backToMenu">Back to Menu</button>
                 </div>
             </div>
 
             <!-- Pause Screen -->
             <div id="screen-pause" class="ui-screen hidden">
                 <div class="glass-panel modal">
-                    <h2>PAUSED</h2>
+                    <h2 data-i18n="paused">PAUSED</h2>
                     <div class="modal-actions" style="display: flex; flex-direction: column; gap: 14px; margin-top: 20px;">
-                        <button id="btn-resume" class="btn btn-primary-play" style="width: 100%;">▶ RESUME</button>
-                        <button id="btn-restart" class="btn btn-chapters" style="width: 100%;">🔄 RESTART LEVEL</button>
+                        <button id="btn-resume" class="btn btn-primary-play" style="width: 100%;" data-i18n="resume">▶ RESUME</button>
+                        <button id="btn-restart" class="btn btn-chapters" style="width: 100%;" data-i18n="restartLevel">🔄 RESTART LEVEL</button>
                         <div style="display: flex; gap: 14px; width: 100%;">
-                            <button id="btn-settings-pause" class="btn btn-story" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;">⚙️ SETTINGS</button>
-                            <button id="btn-quit" class="btn btn-shop-neon" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;">🏠 MENU</button>
+                            <button id="btn-settings-pause" class="btn btn-story" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;" data-i18n="pauseSettings">⚙️ SETTINGS</button>
+                            <button id="btn-quit" class="btn btn-shop-neon" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;" data-i18n="pauseMenu">🏠 MENU</button>
                         </div>
                     </div>
                 </div>
@@ -235,11 +240,11 @@
             <!-- Game Over Screen -->
             <div id="screen-game-over" class="ui-screen hidden">
                 <div class="glass-panel modal">
-                    <h2>OUT OF LIVES!</h2>
-                    <p>You ran out of lives for this run!</p>
+                    <h2 data-i18n="gameOverTitle">OUT OF LIVES!</h2>
+                    <p data-i18n="gameOverDesc">You ran out of lives for this run!</p>
                     <div class="modal-buttons">
-                        <button id="btn-ad-revive" class="btn btn-primary btn-ad-gold">📺 Watch Ad (+1 Life)</button>
-                        <button id="btn-gameover-menu" class="btn btn-secondary">🏠 Main Menu</button>
+                        <button id="btn-ad-revive" class="btn btn-primary btn-ad-gold" data-i18n="adRevive">📺 Watch Ad (+1 Life)</button>
+                        <button id="btn-gameover-menu" class="btn btn-secondary" data-i18n="mainMenu">🏠 Main Menu</button>
                     </div>
                 </div>
             </div>
@@ -252,7 +257,7 @@
                         <div class="arch-star" id="arch-star-2" style="--start-rot: 0deg; --start-y: -10px; --end-scale: 1.15;">⭐</div>
                         <div class="arch-star" id="arch-star-3" style="--start-rot: 20deg; --start-y: 10px; --end-scale: 0.9;">⭐</div>
                     </div>
-                    <h2 class="win-title" style="margin-top: 5px; font-size: 1.8rem; margin-bottom: 10px;">LEVEL CLEARED!</h2>
+                    <h2 class="win-title" style="margin-top: 5px; font-size: 1.8rem; margin-bottom: 10px;" data-i18n="winLevelCleared">LEVEL CLEARED!</h2>
                     
                     <div style="display: flex; gap: 20px; align-items: stretch;">
                         <!-- Left: Checklist & Stats -->
@@ -260,15 +265,15 @@
                             <div class="star-checklist" style="margin-top: 0;">
                                 <div class="star-req-item" id="req-star-1" style="padding: 6px 10px;">
                                     <span class="req-check">⬜</span>
-                                    <span class="req-text" style="font-size: 0.85rem;">Finish Level</span>
+                                    <span class="req-text" style="font-size: 0.85rem;" data-i18n="winFinishLevel">Finish Level</span>
                                 </div>
                                 <div class="star-req-item" id="req-star-2" style="padding: 6px 10px;">
                                     <span class="req-check">⬜</span>
-                                    <span class="req-text" style="font-size: 0.85rem;">Collect ALL Fruits (🍓)</span>
+                                    <span class="req-text" style="font-size: 0.85rem;" data-i18n="winCollectFruits">Collect ALL Fruits (🍓)</span>
                                 </div>
                                 <div class="star-req-item" id="req-star-3" style="padding: 6px 10px;">
                                     <span class="req-check">⬜</span>
-                                    <span class="req-text" style="font-size: 0.85rem;">Speedrun (<span id="win-target-time">0</span>s)</span>
+                                    <span class="req-text" style="font-size: 0.85rem;"><span data-i18n="winSpeedrun">Speedrun</span> (<span id="win-target-time">0</span>s)</span>
                                 </div>
                             </div>
 
@@ -280,11 +285,11 @@
 
                         <!-- Right: Buttons -->
                         <div class="modal-actions" style="flex: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 0; justify-content: center;">
-                            <button id="btn-next-level" class="btn btn-primary-play" style="width: 100%; padding: 12px;">🚀 NEXT LEVEL</button>
-                            <button id="btn-win-restart" class="btn btn-chapters" style="width: 100%; padding: 10px;">🔄 RETRY</button>
+                            <button id="btn-next-level" class="btn btn-primary-play" style="width: 100%; padding: 12px;" data-i18n="winNextLevel">🚀 NEXT LEVEL</button>
+                            <button id="btn-win-restart" class="btn btn-chapters" style="width: 100%; padding: 10px;" data-i18n="winRetry">🔄 RETRY</button>
                             <div style="display: flex; gap: 10px; width: 100%;">
-                                <button id="btn-win-levels" class="btn btn-story" style="flex: 1; padding: 8px; font-size: 0.8rem;">🗺️ LEVELS</button>
-                                <button id="btn-win-main-menu" class="btn btn-shop-neon" style="flex: 1; padding: 8px; font-size: 0.8rem;">🏠 MENU</button>
+                                <button id="btn-win-levels" class="btn btn-story" style="flex: 1; padding: 8px; font-size: 0.8rem;" data-i18n="winLevels">🗺️ LEVELS</button>
+                                <button id="btn-win-main-menu" class="btn btn-shop-neon" style="flex: 1; padding: 8px; font-size: 0.8rem;" data-i18n="winMenu">🏠 MENU</button>
                             </div>
                         </div>
                     </div>
@@ -319,9 +324,9 @@
     <audio id="bgm-game" src="audio/game.wav" loop preload="auto"></audio>
 
     <script src="admob_manager.js" onerror="this.onerror=null;this.src='js/admob_manager.js'"></script>
-    <script src="audio.js?v=4" onerror="this.onerror=null;this.src='js/audio.js?v=4'"></script>
-    <script src="physics.js?v=4" onerror="this.onerror=null;this.src='js/physics.js?v=4'"></script>
-    <script src="levels.js?v=4" onerror="this.onerror=null;this.src='js/levels.js?v=4'"></script>
-    <script src="game.js?v=4" onerror="this.onerror=null;this.src='js/game.js?v=4'"></script>
+    <script src="audio.js?v=9" onerror="this.onerror=null;this.src='js/audio.js?v=9'"></script>
+    <script src="physics.js?v=9" onerror="this.onerror=null;this.src='js/physics.js?v=9'"></script>
+    <script src="levels.js?v=9" onerror="this.onerror=null;this.src='js/levels.js?v=9'"></script>
+    <script src="game.js?v=9" onerror="this.onerror=null;this.src='js/game.js?v=9'"></script>
 </body>
 </html>
