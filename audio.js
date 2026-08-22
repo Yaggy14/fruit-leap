@@ -205,6 +205,74 @@ class AudioManager {
             osc.stop(this.ctx.currentTime + idx * 0.15 + 0.2);
         });
     }
+
+    playBossRoar() {
+        if (this.muted) return;
+        this.init();
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(120, this.ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(55, this.ctx.currentTime + 0.6);
+
+        osc2.type = 'square';
+        osc2.frequency.setValueAtTime(90, this.ctx.currentTime);
+        osc2.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.6);
+
+        gain.gain.setValueAtTime(0.4 * this.globalVolume, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.6);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(this.ctx.currentTime + 0.6);
+        osc2.stop(this.ctx.currentTime + 0.6);
+    }
+
+    playBossHit() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(45, this.ctx.currentTime + 0.22);
+
+        gain.gain.setValueAtTime(0.45 * this.globalVolume, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.22);
+    }
+
+    playBossJump() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(220, this.ctx.currentTime + 0.18);
+
+        gain.gain.setValueAtTime(0.3 * this.globalVolume, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.18);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.18);
+    }
 }
 
 const audio = new AudioManager();

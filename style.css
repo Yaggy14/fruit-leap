@@ -209,6 +209,14 @@ canvas {
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+.hud-item.score-badge {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 107, 0, 0.25));
+    border-color: #ffd700;
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+}
+
 .hud-btn {
     margin-left: auto;
     background: linear-gradient(135deg, #252a48 0%, #151829 100%);
@@ -761,6 +769,35 @@ canvas {
     color: var(--accent-gold);
 }
 
+.level-score-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+.new-record-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff007f, #ff9100);
+    color: #ffffff;
+    font-family: var(--font-retro);
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 14px rgba(255, 0, 127, 0.7);
+    animation: recordPulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes recordPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 8px rgba(255, 0, 127, 0.5); }
+    100% { transform: scale(1.08); box-shadow: 0 0 18px rgba(255, 145, 0, 0.9); }
+}
+
 /* Character Shop Grid */
 .shop-grid {
     display: grid;
@@ -869,6 +906,15 @@ canvas {
     width: 100%;
     max-width: 400px;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+}
+
+.btn-bottom,
+#btn-back-main {
+    margin-top: 26px !important;
+    margin-bottom: 8px !important;
+    padding: 12px 32px;
+    display: inline-block;
+    font-size: 1.05rem;
 }
 
 /* Floating Game Toast Notification */
@@ -1185,3 +1231,435 @@ html {
     box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4) !important;
 }
 
+
+/* ==========================================================================
+   ARCADE JUICE, POWER-UP HUD, BOSS BAR & LUCKY SPIN MODAL
+   ========================================================================== */
+
+/* HUD Badge Pop Animation */
+@keyframes hudBadgePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.28); color: #ffd600; text-shadow: 0 0 12px rgba(255, 214, 0, 0.8); }
+    100% { transform: scale(1); }
+}
+
+.hud-item.hud-pop {
+    animation: hudBadgePop 0.35s ease-out;
+}
+
+/* Power-up Active HUD Bar */
+.hud-powerup-bar {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(18, 22, 44, 0.88);
+    border: 2px solid #00e5ff;
+    padding: 6px 16px;
+    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(0, 229, 255, 0.4);
+    z-index: 100;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.hud-powerup-bar.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.powerup-icon {
+    font-size: 1.4rem;
+    animation: pulse 1s infinite alternate;
+}
+
+.powerup-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.powerup-name {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.82rem;
+    color: #00e5ff;
+    letter-spacing: 0.5px;
+}
+
+.powerup-progress-bg {
+    width: 90px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.powerup-progress-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #00e5ff, #76ff03);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+/* Boss Health Bar HUD */
+.hud-boss-bar {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(18, 22, 44, 0.92);
+    border: 2px solid #ffd600;
+    border-radius: 20px;
+    padding: 8px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+    z-index: 100;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.hud-boss-bar.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-15px);
+}
+
+.boss-title {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.95rem;
+    color: #ffd600;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 8px rgba(255, 214, 0, 0.6);
+}
+
+.boss-hearts {
+    display: flex;
+    gap: 6px;
+    font-size: 1.25rem;
+}
+
+.boss-heart {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.boss-heart.lost {
+    opacity: 0.25;
+    filter: grayscale(1);
+    transform: scale(0.8);
+}
+
+/* Daily Spin Lucky Wheel Modal & Button */
+.btn-daily-spin {
+    background: linear-gradient(135deg, #ffd600 0%, #ff6d00 100%) !important;
+    border: 2px solid #ffffff !important;
+    color: #1a1a1a !important;
+    box-shadow: 0 6px 20px rgba(255, 214, 0, 0.5) !important;
+    position: relative;
+}
+
+.btn-daily-spin:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.7) !important;
+}
+
+.spin-badge-notify {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff1744;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1.5px solid #ffffff;
+    animation: pulse 1s infinite alternate;
+}
+
+/* Lucky Wheel UI Container */
+.wheel-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 16px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#wheel-canvas {
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 214, 0, 0.6), inset 0 0 15px rgba(0, 0, 0, 0.5);
+    border: 4px solid #ffffff;
+    transition: transform 4.5s cubic-bezier(0.15, 0.90, 0.10, 1.0);
+}
+
+.wheel-ticker {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.wheel-center-pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #ffd700, #ff8f00);
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.spin-cooldown-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: #ffab40;
+    margin-top: 10px;
+    font-weight: 800;
+}
+
+.prize-result-box {
+    margin-top: 12px;
+    padding: 10px 18px;
+    background: rgba(255, 214, 0, 0.15);
+    border: 1.5px solid #ffd600;
+    border-radius: 16px;
+    color: #ffd600;
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 1.1rem;
+    animation: bounce 0.6s ease;
+}
+
+/* ==========================================================================
+   ARCADE JUICE, POWER-UP HUD, BOSS BAR & LUCKY SPIN MODAL
+   ========================================================================== */
+
+/* HUD Badge Pop Animation */
+@keyframes hudBadgePop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.28); color: #ffd600; text-shadow: 0 0 12px rgba(255, 214, 0, 0.8); }
+    100% { transform: scale(1); }
+}
+
+.hud-item.hud-pop {
+    animation: hudBadgePop 0.35s ease-out;
+}
+
+/* Power-up Active HUD Bar */
+.hud-powerup-bar {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(18, 22, 44, 0.88);
+    border: 2px solid #00e5ff;
+    padding: 6px 16px;
+    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(0, 229, 255, 0.4);
+    z-index: 100;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.hud-powerup-bar.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.powerup-icon {
+    font-size: 1.4rem;
+    animation: pulse 1s infinite alternate;
+}
+
+.powerup-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.powerup-name {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.82rem;
+    color: #00e5ff;
+    letter-spacing: 0.5px;
+}
+
+.powerup-progress-bg {
+    width: 90px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.powerup-progress-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #00e5ff, #76ff03);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+/* Boss Health Bar HUD */
+.hud-boss-bar {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(18, 22, 44, 0.92);
+    border: 2px solid #ffd600;
+    border-radius: 20px;
+    padding: 8px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+    z-index: 100;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.hud-boss-bar.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-15px);
+}
+
+.boss-title {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.95rem;
+    color: #ffd600;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 8px rgba(255, 214, 0, 0.6);
+}
+
+.boss-hearts {
+    display: flex;
+    gap: 6px;
+    font-size: 1.25rem;
+}
+
+.boss-heart {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.boss-heart.lost {
+    opacity: 0.25;
+    filter: grayscale(1);
+    transform: scale(0.8);
+}
+
+/* Daily Spin Lucky Wheel Modal & Button */
+.btn-daily-spin {
+    background: linear-gradient(135deg, #ffd600 0%, #ff6d00 100%) !important;
+    border: 2px solid #ffffff !important;
+    color: #1a1a1a !important;
+    box-shadow: 0 6px 20px rgba(255, 214, 0, 0.5) !important;
+    position: relative;
+}
+
+.btn-daily-spin:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.7) !important;
+}
+
+.spin-badge-notify {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff1744;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1.5px solid #ffffff;
+    animation: pulse 1s infinite alternate;
+}
+
+/* Lucky Wheel UI Container */
+.wheel-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 16px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#wheel-canvas {
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 214, 0, 0.6), inset 0 0 15px rgba(0, 0, 0, 0.5);
+    border: 4px solid #ffffff;
+    transition: transform 4.5s cubic-bezier(0.15, 0.90, 0.10, 1.0);
+}
+
+.wheel-ticker {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.wheel-center-pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #ffd700, #ff8f00);
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.spin-cooldown-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: #ffab40;
+    margin-top: 10px;
+    font-weight: 800;
+}
+
+.prize-result-box {
+    margin-top: 12px;
+    padding: 10px 18px;
+    background: rgba(255, 214, 0, 0.15);
+    border: 1.5px solid #ffd600;
+    border-radius: 16px;
+    color: #ffd600;
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 1.1rem;
+    animation: bounce 0.6s ease;
+}

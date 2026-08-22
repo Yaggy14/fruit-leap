@@ -6,9 +6,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            console.log("GLOBAL_ERROR: " + msg + " at " + line + ":" + col);
+            if (error && error.stack) console.log(error.stack);
+        };
+        console.log("HELLO FROM INDEX.HTML - THE SCRIPT IS RUNNING!");
+    </script>
     <div id="game-container">
         <!-- Rotate Phone to Landscape Warning Overlay 📱🔄 -->
         <div id="orientation-warning" class="orientation-overlay hidden">
@@ -62,6 +69,7 @@
                     <button id="btn-story-intro" class="btn btn-story" data-i18n="storyQuest">📖 STORY & QUEST</button>
                     <button id="btn-chapter-select" class="btn btn-chapters" data-i18n="chapters">🗺️ CHAPTERS</button>
                     <button id="btn-character-shop" class="btn btn-shop-neon" data-i18n="shop">🛍️ CHARACTER SHOP</button>
+                    <button id="btn-daily-spin" class="btn btn-daily-spin" data-i18n="dailySpin">🎁 GÜNLÜK ÇARK<span id="spin-notify" class="spin-badge-notify">FREE</span></button>
                 </div>
             </div>
 
@@ -73,7 +81,29 @@
 
         <!-- HUD Overlay -->
         <div id="hud-overlay" class="overlay hidden">
+                        <!-- Active Power-up Indicator -->
+            <div id="hud-powerup-bar" class="hud-powerup-bar hidden">
+                <span id="powerup-icon" class="powerup-icon">🧲</span>
+                <div class="powerup-info">
+                    <span id="powerup-name" class="powerup-name">MAGNET</span>
+                    <div class="powerup-progress-bg">
+                        <div id="powerup-fill" class="powerup-progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boss Health Bar -->
+            <div id="hud-boss-bar" class="hud-boss-bar hidden">
+                <span id="boss-title" class="boss-title">👑 KRAL SLIME</span>
+                <div id="boss-hearts" class="boss-hearts">
+                    <span class="boss-heart">❤️</span>
+                    <span class="boss-heart">❤️</span>
+                    <span class="boss-heart">❤️</span>
+                </div>
+            </div>
+
             <div class="hud-top">
+                <div class="hud-item score-badge"><span class="hud-icon">🎯</span> <span id="hud-score">0</span></div>
                 <div class="hud-item"><span class="hud-icon">🍓</span> <span id="hud-fruits">0 / 0</span></div>
                 <div class="hud-item"><span class="hud-icon">🔑</span> <span id="hud-star-key">0 / 1</span></div>
                 <div class="hud-item"><span class="hud-icon">⏱️</span> <span id="hud-timer">0.0s</span></div>
@@ -116,6 +146,33 @@
 
         <!-- Modals & Screens -->
         <div id="ui-layer">
+            
+            <!-- Daily Lucky Spin Modal -->
+            <div id="screen-daily-spin" class="ui-screen hidden">
+                <div class="glass-panel modal-card">
+                    <h2 data-i18n="dailySpinTitle" style="color: #ffd600; text-shadow: 0 0 12px rgba(255, 214, 0, 0.6);">🎁 GÜNLÜK ŞANS ÇARKI</h2>
+                    <p data-i18n="dailySpinDesc" style="font-size: 0.88rem; color: rgba(255,255,255,0.85); margin-bottom: 8px;">Her 24 saatte bir ücretsiz çarkı çevir, sürpriz ödülleri topla!</p>
+                    
+                    <div class="wheel-container">
+                        <div class="wheel-ticker">🔻</div>
+                        <canvas id="wheel-canvas" width="250" height="250"></canvas>
+                        <div class="wheel-center-pin">⭐</div>
+                    </div>
+
+                    <div id="spin-prize-display" class="prize-result-box hidden">
+                        Tebrikler! +25 Yıldız Kazandın! ⭐
+                    </div>
+
+                    <div id="spin-cooldown-display" class="spin-cooldown-text hidden">
+                        ⏳ <span data-i18n="spinNextIn">Sonraki Çevirme:</span> <span id="spin-timer-val">23:59:59</span>
+                    </div>
+
+                    <div class="modal-buttons" style="margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
+                        <button id="btn-spin-wheel" class="btn btn-primary-play" data-i18n="spinWheelBtn">🎡 ÇARK'I ÇEVİR!</button>
+                        <button id="btn-close-daily-spin" class="btn btn-secondary-shop" data-i18n="spinCloseBtn">KAPAT</button>
+                    </div>
+                </div>
+            </div>
             
             <!-- Story Intro Modal Screen -->
             <div id="screen-story-intro" class="ui-screen hidden">
@@ -277,9 +334,17 @@
                                 </div>
                             </div>
 
-                            <div class="score-summary" style="margin-top: 0; padding: 8px; font-size: 0.85rem; display: flex; justify-content: space-around;">
-                                <span>🍓 <strong id="win-fruits-count">0 / 0</strong></span>
-                                <span>⏱️ <strong id="win-time">0.0s</strong></span>
+                            <div class="score-summary" style="margin-top: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.35); border-radius: 14px; border: 1px solid rgba(255,255,255,0.18);">
+                                <div style="display: flex; justify-content: space-around; width: 100%; font-size: 0.9rem;">
+                                    <span>🍓 <strong id="win-fruits-count">0 / 0</strong></span>
+                                    <span>⏱️ <strong id="win-time">0.0s</strong></span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 6px;">
+                                    <span style="font-size: 0.8rem; color: #e0e7ff; font-weight: 700; letter-spacing: 1px;" data-i18n="score">SCORE</span>
+                                    <div id="win-score-val" style="color: #ffd700; font-family: var(--font-retro); font-size: 2.3rem; text-shadow: 0 0 20px rgba(255, 215, 0, 0.75); line-height: 1.1;">0</div>
+                                    <div style="font-size: 0.85rem; color: #a5f3fc; margin-top: 2px;">🏆 <span data-i18n="best">BEST</span>: <strong id="win-best-score-val" style="color: #38bdf8;">0</strong></div>
+                                </div>
+                                <div id="win-new-record-badge" class="new-record-badge hidden" style="align-self: center; margin-top: 2px;" data-i18n="newRecord">🔥 YENİ REKOR!</div>
                             </div>
                         </div>
 
@@ -324,9 +389,9 @@
     <audio id="bgm-game" src="audio/game.wav" loop preload="auto"></audio>
 
     <script src="admob_manager.js" onerror="this.onerror=null;this.src='js/admob_manager.js'"></script>
-    <script src="audio.js?v=9" onerror="this.onerror=null;this.src='js/audio.js?v=9'"></script>
-    <script src="physics.js?v=9" onerror="this.onerror=null;this.src='js/physics.js?v=9'"></script>
-    <script src="levels.js?v=9" onerror="this.onerror=null;this.src='js/levels.js?v=9'"></script>
-    <script src="game.js?v=9" onerror="this.onerror=null;this.src='js/game.js?v=9'"></script>
+        <script src="audio.js?v=28" onerror="this.onerror=null;this.src='js/audio.js?v=28'"></script>
+    <script src="physics.js?v=28" onerror="this.onerror=null;this.src='js/physics.js?v=28'"></script>
+    <script src="levels.js?v=28" onerror="this.onerror=null;this.src='js/levels.js?v=28'"></script>
+    <script src="game.js?v=28" onerror="this.onerror=null;this.src='js/game.js?v=28'"></script>
 </body>
 </html>

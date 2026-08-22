@@ -39,6 +39,7 @@ const I18N = {
         storyQuest: "📖 HİKAYE & GÖREV",
         chapters: "🗺️ CHAPTERLAR",
         shop: "🛍️ KARAKTER MARKETİ",
+        dailySpin: "🎁 GÜNLÜK ÇARK",
         freeLife: "📺 ÜCRETSİZ CAN (+1 ❤️)",
         settings: "⚙️ Ayarlar",
 
@@ -82,6 +83,9 @@ const I18N = {
         winRetry: "🔄 TEKRAR DENE",
         winLevels: "🗺️ BÖLÜMLER",
         winMenu: "🏠 MENÜ",
+        score: "PUAN",
+        best: "EN İYİ",
+        newRecord: "🔥 YENİ REKOR!",
 
         // Game Over
         gameOverTitle: "CANIN TÜKENDİ!",
@@ -115,7 +119,19 @@ const I18N = {
         sizeSmall: "Küçük",
         sizeMedium: "Orta",
         sizeLarge: "Büyük",
-        close: "✔ Kapat"
+        close: "✔ Kapat",
+
+        // Lucky Spin Modal
+        dailySpinTitle: "🎁 GÜNLÜK ŞANS ÇARKI",
+        dailySpinDesc: "Her 24 saatte bir ücretsiz çarkı çevir, sürpriz ödülleri topla!",
+        spinWheelBtn: "🎡 ÇARK'I ÇEVİR!",
+        spinWheelFreeBtn: "🎡 ÇARKI ÇEVİR (ÜCRETSİZ!)",
+        spinCooldownBtn: "⏳ BEKLEMEDE",
+        spinNextIn: "Sonraki Çevirme:",
+        spinCloseBtn: "KAPAT",
+        spinPrizeStars: "⭐ Tebrikler! +{val} YILDIZ KAZANDIN!",
+        spinPrizeLife: "❤️ Harika! +{val} EKSTRA CAN KAZANDIN!",
+        spinPrizePower: "🎁 BÜYÜLÜ ÖDÜL! +30 Yıldız Kazandın!"
     },
     en: {
         stars: "STARS",
@@ -123,6 +139,7 @@ const I18N = {
         storyQuest: "📖 STORY & QUEST",
         chapters: "🗺️ CHAPTERS",
         shop: "🛍️ CHARACTER SHOP",
+        dailySpin: "🎁 LUCKY SPIN",
         freeLife: "📺 FREE LIFE (+1 ❤️)",
         settings: "⚙️ Settings",
 
@@ -166,6 +183,9 @@ const I18N = {
         winRetry: "🔄 RETRY",
         winLevels: "🗺️ LEVELS",
         winMenu: "🏠 MENU",
+        score: "SCORE",
+        best: "BEST",
+        newRecord: "🔥 NEW RECORD!",
 
         // Game Over
         gameOverTitle: "OUT OF LIVES!",
@@ -199,7 +219,19 @@ const I18N = {
         sizeSmall: "Small",
         sizeMedium: "Medium",
         sizeLarge: "Large",
-        close: "✔ Close"
+        close: "✔ Close",
+
+        // Lucky Spin Modal
+        dailySpinTitle: "🎁 DAILY LUCKY SPIN",
+        dailySpinDesc: "Spin the wheel for free every 24 hours to collect awesome rewards!",
+        spinWheelBtn: "🎡 SPIN THE WHEEL!",
+        spinWheelFreeBtn: "🎡 SPIN WHEEL (FREE!)",
+        spinCooldownBtn: "⏳ ON COOLDOWN",
+        spinNextIn: "Next Free Spin in:",
+        spinCloseBtn: "CLOSE",
+        spinPrizeStars: "⭐ Congratulations! +{val} STARS WON!",
+        spinPrizeLife: "❤️ Awesome! +{val} EXTRA LIFE WON!",
+        spinPrizePower: "🎁 MAGIC REWARD! +30 Stars Won!"
     }
 };
 
@@ -218,6 +250,17 @@ class Game {
         this.lives = 3;
         this.levelTimer = 0;
         this.fruitsCollected = 0;
+        this.floatingTexts = [];
+        this.confettiParticles = [];
+        this.screenShakeTimer = 0;
+        this.screenShakeIntensity = 0;
+        this.activePowerUp = null;
+        this.activePowerUpTimer = 0;
+        if (this.player) {
+            this.player.hasBubbleShield = false;
+            this.player.hasMagnet = false;
+            this.player.hasSpeedBoost = false;
+        }
         this.totalFruits = 0;
 
         // Fixed timestep physics properties (60Hz target)
@@ -418,6 +461,12 @@ class Game {
         document.getElementById('btn-chapter-select').addEventListener('click', () => this.showScreen('screen-chapter-select'));
         document.getElementById('btn-back-main').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-shop-back').addEventListener('click', () => this.showScreen('screen-main-menu'));
+        document.getElementById('btn-daily-spin')?.addEventListener('click', () => {
+            this.showScreen('screen-daily-spin');
+            this.initDailySpin();
+        });
+        document.getElementById('btn-close-daily-spin')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
+        document.getElementById('btn-spin-wheel')?.addEventListener('click', () => this.spinDailyWheel());
 
         document.getElementById('btn-pause-hud').addEventListener('click', () => this.pauseGame());
         document.getElementById('btn-resume').addEventListener('click', () => this.resumeGame());
@@ -611,6 +660,9 @@ class Game {
                 }
             });
         }
+        
+        this.initDailySpin();
+        this.checkDailySpinStatus();
     }
 
     renderChapterChips() {
@@ -641,11 +693,14 @@ class Game {
             const card = document.createElement('div');
             const lvlCode = `${chapterId}-${idx + 1}`;
             const stars = this.progress.levelStars[lvlCode] || 0;
+            const highScore = (this.progress.highScores && this.progress.highScores[lvlCode]) ? this.progress.highScores[lvlCode] : 0;
+            const scoreLabel = highScore > 0 ? `🏆 ${highScore.toLocaleString()}` : `<span style="opacity:0.4;">🏆 ---</span>`;
 
             card.className = `level-card`;
             card.innerHTML = `
                 <div class="level-num">Level ${idx + 1}</div>
                 <div class="level-stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
+                <div class="level-score-badge">${scoreLabel}</div>
             `;
             card.addEventListener('click', () => this.startLevel(chapterIdx, idx));
             grid.appendChild(card);
@@ -707,6 +762,7 @@ class Game {
         if (screenId === 'screen-main-menu') {
             this.state = 'MENU';
             audio.playBGM('menu');
+            this.checkDailySpinStatus();
         }
         if (screenId === 'screen-chapter-select') {
             this.state = 'CHAPTER_SELECT';
@@ -792,6 +848,11 @@ class Game {
         this.levelStartScore = this.score;
         this.levelTimer = 0;
         this.fruitsCollected = 0;
+        this.floatingTexts = [];
+        this.confettiParticles = [];
+        this.screenShakeTimer = 0;
+        this.screenShakeIntensity = 0;
+        this.clearActivePowerUp();
 
         // Pre-fill accumulator for frame 1 physics execution
         this.lastTime = performance.now();
@@ -840,6 +901,9 @@ class Game {
         this.player.reset(level.playerStart.x, level.playerStart.y);
         
         this.platforms = level.platforms.map(p => ({ ...p, startX: p.x }));
+        let maxX = 800;
+        this.platforms.forEach(p => { if (p.x + p.width > maxX) maxX = p.x + p.width; });
+        this.levelMapWidth = maxX + 400;
         this.hazards = level.hazards ? level.hazards.map(h => ({
             ...h,
             platformRef: this.platforms.find(p => p.id === h.platformId)
@@ -849,7 +913,15 @@ class Game {
             platformRef: this.platforms.find(p => p.id === oc.platformId)
         })) : [];
         this.bouncyPads = level.bouncyPads ? level.bouncyPads.map(b => ({ ...b, platformRef: this.platforms.find(p => p.id === b.platformId) })) : [];
-        this.enemies = level.enemies.map(e => new Enemy(e.x, e.y, e.range, this.platforms.find(p => p.id === e.platformId)));
+        this.enemies = level.enemies ? level.enemies.map(e => new Enemy(e.x, e.y, e.range, this.platforms.find(p => p.id === e.platformId))) : [];
+        if (level.boss) {
+            const bossPlat = this.platforms.find(p => p.id === level.boss.platformId);
+            this.boss = new BossEnemy(level.boss.x, level.boss.y, bossPlat, level.boss.bossType || 5);
+            this.updateBossHUD();
+        } else {
+            this.boss = null;
+            this.updateBossHUD();
+        }
         this.portals = level.portals ? level.portals.map(p => ({
             ...p,
             entrancePlat: this.platforms.find(plat => plat.id === p.entrancePlatformId),
@@ -876,6 +948,8 @@ class Game {
     }
 
     updateHUD() {
+        const hudScoreEl = document.getElementById('hud-score');
+        if (hudScoreEl) hudScoreEl.innerText = (this.score || 0).toLocaleString();
         document.getElementById('hud-fruits').innerText = `${this.fruitsCollected} / ${this.totalFruits}`;
         document.getElementById('hud-star-key').innerText = `${this.player.hasGoldenKey ? 1 : 0} / 1`;
         document.getElementById('hud-timer').innerText = `${this.levelTimer.toFixed(1)}s`;
@@ -896,6 +970,11 @@ class Game {
 
     restartLevel() {
         this.fruitsCollected = 0;
+        this.floatingTexts = [];
+        this.confettiParticles = [];
+        this.screenShakeTimer = 0;
+        this.screenShakeIntensity = 0;
+        this.clearActivePowerUp();
         this.score = this.levelStartScore;
         this.levelTimer = 0;
         this.player.hasGoldenKey = false;
@@ -942,6 +1021,11 @@ class Game {
 
         // Reset level attempt items
         this.fruitsCollected = 0;
+        this.floatingTexts = [];
+        this.confettiParticles = [];
+        this.screenShakeTimer = 0;
+        this.screenShakeIntensity = 0;
+        this.clearActivePowerUp();
         this.score = this.levelStartScore;
         this.player.hasGoldenKey = false;
         
@@ -961,12 +1045,15 @@ class Game {
             document.getElementById('touch-controls')?.classList.add('hidden');
         } else {
             const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
+            this.loadLevelData();
             this.player.reset(level.playerStart.x, level.playerStart.y);
+            this.updateBossHUD();
         }
     }
 
     handleWin() {
         audio.playBGM(null); // Stop BGM to hear the win fanfare
+        this.clearActivePowerUp();
         this.state = 'WIN';
         const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
         const lvlCode = `${CHAPTERS[this.currentChapterIdx].id}-${this.currentLevelIdx + 1}`;
@@ -985,11 +1072,41 @@ class Game {
 
         this.progress.totalStars = Object.values(this.progress.levelStars).reduce((a, b) => a + b, 0);
 
+        // Score Calculation per Level
+        const fruitScore = this.fruitsCollected * 100;
+        const timeBonus = Math.max(0, Math.round((level.targetTime - this.levelTimer) * 25));
+        const bossBonus = level.isBossLevel ? 1000 : 0;
+        const currentLevelScore = fruitScore + timeBonus + bossBonus;
+
+        this.progress.highScores = this.progress.highScores || {};
+        const previousBest = this.progress.highScores[lvlCode] || 0;
+        const isNewRecord = currentLevelScore > previousBest;
+
+        if (isNewRecord) {
+            this.progress.highScores[lvlCode] = currentLevelScore;
+        }
+
+        this.progress.highScore = Object.values(this.progress.highScores).reduce((a, b) => a + b, 0);
+
         this.saveProgress();
 
         document.getElementById('win-target-time').innerText = `${level.targetTime}s`;
         document.getElementById('win-fruits-count').innerText = `${this.fruitsCollected} / ${this.totalFruits}`;
         document.getElementById('win-time').innerText = `${this.levelTimer.toFixed(1)}s`;
+        
+        const winScoreEl = document.getElementById('win-score-val');
+        if (winScoreEl) winScoreEl.innerText = currentLevelScore.toLocaleString();
+        const winBestScoreEl = document.getElementById('win-best-score-val');
+        if (winBestScoreEl) winBestScoreEl.innerText = Math.max(previousBest, currentLevelScore).toLocaleString();
+
+        const newRecordBadge = document.getElementById('win-new-record-badge');
+        if (newRecordBadge) {
+            if (isNewRecord && previousBest > 0) {
+                newRecordBadge.classList.remove('hidden');
+            } else {
+                newRecordBadge.classList.add('hidden');
+            }
+        }
 
         document.getElementById('req-star-1').className = 'star-req-item';
         document.getElementById('req-star-2').className = 'star-req-item';
@@ -1002,6 +1119,18 @@ class Game {
         document.getElementById('arch-star-1').className = 'arch-star';
         document.getElementById('arch-star-2').className = 'arch-star';
         document.getElementById('arch-star-3').className = 'arch-star';
+
+        const theme = level.theme || CHAPTERS[this.currentChapterIdx]?.theme || CHAPTERS[0].theme;
+        const screenWinEl = document.getElementById('screen-win');
+        const winModalEl = document.querySelector('.win-modal');
+        if (screenWinEl) {
+            screenWinEl.style.background = 'rgba(0, 0, 0, 0.45)';
+            screenWinEl.style.backdropFilter = 'blur(4px)';
+        }
+        if (winModalEl && theme.platformBorder) {
+            winModalEl.style.borderColor = theme.platformBorder;
+            winModalEl.style.boxShadow = `0 0 35px ${theme.platformBorder}88`;
+        }
 
         document.getElementById('screen-win').classList.remove('hidden');
         document.getElementById('touch-controls')?.classList.add('hidden');
@@ -1032,6 +1161,255 @@ class Game {
         admob.showInterstitialAd();
     }
 
+    triggerScreenShake(intensity = 4, duration = 0.15) {
+        this.screenShakeIntensity = intensity;
+        this.screenShakeTimer = duration;
+    }
+
+    clearActivePowerUp() {
+        this.activePowerUp = null;
+        this.activePowerUpTimer = 0;
+        this.activePowerUpMaxTimer = 0;
+        if (this.player) {
+            this.player.hasBubbleShield = false;
+            this.player.hasMagnet = false;
+            this.player.hasSpeedBoost = false;
+        }
+        const powerBar = document.getElementById('hud-powerup-bar');
+        if (powerBar) powerBar.classList.add('hidden');
+    }
+
+    activatePowerUp(type, duration = 10) {
+        this.activePowerUp = type;
+        this.activePowerUpTimer = duration;
+        this.activePowerUpMaxTimer = duration;
+
+        if (type === 'powerup_magnet') this.player.hasMagnet = true;
+        if (type === 'powerup_shield') this.player.hasBubbleShield = true;
+        if (type === 'powerup_boost') this.player.hasSpeedBoost = true;
+
+        const powerBar = document.getElementById('hud-powerup-bar');
+        const iconEl = document.getElementById('powerup-icon');
+        const nameEl = document.getElementById('powerup-name');
+
+        if (powerBar && iconEl && nameEl) {
+            powerBar.classList.remove('hidden');
+            if (type === 'powerup_magnet') { iconEl.innerText = '🧲'; nameEl.innerText = 'MAGNET'; }
+            else if (type === 'powerup_shield') { iconEl.innerText = '🫧'; nameEl.innerText = 'SHIELD'; }
+            else if (type === 'powerup_boost') { iconEl.innerText = '⚡'; nameEl.innerText = 'SPEED BOOST'; }
+        }
+    }
+
+    updatePowerUp(deltaTime) {
+        if (!this.activePowerUp) return;
+
+        // If shield powerup but shield was broken by enemy/hazard
+        if (this.activePowerUp === 'powerup_shield' && this.player && !this.player.hasBubbleShield) {
+            this.clearActivePowerUp();
+            return;
+        }
+
+        this.activePowerUpTimer -= deltaTime;
+
+        const fillEl = document.getElementById('powerup-fill');
+        if (fillEl && this.activePowerUpMaxTimer > 0) {
+            const pct = Math.max(0, (this.activePowerUpTimer / this.activePowerUpMaxTimer) * 100);
+            fillEl.style.width = `${pct}%`;
+        }
+
+        if (this.activePowerUpTimer <= 0) {
+            this.clearActivePowerUp();
+        }
+    }
+
+    updateBossHUD() {
+        const bossBar = document.getElementById('hud-boss-bar');
+        const bossTitle = document.getElementById('boss-title');
+        const heartsContainer = document.getElementById('boss-hearts');
+        if (!bossBar || !heartsContainer) return;
+
+        // Show Boss HUD ONLY when boss is awake and alive!
+        if (!this.boss || !this.boss.isAwake || this.boss.isDead || this.boss.state === 'FALLING_DEAD') {
+            bossBar.classList.add('hidden');
+            return;
+        }
+
+        const bossNames = {
+            5: { tr: "👑 KRAL SLIME", en: "👑 KING SLIME" },
+            10: { tr: "🌋 LAV CANAVARI", en: "🌋 MAGMA GOLEM" },
+            15: { tr: "👻 GÖLGE LORDU", en: "👻 SHADOW PHANTOM" },
+            20: { tr: "🤖 SİBER MECHA SLIME", en: "🤖 CYBER MECHA SLIME" },
+            25: { tr: "🌌 KOZMİK TİTAN", en: "🌌 COSMIC TITAN" }
+        };
+
+        const bInfo = bossNames[this.boss.bossType] || bossNames[5];
+        if (bossTitle) {
+            bossTitle.innerText = this.lang === 'en' ? bInfo.en : bInfo.tr;
+        }
+
+        bossBar.classList.remove('hidden');
+        let html = '';
+        for (let h = 0; h < this.boss.maxHp; h++) {
+            if (h < this.boss.hp) html += '<span class="boss-heart">❤️</span>';
+            else html += '<span class="boss-heart lost">🖤</span>';
+        }
+        heartsContainer.innerHTML = html;
+    }
+
+    popHUDItem(elementId) {
+        const el = document.getElementById(elementId);
+        if (el) {
+            el.parentElement?.classList.remove('hud-pop');
+            void el.offsetWidth;
+            el.parentElement?.classList.add('hud-pop');
+        }
+    }
+
+    initDailySpin() {
+        const canvas = document.getElementById('wheel-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const isEn = (this.lang === 'en');
+        const prizes = [
+            { label: '+10 ⭐', color: '#ff4081', type: 'stars', val: 10 },
+            { label: '+1 ❤️', color: '#00e5ff', type: 'life', val: 1 },
+            { label: isEn ? '🧲 MAGNET' : '🧲 MIKNATIS', color: '#ffd600', type: 'power', val: 'powerup_magnet' },
+            { label: '+25 ⭐', color: '#76ff03', type: 'stars', val: 25 },
+            { label: isEn ? '🫧 SHIELD' : '🫧 KALKAN', color: '#e040fb', type: 'power', val: 'powerup_shield' },
+            { label: '+2 ❤️', color: '#ff6d00', type: 'life', val: 2 },
+            { label: '+50 ⭐', color: '#00b0ff', type: 'stars', val: 50 },
+            { label: '⭐ JACKPOT', color: '#ffd700', type: 'stars', val: 100 }
+        ];
+
+        this.wheelPrizes = prizes;
+        const numSlices = prizes.length;
+        const sliceAngle = (Math.PI * 2) / numSlices;
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const radius = cx - 6;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        prizes.forEach((p, i) => {
+            const startA = i * sliceAngle;
+            const endA = startA + sliceAngle;
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, radius, startA, endA);
+            ctx.closePath();
+            ctx.fillStyle = p.color;
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Label Text
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(startA + sliceAngle / 2);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 13px "Fredoka One", "Nunito", sans-serif';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 4;
+            ctx.fillText(p.label, radius - 16, 5);
+            ctx.restore();
+        });
+
+        this.checkDailySpinStatus();
+    }
+
+    checkDailySpinStatus() {
+        const lastSpin = parseInt(localStorage.getItem('fruit_leap_last_daily_spin') || '0');
+        const now = Date.now();
+        const cooldown = 24 * 60 * 60 * 1000;
+        const diff = now - lastSpin;
+
+        const lData = I18N[this.lang] || I18N.tr;
+        const spinBtn = document.getElementById('btn-spin-wheel');
+        const notifyEl = document.getElementById('spin-notify');
+        const cdDisplay = document.getElementById('spin-cooldown-display');
+        const timerVal = document.getElementById('spin-timer-val');
+
+        if (diff >= cooldown) {
+            // Free Spin Ready!
+            if (spinBtn) { spinBtn.disabled = false; spinBtn.innerText = lData.spinWheelFreeBtn || '🎡 ÇARKI ÇEVİR (ÜCRETSİZ!)'; }
+            if (notifyEl) notifyEl.classList.remove('hidden');
+            if (cdDisplay) cdDisplay.classList.add('hidden');
+        } else {
+            // On Cooldown
+            const remainingMs = cooldown - diff;
+            const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+            const mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((remainingMs % (1000 * 60)) / 1000);
+            const timeStr = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            if (spinBtn) { spinBtn.disabled = true; spinBtn.innerText = lData.spinCooldownBtn || '⏳ BEKLEMEDE'; }
+            if (notifyEl) notifyEl.classList.add('hidden');
+            if (cdDisplay) cdDisplay.classList.remove('hidden');
+            if (timerVal) timerVal.innerText = timeStr;
+        }
+    }
+
+    spinDailyWheel() {
+        if (this.isSpinning) return;
+        const lastSpin = parseInt(localStorage.getItem('fruit_leap_last_daily_spin') || '0');
+        const now = Date.now();
+        if (now - lastSpin < 24 * 60 * 60 * 1000) return;
+
+        this.isSpinning = true;
+        const spinBtn = document.getElementById('btn-spin-wheel');
+        if (spinBtn) spinBtn.disabled = true;
+
+        const prizeIdx = Math.floor(Math.random() * this.wheelPrizes.length);
+        const prize = this.wheelPrizes[prizeIdx];
+        const numSlices = this.wheelPrizes.length;
+        const sliceAngle = (360 / numSlices);
+
+        // Calculate rotation so top pointer lands on prizeIdx
+        // Ticker is at 270 deg (top)
+        const targetDeg = (360 * 5) + (270 - (prizeIdx * sliceAngle + sliceAngle / 2));
+        this.wheelRotation = (this.wheelRotation || 0) + targetDeg;
+
+        const canvas = document.getElementById('wheel-canvas');
+        if (canvas) {
+            canvas.style.transform = `rotate(${this.wheelRotation}deg)`;
+        }
+
+        audio.playCoin();
+
+        setTimeout(() => {
+            this.isSpinning = false;
+            localStorage.setItem('fruit_leap_last_daily_spin', Date.now().toString());
+
+            const lData = I18N[this.lang] || I18N.tr;
+            let prizeMsg = '';
+            if (prize.type === 'stars') {
+                this.progress.totalStars = (this.progress.totalStars || 0) + prize.val;
+                prizeMsg = (lData.spinPrizeStars || '⭐ +{val} YILDIZ!').replace('{val}', prize.val);
+            } else if (prize.type === 'life') {
+                this.progress.globalLives = Math.min(5, (this.progress.globalLives || 0) + prize.val);
+                prizeMsg = (lData.spinPrizeLife || '❤️ +{val} CAN!').replace('{val}', prize.val);
+            } else if (prize.type === 'power') {
+                this.progress.totalStars = (this.progress.totalStars || 0) + 30;
+                prizeMsg = lData.spinPrizePower || '🎁 BÜYÜLÜ ÖDÜL! +30 Yıldız!';
+            }
+
+            this.saveProgress();
+            this.updateStatsUI();
+
+            const prizeEl = document.getElementById('spin-prize-display');
+            if (prizeEl) {
+                prizeEl.innerText = prizeMsg;
+                prizeEl.classList.remove('hidden');
+            }
+
+            audio.playWin();
+            this.checkDailySpinStatus();
+        }, 4700);
+    }
+
     showToast(msg) {
         let toast = document.getElementById('game-toast');
         if (!toast) {
@@ -1052,237 +1430,402 @@ class Game {
     }
 
     drawMenuBackground() {
-        const time = Date.now() * 0.002;
         const w = this.canvas.width;
         const h = this.canvas.height;
-        
-        // 1. Vibrant Sunny Sky Gradient (Azure Blue -> Sky Blue -> Meadow Mint)
-        const skyGrad = this.getCachedGradient('menu_sky_grad', (ctx) => {
+        const time = Date.now() / 1000;
+
+        // 1. Sky Gradient - Bright, Vibrant Daytime Sunset
+        const skyGradient = this.getCachedGradient('menu_sky_v2', (ctx) => {
             const g = ctx.createLinearGradient(0, 0, 0, h);
-            g.addColorStop(0, '#0284c7'); // Deep Azure Blue
-            g.addColorStop(0.5, '#38bdf8'); // Bright Sky Blue
-            g.addColorStop(1, '#a7f3d0'); // Soft Meadow Mint
+            g.addColorStop(0, '#38bdf8'); // Sky blue
+            g.addColorStop(0.35, '#818cf8'); // Soft indigo
+            g.addColorStop(0.65, '#f472b6'); // Warm rose
+            g.addColorStop(1, '#fde047'); // Bright golden yellow
             return g;
         });
-        this.ctx.fillStyle = skyGrad;
+        this.ctx.fillStyle = skyGradient;
         this.ctx.fillRect(0, 0, w, h);
 
-        // 2. Bright Golden Sun with Rotating Radiant Rays ☀️
-        const sunX = w * 0.86;
-        const sunY = 72;
-
-        // Rotating Sunbeams
-        this.ctx.save();
-        this.ctx.translate(sunX, sunY);
-        this.ctx.rotate(time * 0.15);
-        this.ctx.fillStyle = 'rgba(254, 240, 138, 0.18)';
-        for (let r = 0; r < 8; r++) {
-            this.ctx.rotate(Math.PI / 4);
+        // 2. Soft Drifting Clouds
+        const drawCloud = (cx, cy, scale, alpha) => {
+            this.ctx.save();
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
             this.ctx.beginPath();
-            this.ctx.moveTo(0, 0);
-            this.ctx.lineTo(-14, 90);
-            this.ctx.lineTo(14, 90);
-            this.ctx.closePath();
+            this.ctx.arc(cx, cy, 22 * scale, 0, Math.PI * 2);
+            this.ctx.arc(cx + 20 * scale, cy - 14 * scale, 28 * scale, 0, Math.PI * 2);
+            this.ctx.arc(cx + 46 * scale, cy - 10 * scale, 24 * scale, 0, Math.PI * 2);
+            this.ctx.arc(cx + 64 * scale, cy, 20 * scale, 0, Math.PI * 2);
             this.ctx.fill();
-        }
-        this.ctx.restore();
+            this.ctx.restore();
+        };
 
-        // Sun Glow Halo
-        const sunGlow = this.getCachedGradient('menu_sun_glow', (ctx) => {
-            const g = ctx.createRadialGradient(0, 0, 10, 0, 0, 65);
-            g.addColorStop(0, 'rgba(255, 235, 59, 0.9)');
-            g.addColorStop(0.5, 'rgba(255, 214, 0, 0.35)');
-            g.addColorStop(1, 'rgba(255, 214, 0, 0)');
+        // Distant high clouds
+        for (let i = 0; i < 4; i++) {
+            let cx = (i * 260 + time * 10) % (w + 200) - 100;
+            let cy = 45 + (i % 2) * 35;
+            drawCloud(cx, cy, 0.9, 0.45);
+        }
+        // Closer mid clouds
+        for (let i = 0; i < 3; i++) {
+            let cx = (i * 380 + time * 18) % (w + 220) - 110;
+            let cy = 90 + (i % 3) * 25;
+            drawCloud(cx, cy, 1.2, 0.65);
+        }
+
+        // 3. Glowing Radiant Sun
+        const sunX = w * 0.82;
+        const sunY = h * 0.32 + Math.sin(time * 0.6) * 8;
+        
+        const sunGlow = this.getCachedGradient('menu_sun_glow_v2', (ctx) => {
+            const g = ctx.createRadialGradient(0, 0, 10, 0, 0, 110);
+            g.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+            g.addColorStop(0.3, 'rgba(254, 240, 138, 0.7)');
+            g.addColorStop(0.7, 'rgba(251, 146, 60, 0.25)');
+            g.addColorStop(1, 'rgba(251, 146, 60, 0)');
             return g;
         });
         this.ctx.save();
         this.ctx.translate(sunX, sunY);
         this.ctx.fillStyle = sunGlow;
         this.ctx.beginPath();
-        this.ctx.arc(0, 0, 65, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, 110, 0, Math.PI * 2);
         this.ctx.fill();
-        // Golden Sun Core
-        this.ctx.fillStyle = '#fde047';
+        
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.beginPath();
-        this.ctx.arc(0, 0, 36, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, 32, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.restore();
 
-        // 3. Layered Parallax Clouds ☁️
-        // Distant slow clouds
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-        for (let i = 0; i < 4; i++) {
-            let cx = (i * 240 + time * 12) % (w + 140) - 70;
-            let cy = 35 + (i % 2) * 25;
-            this.ctx.beginPath();
-            this.ctx.arc(cx, cy, 18, 0, Math.PI * 2);
-            this.ctx.arc(cx + 18, cy - 8, 22, 0, Math.PI * 2);
-            this.ctx.arc(cx + 38, cy, 18, 0, Math.PI * 2);
-            this.ctx.fill();
-        }
-        // Near fluffy clouds
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-        for (let i = 0; i < 5; i++) {
-            let cx = (i * 190 + time * 24) % (w + 130) - 65;
-            let cy = 55 + (i % 3) * 26;
-            this.ctx.beginPath();
-            this.ctx.arc(cx, cy, 22, 0, Math.PI * 2);
-            this.ctx.arc(cx + 22, cy - 10, 28, 0, Math.PI * 2);
-            this.ctx.arc(cx + 48, cy, 22, 0, Math.PI * 2);
-            this.ctx.fill();
-        }
-
-        // 4. Distant Azure Mountains 🏔️
-        this.ctx.fillStyle = '#38bdf8';
+        // 4. Distant Pastel Mountain Ridges
+        this.ctx.fillStyle = '#a78bfa';
         this.ctx.beginPath();
         this.ctx.moveTo(0, h);
-        for (let x = 0; x <= w; x += 30) {
-            const my = h - 160 + Math.sin(x * 0.004) * 45 + Math.cos(x * 0.008) * 25;
+        for (let x = 0; x <= w; x += 25) {
+            const my = h - 210 + Math.sin((x + time * 6) * 0.006) * 50 + Math.cos((x + time * 6) * 0.014) * 25;
             this.ctx.lineTo(x, my);
         }
         this.ctx.lineTo(w, h);
         this.ctx.fill();
 
-        // 5. Parallax Mid Rolling Hills (#059669)
-        this.ctx.fillStyle = '#059669';
+        // Warm Horizon Haze
+        const haze = this.getCachedGradient('menu_haze_v2', (ctx) => {
+            const g = ctx.createLinearGradient(0, h - 230, 0, h);
+            g.addColorStop(0, 'rgba(253, 224, 71, 0)');
+            g.addColorStop(1, 'rgba(253, 224, 71, 0.35)');
+            return g;
+        });
+        this.ctx.fillStyle = haze;
+        this.ctx.fillRect(0, h - 230, w, 230);
+
+        // 5. Mid-layer Lush Rolling Green Hills
+        this.ctx.fillStyle = '#059669'; // Emerald hill base
         this.ctx.beginPath();
         this.ctx.moveTo(0, h);
         for (let x = 0; x <= w; x += 15) {
-            const hy = h - 118 + Math.sin(time * 0.4 + x * 0.006) * 26;
+            const hy = h - 135 + Math.sin((x + time * 14) * 0.007 + 1.2) * 35;
             this.ctx.lineTo(x, hy);
         }
         this.ctx.lineTo(w, h);
         this.ctx.fill();
 
-        // 6. Parallax Front Lush Green Meadow (#10b981)
-        this.ctx.fillStyle = '#10b981';
+        // Mid-layer Cute Round Stylized Trees / Bushes
+        for (let i = 0; i < 7; i++) {
+            const bx = (i * 180 + time * 14) % (w + 100) - 50;
+            const by = h - 135 + Math.sin((bx + time * 14) * 0.007 + 1.2) * 35;
+            
+            // Soft tree trunk
+            this.ctx.fillStyle = '#78350f';
+            this.ctx.fillRect(bx - 3, by - 6, 6, 12);
+            
+            // Lush round foliage
+            this.ctx.fillStyle = '#047857';
+            this.ctx.beginPath();
+            this.ctx.arc(bx, by - 16, 18, 0, Math.PI * 2);
+            this.ctx.arc(bx - 10, by - 10, 14, 0, Math.PI * 2);
+            this.ctx.arc(bx + 10, by - 10, 14, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Highlight on foliage
+            this.ctx.fillStyle = '#10b981';
+            this.ctx.beginPath();
+            this.ctx.arc(bx - 3, by - 19, 10, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+
+        // 6. Foreground Smooth Lush Meadow
+        this.ctx.fillStyle = '#10b981'; // Vibrant emerald
         this.ctx.beginPath();
         this.ctx.moveTo(0, h);
-        for (let x = 0; x <= w; x += 15) {
-            const hy = h - 75 + Math.sin(time * 0.8 + x * 0.01 + 1.5) * 18;
-            this.ctx.lineTo(x, hy);
+        for (let x = 0; x <= w; x += 10) {
+            const gy = h - 70 + Math.sin((x + time * 28) * 0.009 + 2.5) * 16;
+            this.ctx.lineTo(x, gy);
         }
         this.ctx.lineTo(w, h);
         this.ctx.fill();
 
-        // 7. Ground-Integrated Blooming Flowers & Grass Tufts 🌸🌼🌷
-        const flowerPalette = [
-            { petal: '#f43f5e', center: '#fde047', type: 'rose' },
-            { petal: '#ffffff', center: '#eab308', type: 'daisy' },
-            { petal: '#a855f7', center: '#facc15', type: 'violet' },
-            { petal: '#fb923c', center: '#713f12', type: 'sunflower' },
-            { petal: '#ec4899', center: '#fef08a', type: 'tulip' }
+        // Bright Grass Top Trim
+        this.ctx.strokeStyle = '#34d399';
+        this.ctx.lineWidth = 4;
+        this.ctx.beginPath();
+        for (let x = 0; x <= w; x += 10) {
+            const gy = h - 70 + Math.sin((x + time * 28) * 0.009 + 2.5) * 16;
+            if (x === 0) this.ctx.moveTo(x, gy);
+            else this.ctx.lineTo(x, gy);
+        }
+        this.ctx.stroke();
+
+        // Cute Foreground Bush Clusters & Blooming Flowers
+        for (let i = 0; i < 12; i++) {
+            const fx = (i * 110 + time * 28) % (w + 100) - 50;
+            const fy = h - 70 + Math.sin((fx + time * 28) * 0.009 + 2.5) * 16;
+            
+            // Little round berry bush
+            if (i % 2 === 0) {
+                this.ctx.fillStyle = '#059669';
+                this.ctx.beginPath();
+                this.ctx.arc(fx, fy - 4, 11, Math.PI * 0.9, Math.PI * 2.1);
+                this.ctx.fill();
+                this.ctx.fillStyle = '#34d399';
+                this.ctx.beginPath();
+                this.ctx.arc(fx - 2, fy - 7, 6, 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Little red berries
+                this.ctx.fillStyle = '#f43f5e';
+                this.ctx.beginPath();
+                this.ctx.arc(fx - 4, fy - 5, 2.2, 0, Math.PI * 2);
+                this.ctx.arc(fx + 3, fy - 6, 2.2, 0, Math.PI * 2);
+                this.ctx.arc(fx, fy - 9, 2.2, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else {
+                // Pretty animated swaying flower (Daisy / Tulip)
+                const sway = Math.sin(time * 3 + i) * 3;
+                this.ctx.strokeStyle = '#047857';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.moveTo(fx, fy);
+                this.ctx.quadraticCurveTo(fx + sway * 0.5, fy - 9, fx + sway, fy - 16);
+                this.ctx.stroke();
+
+                // Petals
+                const flowerColors = ['#f43f5e', '#fbbf24', '#ffffff', '#ec4899', '#a855f7'];
+                const fCol = flowerColors[i % flowerColors.length];
+                this.ctx.fillStyle = fCol;
+                for (let p = 0; p < 5; p++) {
+                    const ang = (p * Math.PI * 2) / 5;
+                    this.ctx.beginPath();
+                    this.ctx.arc(fx + sway + Math.cos(ang) * 4.5, fy - 16 + Math.sin(ang) * 4.5, 3.2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                // Center
+                this.ctx.fillStyle = '#fde047';
+                this.ctx.beginPath();
+                this.ctx.arc(fx + sway, fy - 16, 3, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+        }
+
+        // 7. Ambient Glowing Magic Spores / Fireflies
+        this.ctx.save();
+        for (let sp = 0; sp < 14; sp++) {
+            const spX = (sp * 80 + time * (16 + sp * 2)) % (w + 40) - 20;
+            const spY = h - 110 + Math.sin(time * 2.5 + sp) * 35 - ((time * 12 + sp * 18) % 130);
+            const spAlpha = 0.35 + (Math.sin(time * 4 + sp) * 0.5 + 0.5) * 0.55;
+            
+            this.ctx.fillStyle = sp % 2 === 0 ? `rgba(253, 224, 71, ${spAlpha})` : `rgba(167, 243, 208, ${spAlpha})`;
+            this.ctx.shadowColor = sp % 2 === 0 ? '#fde047' : '#6ee7b7';
+            this.ctx.shadowBlur = 8;
+            
+            this.ctx.beginPath();
+            this.ctx.arc(spX, spY, 2, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+
+        // 8. Main Characters Running & Bouncing across the Meadow!
+        // We render Fluffy Bunny (the Hero with Cape), Foxy, and Kitty!
+        const heroList = [
+            { type: 'bunny', bodyColor: '#ffffff', earColor: '#ff80ab', cape: true, offset: 0, speed: 50 },
+            { type: 'fox', bodyColor: '#ff5722', earColor: '#d84315', cape: true, offset: 110, speed: 50 },
+            { type: 'kitty', bodyColor: '#ffa726', earColor: '#ffb300', cape: false, offset: 220, speed: 50 }
         ];
 
-        for (let fl = 0; fl < 16; fl++) {
-            const flX = 25 + fl * 60;
-            const groundY = h - 75 + Math.sin(time * 0.8 + flX * 0.01 + 1.5) * 18;
-            const fInfo = flowerPalette[fl % flowerPalette.length];
-            const stemH = 14 + (fl % 3) * 4;
-            const sway = Math.sin(time * 2.2 + fl * 0.8) * 3;
-
-            this.ctx.save();
+        heroList.forEach((hero, index) => {
+            let hx = (w + 120 - (time * hero.speed + hero.offset) % (w + 240));
+            const groundY = h - 70 + Math.sin((hx + time * 28) * 0.009 + 2.5) * 16;
             
-            // Grass tuft at the base
-            this.ctx.strokeStyle = '#059669';
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
-            this.ctx.moveTo(flX - 4, groundY + 2);
-            this.ctx.lineTo(flX - 8, groundY - 7);
-            this.ctx.moveTo(flX + 4, groundY + 2);
-            this.ctx.lineTo(flX + 8, groundY - 7);
-            this.ctx.stroke();
+            // Cute running hop animation
+            const hopTime = time * 12 + index * 1.5;
+            const bounce = Math.abs(Math.sin(hopTime));
+            const squash = 1 - bounce * 0.18;
+            const stretch = 1 + bounce * 0.18;
+            const hy = groundY - 14 - (bounce * 28);
+            
+            this.ctx.save();
+            this.ctx.translate(hx, hy);
+            this.ctx.scale(squash, stretch);
 
-            // Stem rising from the ground
-            this.ctx.strokeStyle = '#15803d';
-            this.ctx.lineWidth = 2.2;
-            this.ctx.beginPath();
-            this.ctx.moveTo(flX, groundY + 1);
-            this.ctx.quadraticCurveTo(flX + sway * 0.5, groundY - stemH * 0.5, flX + sway, groundY - stemH);
-            this.ctx.stroke();
+            const isRight = false; // running leftwards across screen
+            const tMs = Date.now();
 
-            // Little green leaves
-            this.ctx.fillStyle = '#22c55e';
-            this.ctx.beginPath();
-            this.ctx.ellipse(flX + sway * 0.4 - 4, groundY - stemH * 0.45, 4, 2, -Math.PI / 4, 0, Math.PI * 2);
-            this.ctx.fill();
-            this.ctx.beginPath();
-            this.ctx.ellipse(flX + sway * 0.4 + 4, groundY - stemH * 0.45, 4, 2, Math.PI * 4, 0, Math.PI * 2);
-            this.ctx.fill();
-
-            // Flower Head
-            const headX = flX + sway;
-            const headY = groundY - stemH;
-
-            // Petals
-            this.ctx.fillStyle = fInfo.petal;
-            for (let p = 0; p < 5; p++) {
-                const angle = (p * Math.PI * 2) / 5 + time * 0.5;
-                const px = headX + Math.cos(angle) * 5.5;
-                const py = headY + Math.sin(angle) * 5.5;
+            // Cape for Bunny and Fox
+            if (hero.cape) {
+                const capeWave = Math.sin(tMs * 0.018 + index) * 6;
+                this.ctx.fillStyle = '#ff1744';
                 this.ctx.beginPath();
-                this.ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+                this.ctx.moveTo(6, -2);
+                this.ctx.lineTo(24, 6 + capeWave);
+                this.ctx.lineTo(26, -6 + capeWave);
+                this.ctx.lineTo(6, -8);
+                this.ctx.closePath();
                 this.ctx.fill();
             }
 
-            // Flower Center
-            this.ctx.fillStyle = fInfo.center;
+            // Tails for Fox and Kitty
+            if (hero.type === 'fox') {
+                const tailWave = Math.sin(tMs * 0.015) * 5;
+                this.ctx.fillStyle = '#ff5722';
+                this.ctx.beginPath();
+                this.ctx.ellipse(14, 4 + tailWave, 10, 6, 0.4, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.ellipse(20, 4 + tailWave, 5, 4, 0.4, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'kitty') {
+                const tailWave = Math.sin(tMs * 0.018) * 6;
+                this.ctx.strokeStyle = '#ffa726';
+                this.ctx.lineWidth = 4;
+                this.ctx.lineCap = 'round';
+                this.ctx.beginPath();
+                this.ctx.moveTo(10, 4);
+                this.ctx.quadraticCurveTo(18, -2 + tailWave, 16, -10 + tailWave);
+                this.ctx.stroke();
+            }
+
+            // Ears
+            if (hero.type === 'bunny') {
+                // Long Cute Bunny Ears
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.ellipse(-4, -22, 5, 13, -0.15, 0, Math.PI * 2);
+                this.ctx.ellipse(5, -23, 5, 14, 0.12, 0, Math.PI * 2);
+                this.ctx.fill();
+                // Pink inner ear
+                this.ctx.fillStyle = '#ff80ab';
+                this.ctx.beginPath();
+                this.ctx.ellipse(-4, -22, 2.8, 9, -0.15, 0, Math.PI * 2);
+                this.ctx.ellipse(5, -23, 2.8, 10, 0.12, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'fox') {
+                this.ctx.fillStyle = '#ff5722';
+                this.ctx.beginPath();
+                this.ctx.moveTo(-12, -6); this.ctx.lineTo(-10, -22); this.ctx.lineTo(-2, -10); this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.moveTo(2, -10); this.ctx.lineTo(10, -22); this.ctx.lineTo(12, -6); this.ctx.fill();
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.moveTo(-9, -9); this.ctx.lineTo(-8, -16); this.ctx.lineTo(-4, -10); this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.moveTo(4, -10); this.ctx.lineTo(8, -16); this.ctx.lineTo(9, -9); this.ctx.fill();
+            } else if (hero.type === 'kitty') {
+                this.ctx.fillStyle = '#ffa726';
+                this.ctx.beginPath();
+                this.ctx.moveTo(-12, -6); this.ctx.lineTo(-10, -20); this.ctx.lineTo(-2, -10); this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.moveTo(2, -10); this.ctx.lineTo(10, -20); this.ctx.lineTo(12, -6); this.ctx.fill();
+                this.ctx.fillStyle = '#ff80ab';
+                this.ctx.beginPath();
+                this.ctx.moveTo(-10, -8); this.ctx.lineTo(-9, -16); this.ctx.lineTo(-4, -10); this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.moveTo(4, -10); this.ctx.lineTo(9, -16); this.ctx.lineTo(10, -8); this.ctx.fill();
+            }
+
+            // Main Body Round
+            this.ctx.fillStyle = hero.bodyColor;
             this.ctx.beginPath();
-            this.ctx.arc(headX, headY, 3.5, 0, Math.PI * 2);
+            this.ctx.arc(0, 0, 14.5, 0, Math.PI * 2);
             this.ctx.fill();
 
-            this.ctx.restore();
-        }
+            // Muzzle / Tummy details
+            if (hero.type === 'bunny') {
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.ellipse(0, 4, 8.5, 7.5, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'fox') {
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.ellipse(-5, 4, 5, 5, 0, 0, Math.PI * 2);
+                this.ctx.ellipse(5, 4, 5, 5, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'kitty') {
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.ellipse(0, 4, 7, 5, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
 
-        // 8. Animated Butterflies 🦋 Fluttering Playfully
-        for (let b = 0; b < 3; b++) {
-            const bx = (b * 280 + time * 38) % (w + 60) - 30;
-            const by = h - 110 + Math.sin(time * 3 + b * 2) * 22;
-            const flap = Math.sin(time * 12 + b * 3) * 0.7;
-            this.ctx.save();
-            this.ctx.translate(bx, by);
-            this.ctx.fillStyle = b === 0 ? '#ff4081' : (b === 1 ? '#00e5ff' : '#ffd600');
-            // Left Wing
+            // Cute Pink Blush Cheeks
+            this.ctx.fillStyle = 'rgba(255, 64, 129, 0.45)';
             this.ctx.beginPath();
-            this.ctx.ellipse(-3, 0, 4 * Math.abs(flap), 6, -0.3, 0, Math.PI * 2);
+            this.ctx.arc(-8, 3.5, 3, 0, Math.PI * 2);
+            this.ctx.arc(8, 3.5, 3, 0, Math.PI * 2);
             this.ctx.fill();
-            // Right Wing
-            this.ctx.beginPath();
-            this.ctx.ellipse(3, 0, 4 * Math.abs(flap), 6, 0.3, 0, Math.PI * 2);
-            this.ctx.fill();
-            // Body
+
+            // Expressive Big Eyes (Looking left)
             this.ctx.fillStyle = '#212121';
             this.ctx.beginPath();
-            this.ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
+            this.ctx.ellipse(-5, -2, 3.2, 4.2, 0, 0, Math.PI * 2);
+            this.ctx.ellipse(4, -2, 3.2, 4.2, 0, 0, Math.PI * 2);
             this.ctx.fill();
+
+            // Eye Highlights
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.beginPath();
+            this.ctx.arc(-6, -3.5, 1.4, 0, Math.PI * 2);
+            this.ctx.arc(3, -3.5, 1.4, 0, Math.PI * 2);
+            this.ctx.arc(-4, -0.8, 0.8, 0, Math.PI * 2);
+            this.ctx.arc(5, -0.8, 0.8, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Cute Nose
+            this.ctx.fillStyle = hero.type === 'fox' ? '#212121' : '#ff4081';
+            this.ctx.beginPath();
+            this.ctx.ellipse(-1, 2, 1.8, 1.3, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Running Cute Feet!
+            const footColor = (hero.type === 'fox') ? '#212121' : hero.bodyColor;
+            this.ctx.fillStyle = footColor;
+            
+            const footCycle = Math.sin(tMs * 0.02 + index);
+            const lFootY = 12.5 + footCycle * 3;
+            const rFootY = 12.5 - footCycle * 3;
+            const lFootX = -6 - footCycle * 2;
+            const rFootX = 6 + footCycle * 2;
+
+            this.ctx.beginPath();
+            this.ctx.ellipse(lFootX, lFootY, 4.5, 3, 0, 0, Math.PI * 2);
+            this.ctx.ellipse(rFootX, rFootY, 4.5, 3, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Outline for feet if white
+            if (footColor === '#ffffff') {
+                this.ctx.strokeStyle = '#e0e0e0';
+                this.ctx.lineWidth = 1;
+                this.ctx.stroke();
+            }
+
             this.ctx.restore();
-        }
+        });
 
-        // 9. Animated Equipped Hero Bouncing Happily on the Meadow!
-        const heroX = w * 0.14;
-        const jumpY = Math.abs(Math.sin(time * 3.5)) * 26;
-        const groundY = h - 75 + Math.sin(time * 0.8 + heroX * 0.01 + 1.5) * 18;
-        const heroY = groundY - 20 - jumpY;
 
-        // Shadow on ground
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
-        this.ctx.beginPath();
-        this.ctx.ellipse(heroX, groundY + 4, 18 - jumpY * 0.2, 5.5, 0, 0, Math.PI * 2);
-        this.ctx.fill();
 
-        // Render the equipped character using Player.draw!
-        if (this.player) {
-            const origX = this.player.x, origY = this.player.y, origFacing = this.player.facing, origSkin = this.player.currentSkinId;
-            this.player.x = heroX - this.player.width / 2;
-            this.player.y = heroY - this.player.height / 2;
-            this.player.facing = 'right';
-            this.player.currentSkinId = this.progress.equippedSkin || 'bunny';
-            this.player.draw(this.ctx, { x: 0, y: 0 });
-            this.player.x = origX;
-            this.player.y = origY;
-            this.player.facing = origFacing;
-            this.player.currentSkinId = origSkin;
-        }
+
+
+
     }
 
     loop(timestamp) {
@@ -1306,6 +1849,8 @@ class Game {
             }
 
             this.updateHUD();
+            this.draw();
+        } else if (this.state === 'PAUSED' || this.state === 'WIN') {
             this.draw();
         } else {
             this.drawMenuBackground();
@@ -1355,12 +1900,24 @@ class Game {
             this.switches,
             () => this.handleDie(),
             () => this.handleWin(),
-            (fruit) => {
-                this.fruitsCollected++;
-                this.updateHUD();
+            (item) => {
+                if (item.type === 'powerup_magnet') {
+                    this.activatePowerUp('powerup_magnet', 10);
+                } else if (item.type === 'powerup_shield') {
+                    this.activatePowerUp('powerup_shield', 30);
+                } else if (item.type === 'powerup_boost') {
+                    this.activatePowerUp('powerup_boost', 8);
+                } else {
+                    this.fruitsCollected++;
+                    this.score = (this.score || 0) + 100;
+                    this.updateHUD();
+                    this.popHUDItem('hud-fruits');
+                }
             },
             (goldenKey) => {
+                this.score = (this.score || 0) + 250;
                 this.updateHUD();
+                this.popHUDItem('hud-star-key');
                 const lData = I18N[this.lang] || I18N.tr;
                 this.showPikoDialogue(lData.keyFoundMsg);
             },
@@ -1368,8 +1925,32 @@ class Game {
             () => {
                 const lData = I18N[this.lang] || I18N.tr;
                 this.showPikoDialogue(lData.doorLockedMsg);
-            }
+            },
+            this.floatingTexts,
+            (intensity, duration) => this.triggerScreenShake(intensity, duration),
+            this.boss
         );
+
+        // Update Boss
+        if (this.boss && this.boss.y < 1500) {
+            this.boss.update(this.platforms, this.player, this.particles, (i, d) => this.triggerScreenShake(i, d));
+            this.updateBossHUD();
+        }
+
+        // Update Active Power-up Timer
+        this.updatePowerUp(this.fixedStep);
+
+        // Update Floating Texts
+        for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+            this.floatingTexts[i].update();
+            if (this.floatingTexts[i].life <= 0) this.floatingTexts.splice(i, 1);
+        }
+
+        // Update Confetti Particles
+        for (let i = this.confettiParticles.length - 1; i >= 0; i--) {
+            this.confettiParticles[i].update();
+            if (this.confettiParticles[i].life <= 0) this.confettiParticles.splice(i, 1);
+        }
 
         for (let i = this.particles.length - 1; i >= 0; i--) {
             this.particles[i].update();
@@ -1391,7 +1972,8 @@ class Game {
     }
 
     draw() {
-        const theme = CHAPTERS[this.currentChapterIdx]?.theme || CHAPTERS[0].theme;
+        const currentLevel = CHAPTERS[this.currentChapterIdx]?.levels[this.currentLevelIdx];
+        const theme = currentLevel?.theme || CHAPTERS[this.currentChapterIdx]?.theme || CHAPTERS[0].theme;
 
         // Rich Atmospheric Sky Gradient (Cached per theme)
         const themeKey = theme.name || 'default';
@@ -1403,32 +1985,76 @@ class Game {
         });
         this.ctx.fillStyle = skyGrad;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        if (this.state === 'PAUSED') {
+            this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
 
-        // Sun / Moon Glow
-        const isNight = theme.name === "Starry Night";
-        const orbColor = isNight ? "#e0e7ff" : "#ffeb3b";
-        const glowColor = isNight ? "rgba(224, 231, 255, 0.4)" : "rgba(255, 235, 59, 0.4)";
+        // Celestial Orb & Weather per Theme World
+        const isVolcano = theme.name === "Magma Caverns";
+        const isSpectral = theme.name === "Spectral Void";
+        const isCyber = theme.name === "Cyber Metropolis";
+        const isCosmic = theme.name === "Cosmic Galaxy";
+
+        let orbColor = "#ffeb3b";
+        let glowColor = "rgba(255, 235, 59, 0.35)";
+        let cloudAlpha = 0.65;
+
+        if (isVolcano) {
+            orbColor = "#ff5722";
+            glowColor = "rgba(255, 87, 34, 0.4)";
+            cloudAlpha = 0.25;
+        } else if (isSpectral) {
+            orbColor = "#00e5ff";
+            glowColor = "rgba(0, 229, 255, 0.35)";
+            cloudAlpha = 0.30;
+        } else if (isCyber) {
+            orbColor = "#00f5d4";
+            glowColor = "rgba(0, 245, 212, 0.35)";
+            cloudAlpha = 0.20;
+        } else if (isCosmic) {
+            orbColor = "#ffd700";
+            glowColor = "rgba(255, 215, 0, 0.45)";
+            cloudAlpha = 0.15;
+        }
 
         this.ctx.save();
         this.ctx.shadowColor = glowColor;
-        this.ctx.shadowBlur = 30;
+        this.ctx.shadowBlur = 32;
         this.ctx.fillStyle = orbColor;
         this.ctx.beginPath();
-        this.ctx.arc(850 - this.camera.x * 0.05, 85, 45, 0, Math.PI * 2);
+        this.ctx.arc(850 - this.camera.x * 0.04, 85, 42, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.restore();
 
-        // Atmospheric Clouds & Parallax Elements
-        this.ctx.fillStyle = isNight ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.65)";
-        for (let i = 0; i < 14; i++) {
-            let cx = (i * 220 - this.camera.x * 0.15) % 3200;
-            if (cx < -120) cx += 3200;
-            let cy = 55 + (i % 4) * 32;
-            this.ctx.beginPath();
-            this.ctx.arc(cx, cy, 24, 0, Math.PI * 2);
-            this.ctx.arc(cx + 25, cy - 12, 32, 0, Math.PI * 2);
-            this.ctx.arc(cx + 52, cy, 24, 0, Math.PI * 2);
-            this.ctx.fill();
+        // Atmospheric Weather & Clouds / Stars
+        if (isCosmic || isSpectral) {
+            // Shimmering Twinkle Stars in Space/Void
+            this.ctx.save();
+            this.ctx.fillStyle = "#ffffff";
+            const time = Date.now();
+            for (let s = 0; s < 30; s++) {
+                const sx = (s * 97 - this.camera.x * 0.08) % 2400;
+                const sy = 25 + (s * 37) % 280;
+                const sSize = 1.2 + Math.sin(time * 0.003 + s) * 0.7;
+                this.ctx.beginPath();
+                this.ctx.arc(sx < 0 ? sx + 2400 : sx, sy, Math.max(0.5, sSize), 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+            this.ctx.restore();
+        } else {
+            // Soft atmospheric clouds
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${cloudAlpha})`;
+            for (let i = 0; i < 14; i++) {
+                let cx = (i * 220 - this.camera.x * 0.15) % 3200;
+                if (cx < -120) cx += 3200;
+                let cy = 55 + (i % 4) * 32;
+                this.ctx.beginPath();
+                this.ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+                this.ctx.arc(cx + 25, cy - 12, 32, 0, Math.PI * 2);
+                this.ctx.arc(cx + 52, cy, 24, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
         }
 
         // Bottom Parallax Rolling Terrain Hills ($y = 400 - 540$)
@@ -1563,13 +2189,18 @@ class Game {
             this.ctx.strokeStyle = '#ffd600';
             this.ctx.lineWidth = 1.5;
 
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, h.height);
-            this.ctx.lineTo(h.width / 2, 0);
-            this.ctx.lineTo(h.width, h.height);
-            this.ctx.closePath();
-            this.ctx.fill();
-            this.ctx.stroke();
+            const singleSpikeW = 22;
+            const count = Math.max(1, Math.round(h.width / singleSpikeW));
+            for (let s = 0; s < count; s++) {
+                const sx = s * singleSpikeW;
+                this.ctx.beginPath();
+                this.ctx.moveTo(sx, h.height);
+                this.ctx.lineTo(sx + singleSpikeW / 2, 0);
+                this.ctx.lineTo(sx + singleSpikeW, h.height);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+            }
             this.ctx.restore();
         });
 
@@ -1601,10 +2232,25 @@ class Game {
         // Portals 🔮 🌀 (Cosmic Glowing Portals)
         this.portals.forEach(p => {
             this.ctx.save();
+            
+            if (!p.entry && !p.entrance) {
+                // Boss Portal
+                const enX = p.x - this.camera.x + 25;
+                const enY = p.y - this.camera.y + 35;
+                this.ctx.shadowColor = (this.boss && !this.boss.isDead) ? '#ff1744' : '#76ff03';
+                this.ctx.shadowBlur = 25;
+                this.ctx.fillStyle = (this.boss && !this.boss.isDead) ? '#b71c1c' : '#64dd17';
+                this.ctx.beginPath();
+                this.ctx.ellipse(enX, enY, 20, 35, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+                return;
+            }
 
             // Entrance - Magenta Cosmic Swirl
-            const enX = p.entrance.x - this.camera.x + 15;
-            const enY = p.entrance.y - this.camera.y + 22;
+            const entryObj = p.entry || p.entrance;
+            const enX = entryObj.x - this.camera.x + 15;
+            const enY = entryObj.y - this.camera.y + 22;
             this.ctx.shadowColor = '#ff007f';
             this.ctx.shadowBlur = 20;
             this.ctx.fillStyle = '#d5006d';
@@ -1810,33 +2456,33 @@ class Game {
                 this.ctx.translate(c.x - this.camera.x + 15, platY - this.camera.y);
 
                 // Portal Aura Glow
-                this.ctx.shadowColor = isUnlocked ? '#00f0ff' : '#ffab00';
+                this.ctx.shadowColor = isUnlocked ? (theme.platformBorder || '#00f0ff') : '#ffab00';
                 this.ctx.shadowBlur = isUnlocked ? 24 : 12;
 
-                // 1. Royal Stone Pillars Arch Frame (Amethyst & Gold)
-                this.ctx.fillStyle = '#1e1b4b'; // Royal Midnight Stone
+                // 1. Theme-Fitted Pillars Arch Frame
+                this.ctx.fillStyle = theme.platformColor || '#1e1b4b';
                 this.ctx.beginPath();
                 this.ctx.roundRect(-27, -80, 54, 80, [27, 27, 0, 0]);
                 this.ctx.fill();
 
-                // Ornate Golden Arch Border
-                this.ctx.strokeStyle = '#ffd700';
+                // Ornate Theme Arch Border
+                this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
                 this.ctx.lineWidth = 3.5;
                 this.ctx.stroke();
 
-                // Inner Arch Gold Inlay
-                this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.4)';
+                // Inner Arch Inlay
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
                 this.ctx.lineWidth = 1.5;
                 this.ctx.beginPath();
                 this.ctx.roundRect(-23, -76, 46, 76, [23, 23, 0, 0]);
                 this.ctx.stroke();
 
-                // 2. Apex Keystone Gem (Pulsing Star Crystal 💎)
+                // 2. Apex Keystone Gem (Pulsing Theme Crystal 💎)
                 this.ctx.save();
-                const gemGlow = isUnlocked ? '#00f0ff' : '#ffd600';
+                const gemGlow = isUnlocked ? (theme.platformBorder || '#00f0ff') : '#ffd600';
                 this.ctx.shadowColor = gemGlow;
-                this.ctx.shadowBlur = 12;
-                this.ctx.fillStyle = isUnlocked ? '#00e5ff' : '#ff9100';
+                this.ctx.shadowBlur = 14;
+                this.ctx.fillStyle = isUnlocked ? (theme.slimeColor?.start || '#00e5ff') : '#ff9100';
                 this.ctx.beginPath();
                 // 4-point Diamond Crystal at Top Apex
                 this.ctx.moveTo(0, -84);
@@ -1851,13 +2497,13 @@ class Game {
                 this.ctx.fill();
                 this.ctx.restore();
 
-                // 3. Inner Cosmic Portal Void
-                const doorGrad = this.getCachedGradient('magical_door_portal_grad', (ctx) => {
+                // 3. Inner Theme Portal Void
+                const portalGradKey = 'portal_void_' + (theme.name || 'default');
+                const doorGrad = this.getCachedGradient(portalGradKey, (ctx) => {
                     const g = ctx.createLinearGradient(0, -74, 0, 0);
-                    g.addColorStop(0, '#00f0ff');
-                    g.addColorStop(0.4, '#e040fb');
-                    g.addColorStop(0.8, '#7c4dff');
-                    g.addColorStop(1, '#1a0033');
+                    g.addColorStop(0, theme.skyGradient ? theme.skyGradient[0] : '#00f0ff');
+                    g.addColorStop(0.5, theme.platformBorder || '#e040fb');
+                    g.addColorStop(1, '#050014');
                     return g;
                 });
                 this.ctx.fillStyle = doorGrad;
@@ -1874,13 +2520,14 @@ class Game {
 
                     // Swirling Nebula Rings
                     const rot = time * 0.003;
-                    this.ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+                    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
                     this.ctx.lineWidth = 2;
                     this.ctx.beginPath();
                     this.ctx.ellipse(0, -36, 14, 22, rot, 0, Math.PI * 2);
                     this.ctx.stroke();
 
-                    this.ctx.strokeStyle = 'rgba(224, 64, 251, 0.45)';
+                    this.ctx.strokeStyle = theme.platformBorder || '#e040fb';
+                    this.ctx.lineWidth = 1.5;
                     this.ctx.beginPath();
                     this.ctx.ellipse(0, -36, 10, 16, -rot * 1.3, 0, Math.PI * 2);
                     this.ctx.stroke();
@@ -1912,34 +2559,34 @@ class Game {
 
                 const slideDist = 20 * openProgress; // slides up to 20px left and right
 
-                // Midnight Indigo Fantasy Panels with Golden Filigree
-                this.ctx.fillStyle = '#0f172a';
+                // Fantasy Panels with Theme Filigree
+                this.ctx.fillStyle = theme.platformColor || '#0f172a';
                 
                 // Left Panel
                 this.ctx.beginPath();
                 this.ctx.roundRect(-20 - slideDist, -73, 20, 73, [20, 0, 0, 0]);
                 this.ctx.fill();
-                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
                 this.ctx.lineWidth = 1.5;
                 this.ctx.stroke();
 
                 // Left Filigree Arc
-                this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.5)';
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
                 this.ctx.beginPath();
                 this.ctx.arc(-10 - slideDist, -36, 6, 0, Math.PI * 2);
                 this.ctx.stroke();
                 
                 // Right Panel
-                this.ctx.fillStyle = '#0f172a';
+                this.ctx.fillStyle = theme.platformColor || '#0f172a';
                 this.ctx.beginPath();
                 this.ctx.roundRect(0 + slideDist, -73, 20, 73, [0, 20, 0, 0]);
                 this.ctx.fill();
-                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
                 this.ctx.lineWidth = 1.5;
                 this.ctx.stroke();
 
                 // Right Filigree Arc
-                this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.5)';
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
                 this.ctx.beginPath();
                 this.ctx.arc(10 + slideDist, -36, 6, 0, Math.PI * 2);
                 this.ctx.stroke();
@@ -2005,6 +2652,50 @@ class Game {
         this.particles.forEach(p => p.draw(this.ctx, this.camera));
 
         // Player
+        // Power-up Orbs rendering (🧲, 🫧, ⚡)
+        this.collectibles.forEach(c => {
+            if (c.collected) return;
+            if (c.type === 'powerup_magnet' || c.type === 'powerup_shield' || c.type === 'powerup_boost') {
+                this.ctx.save();
+                const cx = c.x - this.camera.x + 13;
+                const cy = c.y - this.camera.y + 13;
+                const pulse = Math.sin(Date.now() * 0.008) * 3;
+                
+                this.ctx.translate(cx, cy);
+                this.ctx.shadowColor = c.type === 'powerup_boost' ? '#ffd600' : '#00e5ff';
+                this.ctx.shadowBlur = 16;
+
+                // Outer Glowing Orb
+                this.ctx.fillStyle = c.type === 'powerup_boost' ? 'rgba(255, 214, 0, 0.3)' : 'rgba(0, 229, 255, 0.3)';
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, 16 + pulse, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.ctx.strokeStyle = '#ffffff';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+
+                // Icon
+                this.ctx.font = '16px sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                const icon = c.type === 'powerup_magnet' ? '🧲' : (c.type === 'powerup_shield' ? '🫧' : '⚡');
+                this.ctx.fillText(icon, 0, 0);
+                this.ctx.restore();
+            }
+        });
+
+        // Boss Enemy
+        if (this.boss) {
+            this.boss.draw(this.ctx, this.camera);
+        }
+
+        // Floating Scores & Popups
+        this.floatingTexts.forEach(ft => ft.draw(this.ctx, this.camera));
+
+        // Confetti Particles
+        this.confettiParticles.forEach(cp => cp.draw(this.ctx, this.camera));
+
         if (this.state === 'PLAYING' || this.state === 'PAUSED') {
             this.player.draw(this.ctx, this.camera);
         }
