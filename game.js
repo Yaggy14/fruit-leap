@@ -239,6 +239,9 @@ class Game {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+        window.addEventListener('orientationchange', () => setTimeout(() => this.resizeCanvas(), 150));
 
         this.lang = localStorage.getItem('game_lang') || 'tr';
         this.state = 'MENU';
@@ -296,7 +299,21 @@ class Game {
         this.init();
     }
 
+    resizeCanvas() {
+        if (!this.canvas) return;
+        const aspect = window.innerWidth / Math.max(1, window.innerHeight);
+        this.canvas.height = 540;
+        // Calculate width to match exact screen aspect ratio (min 960 up to 1350 for ultra-widescreen)
+        this.canvas.width = Math.round(540 * Math.max(16 / 9, Math.min(22 / 9, aspect)));
+        
+        // Reset gradient cache so gradients scale perfectly to new width
+        if (this.cache && this.cache.gradients) {
+            this.cache.gradients = {};
+        }
+    }
+
     init() {
+        this.resizeCanvas();
         this.bindEvents();
         this.updateStatsUI();
         this.renderChapterChips();

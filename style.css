@@ -39,14 +39,17 @@ body {
 
 #game-container {
     position: relative;
-    width: 100%;
-    height: 100%;
-    max-width: 1280px;
-    max-height: 720px;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100vh;
+    max-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    background: #0f172a;
 }
 
 /* Portrait Orientation Warning Overlay 📱🔄 */
@@ -163,11 +166,13 @@ body {
     transform: scale(1.05);
 }
 
-canvas {
+canvas#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: contain;
     will-change: transform;
     transform: translateZ(0);
 }
@@ -983,10 +988,10 @@ canvas {
 /* Ergonomic Mobile Touch Controls Overlay */
 .touch-overlay {
     position: absolute;
-    bottom: 18px;
+    bottom: max(18px, env(safe-area-inset-bottom, 18px));
     left: 0;
     width: 100%;
-    padding: 0 20px;
+    padding: 0 max(24px, env(safe-area-inset-left, 24px)) 0 max(24px, env(safe-area-inset-right, 24px));
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
