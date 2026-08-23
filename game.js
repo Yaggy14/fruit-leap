@@ -840,12 +840,9 @@ class Game {
         this.currentChapterIdx = chapterIdx;
         this.currentLevelIdx = levelIdx;
         
-        // Reset score if starting a new chapter
-        if (levelIdx === 0) {
-            this.score = 0;
-        }
-        
-        this.levelStartScore = this.score;
+        // Reset score for each level so each level has its own clean score
+        this.score = 0;
+        this.levelStartScore = 0;
         this.levelTimer = 0;
         this.fruitsCollected = 0;
         this.floatingTexts = [];
@@ -924,6 +921,8 @@ class Game {
         }
         this.portals = level.portals ? level.portals.map(p => ({
             ...p,
+            entrance: { ...p.entrance },
+            exit: { ...p.exit },
             entrancePlat: this.platforms.find(plat => plat.id === p.entrancePlatformId),
             exitPlat: this.platforms.find(plat => plat.id === p.exitPlatformId)
         })) : [];
@@ -1946,12 +1945,15 @@ class Game {
             if (this.floatingTexts[i].life <= 0) this.floatingTexts.splice(i, 1);
         }
 
-        // Update Confetti Particles
+        // Update Confetti Particles (Capped for mobile performance)
+        if (this.confettiParticles.length > 60) this.confettiParticles.splice(0, this.confettiParticles.length - 60);
         for (let i = this.confettiParticles.length - 1; i >= 0; i--) {
             this.confettiParticles[i].update();
             if (this.confettiParticles[i].life <= 0) this.confettiParticles.splice(i, 1);
         }
 
+        // Update In-Game Particles (Capped for mobile performance)
+        if (this.particles.length > 50) this.particles.splice(0, this.particles.length - 50);
         for (let i = this.particles.length - 1; i >= 0; i--) {
             this.particles[i].update();
             if (this.particles[i].life <= 0) this.particles.splice(i, 1);

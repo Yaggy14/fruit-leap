@@ -131,8 +131,8 @@ class Player {
         this.height = 36;
         this.vx = 0;
         this.vy = 0;
-        this.jumpForce = -16.0;
-        this.gravity = 1.35;
+        this.jumpForce = -14.2;
+        this.gravity = 0.98;
 
         this.grounded = false;
         this.canDoubleJump = true;
@@ -232,10 +232,10 @@ class Player {
             audio.playJump();
             this.createDust(particles, 6, '#ffb74d');
         } else if (this.canDoubleJump) {
-            this.vy = this.jumpForce * 1.15;
+            this.vy = this.jumpForce * 0.92;
             this.canDoubleJump = false;
             audio.playJump();
-            this.createDust(particles, 10, '#81d4fa');
+            this.createDust(particles, 8, '#81d4fa');
         }
     }
 
@@ -377,8 +377,19 @@ class Player {
             }
         }
 
-        this.vy += this.gravity;
-        if (this.vy > 18) this.vy = 18;
+        // Smooth, realistic gravity with apex hangtime & gradual acceleration
+        let appliedGravity = this.gravity;
+        if (Math.abs(this.vy) < 2.8 && !this.grounded) {
+            // Apex floatiness - gentle hangtime at the peak of the jump
+            appliedGravity = this.gravity * 0.60;
+        } else if (this.vy > 0) {
+            // Gradual fall acceleration - starts gentle and smoothly accelerates
+            const fallProgress = Math.min(1.0, this.vy / 8.0);
+            appliedGravity = this.gravity * (0.85 + fallProgress * 0.35);
+        }
+        
+        this.vy += appliedGravity;
+        if (this.vy > 13.5) this.vy = 13.5; // Smooth terminal velocity (no sudden slamming)
         this.y += this.vy;
 
         this.grounded = false;

@@ -175,19 +175,20 @@ function generate25Chapters() {
                 const nextCheckpoint = portalCheckpoints[portalCount];
                 const shouldSpawnPortal = (targetPortals > 0 && portalCount < targetPortals && nextCheckpoint !== undefined && mapProgress >= nextCheckpoint);
 
-                if (shouldSpawnPortal) {
+                if (shouldSpawnPortal && !isMoving) {
                     hasPortalOnThisPlatform = true;
-                    const portExitX = curX + 140 + Math.round(rng() * 60);
-                    const portExitY = pY - 115 - Math.round(rng() * 40);
+                    const portExitX = curX + 130 + Math.round(rng() * 50);
+                    const portExitY = Math.max(160, pY - 95 - Math.round(rng() * 30));
                     
-                    const portPlat = { id: platformIndex++, x: portExitX, y: portExitY, width: 160, height: 24 };
+                    // Sturdy portal destination island
+                    const portPlat = { id: platformIndex++, x: portExitX, y: portExitY, width: 180, height: 24 };
                     platforms.push(portPlat);
 
                     portals.push({
                         entrancePlatformId: platformObj.id,
                         exitPlatformId: portPlat.id,
-                        entrance: { x: platformObj.x + pWidth - 45, y: pY - 45, width: 30, height: 45 },
-                        exit: { x: portPlat.x + (portPlat.width / 2) - 15, y: portPlat.y - 45, width: 30, height: 45 }
+                        entrance: { x: platformObj.x + pWidth - 55, y: pY - 45, width: 30, height: 45, offsetX: pWidth - 55, offsetY: -45 },
+                        exit: { x: portPlat.x + 35, y: portPlat.y - 45, width: 30, height: 45, offsetX: 35, offsetY: -45 }
                     });
 
                     portalCount++;
