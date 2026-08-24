@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=32">
+    <link rel="stylesheet" href="style.css?v=48">
 </head>
 <body>
     <script>
@@ -26,8 +26,61 @@
             </div>
         </div>
 
+        <!-- SETOGI Studio Splash & Loading Screen 🚀 -->
+        <div id="screen-splash" class="ui-screen splash-screen">
+            <div class="splash-particles-bg" id="splash-particles"></div>
+            
+            <div class="splash-content">
+                <!-- Studio Brand Section -->
+                <div class="studio-brand-box" id="studio-brand-box">
+                    <div class="studio-logo-badge">
+                        <div class="studio-emblem-hex">
+                            <span class="studio-emblem-letter">S</span>
+                        </div>
+                        <div class="studio-glow-ring"></div>
+                    </div>
+                    <div class="studio-text-wrap">
+                        <h1 class="studio-name-title">SETOGI</h1>
+                        <span class="studio-tagline">G A M E S</span>
+                    </div>
+                    <div class="studio-presents" data-i18n="studioPresents">GURURLA SUNAR</div>
+                </div>
+
+                <!-- Game Teaser & Loading Progress Section -->
+                <div class="splash-loading-box" id="splash-loading-box">
+                    <div class="splash-game-tag">
+                        <span class="splash-mascot">🐰🍓</span>
+                        <span class="splash-game-title">FRUIT LEAP</span>
+                    </div>
+
+                    <!-- Modern Glassmorphic Loading Bar -->
+                    <div class="splash-bar-outer" id="splash-bar-outer">
+                        <div class="splash-bar-track">
+                            <div id="splash-bar-fill" class="splash-bar-fill" style="width: 0%;">
+                                <span class="splash-bar-glow-head"></span>
+                            </div>
+                        </div>
+                        <div class="splash-bar-meta">
+                            <span id="splash-loading-text" class="splash-tip-text" data-i18n="splashTip1">SETOGI dünyasına hoş geldiniz...</span>
+                            <span id="splash-percent-val" class="splash-percent-text">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Tap To Start Button (Appears when 100% loaded) -->
+                    <div id="splash-tap-container" class="splash-tap-container hidden">
+                        <button id="btn-splash-start" class="btn-splash-tap">
+                            <span class="tap-icon">✨</span>
+                            <span class="tap-label" data-i18n="tapToStart">BAŞLAMAK İÇİN DOKUNUN</span>
+                            <span class="tap-icon">✨</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="splash-version-tag">SETOGI Mobile Engine • v0.7.28</div>
+        </div>
+
         <!-- Main Menu Screen -->
-        <div id="screen-main-menu" class="ui-screen">
+        <div id="screen-main-menu" class="ui-screen hidden">
             <!-- Top-Left Corner: Lives & Stars Badges -->
             <div class="menu-top-left">
                 <div class="menu-badge life-badge">
@@ -155,7 +208,7 @@
                     
                     <div class="wheel-container">
                         <div class="wheel-ticker">🔻</div>
-                        <canvas id="wheel-canvas" width="250" height="250"></canvas>
+                        <canvas id="wheel-canvas" width="500" height="500"></canvas>
                         <div class="wheel-center-pin">⭐</div>
                     </div>
 
@@ -217,6 +270,34 @@
                 </div>
             </div>
 
+            
+            <!-- Death Choice Modal (Revive / Retry / Menu) -->
+            <div id="screen-death-choice" class="ui-screen hidden">
+                <div class="glass-panel modal death-modal">
+                    <div class="death-icon-pop">💀</div>
+                    <h2 data-i18n="deathTitle" class="modal-title-neon" style="color: #ff1744; text-shadow: 0 0 16px rgba(255, 23, 68, 0.7); font-size: 1.15rem; margin-bottom: 6px;">CAN KAYBEDİLDİ!</h2>
+                    <div class="death-lives-info">
+                        💖 <span id="death-modal-lives">4/5</span> <span data-i18n="livesLeft">Kalan Can</span>
+                    </div>
+                    <div class="modal-actions" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%;">
+                        <button id="btn-death-revive-ad" class="btn btn-ad-gold" style="width: 100%; font-size: 0.86rem; padding: 10px 14px;">
+                            🎬 Kaldığın Yerden Devam Et (Reklam)
+                        </button>
+                        <button id="btn-death-retry" class="btn btn-primary-play" style="width: 100%; font-size: 0.82rem; padding: 8px 12px;">
+                            🔄 Baştan Başla (-1 Can)
+                        </button>
+                        <button id="btn-death-menu" class="btn btn-secondary" style="width: 100%; font-size: 0.78rem; padding: 6px 12px;">
+                            🏠 Ana Menü
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3-2-1 Revive Countdown Overlay -->
+            <div id="countdown-overlay" class="countdown-overlay hidden">
+                <div id="countdown-number" class="countdown-number">3</div>
+            </div>
+
             <!-- Out of Lives Modal -->
             <div id="screen-no-lives" class="ui-screen hidden">
                 <div class="glass-panel modal">
@@ -233,24 +314,44 @@
             <!-- Character Shop Screen -->
             <div id="screen-character-shop" class="ui-screen hidden">
                 <div class="glass-panel modal-large shop-modal">
-                    <h2 data-i18n="characterShop">Character Shop</h2>
+                    <div class="modal-header-row">
+                        <h2 data-i18n="characterShop" class="modal-title-neon">🛍️ Karakter Mağazası</h2>
+                        <div class="header-stars-badge">
+                            <span class="badge-icon">⭐</span>
+                            <span id="shop-total-stars" class="badge-val">0</span>
+                            <span class="badge-label" data-i18n="stars">YILDIZ</span>
+                        </div>
+                    </div>
                     <div class="shop-grid" id="shop-grid">
                         <!-- Skin Cards Gen -->
                     </div>
-                    <button id="btn-shop-back" class="btn btn-secondary btn-bottom" data-i18n="backToMenu">Back to Menu</button>
+                    <button id="btn-shop-back" class="btn btn-secondary btn-bottom" data-i18n="backToMenu">⬅ Menüye Dön</button>
                 </div>
             </div>
 
-            <!-- Pause Screen -->
+            <!-- Enhanced Pause Screen -->
             <div id="screen-pause" class="ui-screen hidden">
-                <div class="glass-panel modal">
-                    <h2 data-i18n="paused">PAUSED</h2>
-                    <div class="modal-actions" style="display: flex; flex-direction: column; gap: 14px; margin-top: 20px;">
-                        <button id="btn-resume" class="btn btn-primary-play" style="width: 100%;" data-i18n="resume">▶ RESUME</button>
-                        <button id="btn-restart" class="btn btn-chapters" style="width: 100%;" data-i18n="restartLevel">🔄 RESTART LEVEL</button>
-                        <div style="display: flex; gap: 14px; width: 100%;">
-                            <button id="btn-settings-pause" class="btn btn-story" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;" data-i18n="pauseSettings">⚙️ SETTINGS</button>
-                            <button id="btn-quit" class="btn btn-shop-neon" style="flex: 1; padding: 12px 10px; font-size: 0.85rem;" data-i18n="pauseMenu">🏠 MENU</button>
+                <div class="glass-panel modal pause-modal">
+                    <div class="pause-header-badge">
+                        <span class="pause-icon">⏸️</span>
+                        <h2 data-i18n="paused" class="pause-title">OYUN DURDURULDU</h2>
+                    </div>
+                    <div id="pause-level-indicator" class="pause-level-tag">Chapter 1 - Level 1</div>
+                    
+                    <div class="pause-actions-list">
+                        <button id="btn-resume" class="btn btn-primary-play btn-pause-action" data-i18n="resume">
+                            <span class="btn-icon">▶</span> <span class="btn-text">DEVAM ET</span>
+                        </button>
+                        <button id="btn-restart" class="btn btn-chapters btn-pause-action" data-i18n="restartLevel">
+                            <span class="btn-icon">🔄</span> <span class="btn-text">YENİDEN BAŞLAT</span>
+                        </button>
+                        <div class="pause-sub-buttons">
+                            <button id="btn-settings-pause" class="btn btn-story btn-pause-sub" data-i18n="pauseSettings">
+                                ⚙️ AYARLAR
+                            </button>
+                            <button id="btn-quit" class="btn btn-secondary btn-pause-sub" data-i18n="pauseMenu">
+                                🏠 ANA MENÜ
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -389,9 +490,9 @@
     <audio id="bgm-game" src="audio/game.wav" loop preload="auto"></audio>
 
     <script src="admob_manager.js" onerror="this.onerror=null;this.src='js/admob_manager.js'"></script>
-        <script src="audio.js?v=32" onerror="this.onerror=null;this.src='js/audio.js?v=32'"></script>
-    <script src="physics.js?v=32" onerror="this.onerror=null;this.src='js/physics.js?v=32'"></script>
-    <script src="levels.js?v=32" onerror="this.onerror=null;this.src='js/levels.js?v=32'"></script>
-    <script src="game.js?v=32" onerror="this.onerror=null;this.src='js/game.js?v=32'"></script>
+        <script src="audio.js?v=48" onerror="this.onerror=null;this.src='js/audio.js?v=48'"></script>
+    <script src="physics.js?v=48" onerror="this.onerror=null;this.src='js/physics.js?v=48'"></script>
+    <script src="levels.js?v=48" onerror="this.onerror=null;this.src='js/levels.js?v=48'"></script>
+    <script src="game.js?v=48" onerror="this.onerror=null;this.src='js/game.js?v=48'"></script>
 </body>
 </html>

@@ -347,11 +347,21 @@ function generate25Chapters() {
                 const midIdx = Math.floor(platforms.length / 2);
                 const midPlat = platforms[midIdx];
                 
-                // Clear any fruits or powerups from midPlat so Golden Key has its own dedicated platform!
+                // STRICT SAFETY: Completely clear ALL hazards/spikes, enemies, ceilings, and other items from key platform!
+                for (let hi = hazards.length - 1; hi >= 0; hi--) {
+                    if (hazards[hi].platformId === midPlat.id) hazards.splice(hi, 1);
+                }
+                for (let ei = enemies.length - 1; ei >= 0; ei--) {
+                    if (enemies[ei].platformId === midPlat.id) enemies.splice(ei, 1);
+                }
+                for (let oi = overheadCeilings.length - 1; oi >= 0; oi--) {
+                    if (overheadCeilings[oi].platformId === midPlat.id) overheadCeilings.splice(oi, 1);
+                }
+                for (let bi = bouncyPads.length - 1; bi >= 0; bi--) {
+                    if (bouncyPads[bi].platformId === midPlat.id) bouncyPads.splice(bi, 1);
+                }
                 for (let ci = fruitCollectibles.length - 1; ci >= 0; ci--) {
-                    if (fruitCollectibles[ci].platformId === midPlat.id) {
-                        fruitCollectibles.splice(ci, 1);
-                    }
+                    if (fruitCollectibles[ci].platformId === midPlat.id) fruitCollectibles.splice(ci, 1);
                 }
                 
                 fruitCollectibles.push({ 

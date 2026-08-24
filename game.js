@@ -42,6 +42,8 @@ const I18N = {
         dailySpin: "🎁 GÜNLÜK ÇARK",
         freeLife: "📺 ÜCRETSİZ CAN (+1 ❤️)",
         settings: "⚙️ Ayarlar",
+        studioPresents: "GURURLA SUNAR",
+        tapToStart: "BAŞLAMAK İÇİN DOKUNUN",
 
         // Story Modal
         storyTitle: "✨ PİKO'NUN EFSANESİ ✨",
@@ -142,6 +144,8 @@ const I18N = {
         dailySpin: "🎁 LUCKY SPIN",
         freeLife: "📺 FREE LIFE (+1 ❤️)",
         settings: "⚙️ Settings",
+        studioPresents: "PROUDLY PRESENTS",
+        tapToStart: "TAP TO START",
 
         // Story Modal
         storyTitle: "✨ THE LEGEND OF PIKO ✨",
@@ -295,6 +299,7 @@ class Game {
         this.particles = [];
 
         this.keys = { left: false, right: false, up: false, down: false };
+        this.ambientParticles = [];
 
         this.init();
     }
@@ -319,19 +324,111 @@ class Game {
         this.renderChapterChips();
         this.renderLevelGrid(1);
         this.renderShopGrid();
-
-        // Autoplay policy workaround: play menu BGM on first interaction if we're in a menu state
-        const startInitialBGM = () => {
-            if (this.state === 'MENU' || this.state === 'SHOP' || this.state === 'CHAPTER_SELECT') {
-                audio.playBGM('menu');
-            }
-            document.removeEventListener('click', startInitialBGM);
-            document.removeEventListener('touchstart', startInitialBGM);
-        };
-        document.addEventListener('click', startInitialBGM);
-        document.addEventListener('touchstart', startInitialBGM);
+        this.initSplashScreen();
 
         requestAnimationFrame((t) => this.loop(t));
+    }
+
+    initSplashScreen() {
+        const splashScreen = document.getElementById('screen-splash');
+        if (!splashScreen) {
+            this.showScreen('screen-main-menu');
+            return;
+        }
+
+        const barFill = document.getElementById('splash-bar-fill');
+        const percentText = document.getElementById('splash-percent-val');
+        const loadingText = document.getElementById('splash-loading-text');
+        const tapContainer = document.getElementById('splash-tap-container');
+        const barOuter = document.getElementById('splash-bar-outer');
+        const btnStart = document.getElementById('btn-splash-start');
+
+        const isTr = (this.lang === 'tr');
+        const tips = isTr ? [
+            "SETOGI dünyasına hoş geldiniz...",
+            "Tavşan Piko havuçları topluyor...",
+            "25 Yıldız Anahtarı boyut portallarına yerleştiriliyor...",
+            "Sesler ve seviyeler optimize ediliyor...",
+            "Macera başlamak üzere! Hazır ol..."
+        ] : [
+            "Welcome to the SETOGI universe...",
+            "Bunny Piko is gathering carrots...",
+            "25 Star Keys placed in dimensional portals...",
+            "Optimizing sound effects and level worlds...",
+            "Adventure is about to begin! Get ready..."
+        ];
+
+        let progress = 0;
+        let tipIdx = 0;
+
+        // Try playing splash intro audio if permitted
+        setTimeout(() => {
+            try { audio.playSplashIntro(); } catch (e) {}
+        }, 150);
+
+        const interval = setInterval(() => {
+            // Smooth natural progress increment
+            progress += Math.floor(Math.random() * 5) + 3;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+            }
+
+            if (barFill) barFill.style.width = `${progress}%`;
+            if (percentText) percentText.innerText = `${progress}%`;
+
+            // Cycle dynamic tips
+            const targetTipIdx = Math.min(tips.length - 1, Math.floor((progress / 100) * tips.length));
+            if (targetTipIdx !== tipIdx && loadingText) {
+                tipIdx = targetTipIdx;
+                loadingText.style.opacity = '0';
+                setTimeout(() => {
+                    if (loadingText) {
+                        loadingText.innerText = tips[tipIdx];
+                        loadingText.style.opacity = '1';
+                    }
+                }, 120);
+            }
+
+            if (progress >= 100) {
+                setTimeout(() => {
+                    if (barOuter) barOuter.classList.add('hidden');
+                    if (tapContainer) tapContainer.classList.remove('hidden');
+                }, 280);
+            }
+        }, 40);
+
+        // Tap to Enter Game & Play BGM
+        let entered = false;
+        const enterGame = () => {
+            if (entered) return;
+            entered = true;
+            try { audio.playSplashTap(); } catch (e) {}
+            splashScreen.classList.add('fade-out');
+            setTimeout(() => {
+                splashScreen.classList.add('hidden');
+                this.showScreen('screen-main-menu');
+                try { audio.playBGM('menu'); } catch (e) {}
+            }, 450);
+        };
+
+        if (btnStart) {
+            btnStart.addEventListener('click', (e) => {
+                e.stopPropagation();
+                enterGame();
+            });
+            btnStart.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                enterGame();
+            }, { passive: true });
+        }
+
+        splashScreen.addEventListener('click', () => {
+            if (progress >= 100) enterGame();
+        });
+        splashScreen.addEventListener('touchstart', () => {
+            if (progress >= 100) enterGame();
+        }, { passive: true });
     }
 
     getCachedGradient(key, factory) {
@@ -536,6 +633,33 @@ class Game {
         document.getElementById('btn-no-lives-ad')?.addEventListener('click', watchAdInGameRevive);
         document.getElementById('btn-ad-revive')?.addEventListener('click', watchAdInGameRevive);
 
+        // Death Choice Modal Buttons
+        document.getElementById('btn-death-revive-ad')?.addEventListener('click', () => {
+            admob.showRewardedAd(() => {
+                this.revivePlayerFromDeath();
+            });
+        });
+        document.getElementById('btn-death-retry')?.addEventListener('click', () => {
+            // Decrement 1 life and restart from beginning
+            this.progress.globalLives = Math.max(0, (this.progress.globalLives || 1) - 1);
+            if (this.progress.globalLives < 5 && !this.progress.lastHeartRegenTime) {
+                this.progress.lastHeartRegenTime = Date.now();
+            }
+            this.saveProgress();
+            this.updateStatsUI();
+            document.getElementById('screen-death-choice')?.classList.add('hidden');
+            this.restartLevel();
+        });
+        document.getElementById('btn-death-menu')?.addEventListener('click', () => {
+            this.progress.globalLives = Math.max(0, (this.progress.globalLives || 1) - 1);
+            if (this.progress.globalLives < 5 && !this.progress.lastHeartRegenTime) {
+                this.progress.lastHeartRegenTime = Date.now();
+            }
+            this.saveProgress();
+            this.updateStatsUI();
+            this.showScreen('screen-main-menu');
+        });
+
         // Language Selector Toggle
         document.getElementById('btn-lang-toggle')?.addEventListener('click', () => {
             this.lang = (this.lang === 'tr') ? 'en' : 'tr';
@@ -684,86 +808,145 @@ class Game {
 
     renderChapterChips() {
         const container = document.getElementById('chapter-scroll');
+        if (!container) return;
         container.innerHTML = '';
+
+        const starsSpan = document.getElementById('select-total-stars-val');
+        if (starsSpan) starsSpan.innerText = this.progress.totalStars || 0;
+
         CHAPTERS.forEach((c) => {
             const chip = document.createElement('div');
-            chip.className = `chapter-chip ${c.id === 1 ? 'active' : ''}`;
-            chip.innerText = c.id === 0 ? 'Ch.0 🧪' : `Ch.${c.id}`;
+            const isFinal = (c.id === 25);
+            const isActive = c.id === (this.currentChapterIdx + 1 || 1);
+            chip.className = `chapter-chip ${isActive ? 'active' : ''} ${isFinal ? 'chip-final' : ''}`;
+            
+            let label = `Ch.${c.id}`;
+            if (c.id === 0) label = 'Ch.0 🧪';
+            else if (isFinal) label = 'Ch.25 👑 FINAL';
+            
+            chip.innerText = label;
             chip.addEventListener('click', () => {
                 document.querySelectorAll('.chapter-chip').forEach(ch => ch.classList.remove('active'));
                 chip.classList.add('active');
+                chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                audio.playJump();
                 this.renderLevelGrid(c.id);
             });
             container.appendChild(chip);
         });
+
+        // Initial render for active chapter
+        this.renderLevelGrid(this.currentChapterIdx + 1 || 1);
     }
 
     renderLevelGrid(chapterId) {
         const grid = document.getElementById('level-grid');
+        if (!grid) return;
         grid.innerHTML = '';
         const chapter = CHAPTERS.find(c => c.id === chapterId);
         if (!chapter) return;
 
         const chapterIdx = CHAPTERS.findIndex(c => c.id === chapterId);
+        const isTr = (this.lang === 'tr');
+
+        // Update active Chapter Info Banner
+        const bannerText = document.getElementById('chapter-title-text');
+        if (bannerText) {
+            bannerText.innerText = `${chapter.title || `Chapter ${chapterId}: ${chapter.theme.name}`}`;
+        }
+
+        const playText = isTr ? 'OYNA' : 'PLAY';
 
         chapter.levels.forEach((lvl, idx) => {
             const card = document.createElement('div');
             const lvlCode = `${chapterId}-${idx + 1}`;
             const stars = this.progress.levelStars[lvlCode] || 0;
             const highScore = (this.progress.highScores && this.progress.highScores[lvlCode]) ? this.progress.highScores[lvlCode] : 0;
-            const scoreLabel = highScore > 0 ? `🏆 ${highScore.toLocaleString()}` : `<span style="opacity:0.4;">🏆 ---</span>`;
+            const scoreLabel = highScore > 0 ? `🏆 ${highScore.toLocaleString()}` : `<span style="opacity:0.45;">🏆 ---</span>`;
+            const isBoss = !!lvl.isBossLevel;
 
-            card.className = `level-card`;
+            card.className = `level-card ${isBoss ? 'boss-card' : ''}`;
+            
+            let bossTagHtml = isBoss ? `<div class="level-boss-tag">👑 BOSS</div>` : '';
+
             card.innerHTML = `
-                <div class="level-num">Level ${idx + 1}</div>
+                ${bossTagHtml}
+                <div class="level-num">${isBoss ? '👑 Boss' : `Level ${idx + 1}`}</div>
                 <div class="level-stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
                 <div class="level-score-badge">${scoreLabel}</div>
+                <div class="level-play-btn">${playText}</div>
             `;
-            card.addEventListener('click', () => this.startLevel(chapterIdx, idx));
+            card.addEventListener('click', () => {
+                audio.playJump();
+                this.startLevel(chapterIdx, idx);
+            });
             grid.appendChild(card);
         });
     }
 
     renderShopGrid() {
         const container = document.getElementById('shop-grid');
+        if (!container) return;
         container.innerHTML = '';
+
+        const starsSpan = document.getElementById('shop-total-stars');
+        if (starsSpan) starsSpan.innerText = this.progress.totalStars || 0;
+
+        const isTr = (this.lang === 'tr');
 
         CHARACTER_SKINS.forEach(skin => {
             const isUnlocked = this.progress.unlockedSkins.includes(skin.id);
             const isEquipped = this.progress.equippedSkin === skin.id;
 
             const card = document.createElement('div');
-            card.className = `shop-card ${isEquipped ? 'equipped' : ''}`;
+            card.className = `shop-card ${isEquipped ? 'equipped' : (isUnlocked ? 'unlocked' : 'locked')}`;
+
+            let btnMarkup = '';
+            if (isEquipped) {
+                btnMarkup = `<button class="btn btn-shop-action btn-equipped" disabled>✓ ${isTr ? 'SEÇİLİ' : 'EQUIPPED'}</button>`;
+            } else if (isUnlocked) {
+                btnMarkup = `<button class="btn btn-shop-action btn-equip">${isTr ? 'SEÇ' : 'SELECT'}</button>`;
+            } else {
+                btnMarkup = `<button class="btn btn-shop-action btn-buy-star">⭐ ${skin.priceStars}</button>`;
+            }
+
             card.innerHTML = `
                 <div class="char-icon">${skin.icon}</div>
                 <div class="char-name">${skin.name}</div>
-                <div class="char-perk">${skin.perk}</div>
-                <button class="btn btn-buy ${isEquipped ? 'btn-secondary' : 'btn-primary'}">
-                    ${isEquipped ? 'EQUIPPED' : (isUnlocked ? 'EQUIP' : `UNLOCK ⭐${skin.priceStars}`)}
-                </button>
+                <div class="char-perk">⚡ ${skin.speed} • ${skin.perk}</div>
+                ${btnMarkup}
             `;
 
-            const btn = card.querySelector('button');
-            btn.addEventListener('click', () => {
-                if (isEquipped) return;
-                if (isUnlocked) {
-                    this.progress.equippedSkin = skin.id;
-                    this.player.currentSkinId = skin.id;
-                    this.saveProgress();
-                    this.renderShopGrid();
-                } else {
-                    if (this.progress.totalStars >= skin.priceStars) {
-                        this.progress.unlockedSkins.push(skin.id);
+            const actionBtn = card.querySelector('.btn-shop-action');
+            if (actionBtn && !isEquipped) {
+                actionBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (isUnlocked) {
                         this.progress.equippedSkin = skin.id;
                         this.player.currentSkinId = skin.id;
                         this.saveProgress();
+                        audio.playCoin();
                         this.renderShopGrid();
-                        this.updateStatsUI();
                     } else {
-                        alert(`Bu karakter için ⭐ ${skin.priceStars} Yıldız gereklidir! Mevcut Yıldızın: ⭐ ${this.progress.totalStars}`);
+                        if (this.progress.totalStars >= skin.priceStars) {
+                            this.progress.totalStars -= skin.priceStars;
+                            this.progress.unlockedSkins.push(skin.id);
+                            this.progress.equippedSkin = skin.id;
+                            this.player.currentSkinId = skin.id;
+                            this.saveProgress();
+                            audio.playWin();
+                            this.renderShopGrid();
+                            this.updateStatsUI();
+                            this.showToast(isTr ? `🎉 ${skin.name} Açıldı!` : `🎉 ${skin.name} Unlocked!`);
+                        } else {
+                            audio.playHurt();
+                            const need = skin.priceStars - (this.progress.totalStars || 0);
+                            const msg = isTr ? `⭐ ${need} Yıldız daha gerekiyor!` : `⭐ Need ${need} more Stars!`;
+                            this.showToast(msg);
+                        }
                     }
-                }
-            });
+                });
+            }
 
             container.appendChild(card);
         });
@@ -1026,45 +1209,89 @@ class Game {
 
     handleDie() {
         audio.playHurt();
-        
-        // Decrement global energy life
-        this.progress.globalLives = Math.max(0, (this.progress.globalLives || 1) - 1);
-        if (this.progress.globalLives < 5 && !this.progress.lastHeartRegenTime) {
-            this.progress.lastHeartRegenTime = Date.now();
-        }
-        this.saveProgress();
-        this.updateStatsUI();
 
-        // Reset level attempt items
-        this.fruitsCollected = 0;
-        this.floatingTexts = [];
-        this.confettiParticles = [];
-        this.screenShakeTimer = 0;
-        this.screenShakeIntensity = 0;
-        this.clearActivePowerUp();
-        this.score = this.levelStartScore;
-        this.player.hasGoldenKey = false;
-        
-        this.collectibles.forEach(c => {
-            c.collected = false;
-        });
-
-        this.switches.forEach(s => s.activated = false);
-        this.updateHUD();
-
-        if (this.progress.globalLives <= 0) {
-            audio.playBGM(null); // Stop BGM for game over
+        if ((this.progress.globalLives || 0) <= 0) {
+            audio.playBGM(null);
             audio.playGameOver();
             this.state = 'GAME_OVER';
             document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('screen-game-over').classList.remove('hidden');
             document.getElementById('touch-controls')?.classList.add('hidden');
-        } else {
-            const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
-            this.loadLevelData();
-            this.player.reset(level.playerStart.x, level.playerStart.y);
-            this.updateBossHUD();
+            return;
         }
+
+        // Show Death Choice Modal (Revive with Ad / Retry / Main Menu)
+        this.state = 'DEATH_CHOICE';
+        document.getElementById('touch-controls')?.classList.add('hidden');
+        
+        const livesSpan = document.getElementById('death-modal-lives');
+        if (livesSpan) livesSpan.innerText = `${this.progress.globalLives}/5`;
+
+        const modal = document.getElementById('screen-death-choice');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    revivePlayerFromDeath() {
+        // Hide Death Choice Modal
+        document.getElementById('screen-death-choice')?.classList.add('hidden');
+        
+        // Reposition player on last safe platform (or level start if none)
+        const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
+        const respawnX = this.player.lastSafeX || level.playerStart.x;
+        const respawnY = this.player.lastSafeY || level.playerStart.y;
+        
+        this.player.x = respawnX;
+        this.player.y = respawnY;
+        this.player.vx = 0;
+        this.player.vy = 0;
+        this.player.grounded = true;
+        this.player.isDead = false;
+        this.player.deathTimer = 0;
+        this.player.invincibleTimer = 180; // 3 seconds invincibility after revive
+
+        // Run 3-2-1 Animated Countdown before resuming gameplay
+        this.startReviveCountdown();
+    }
+
+    startReviveCountdown() {
+        const overlay = document.getElementById('countdown-overlay');
+        const numEl = document.getElementById('countdown-number');
+        if (!overlay || !numEl) {
+            this.state = 'PLAYING';
+            document.getElementById('touch-controls')?.classList.remove('hidden');
+            return;
+        }
+
+        overlay.classList.remove('hidden');
+        let count = 3;
+        numEl.innerText = count;
+        audio.playJump();
+
+        const timer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                numEl.innerText = count;
+                // Re-trigger CSS animation
+                numEl.style.animation = 'none';
+                void numEl.offsetWidth;
+                numEl.style.animation = 'countdownPop 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                audio.playJump();
+            } else if (count === 0) {
+                const isTr = (this.lang === 'tr');
+                numEl.innerText = isTr ? 'BAŞLA!' : 'GO!';
+                numEl.style.color = '#76ff03';
+                numEl.style.animation = 'none';
+                void numEl.offsetWidth;
+                numEl.style.animation = 'countdownPop 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                audio.playStar();
+            } else {
+                clearInterval(timer);
+                overlay.classList.add('hidden');
+                numEl.style.color = '#ffd600'; // Reset color
+                this.state = 'PLAYING';
+                document.getElementById('touch-controls')?.classList.remove('hidden');
+            }
+        }, 850);
     }
 
     handleWin() {
@@ -1180,6 +1407,154 @@ class Game {
     triggerScreenShake(intensity = 4, duration = 0.15) {
         this.screenShakeIntensity = intensity;
         this.screenShakeTimer = duration;
+    }
+
+
+    updateAmbientWeather(theme) {
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const worldIdx = Math.floor((this.currentChapterIdx || 0) / 5);
+
+        // Pre-populate subtly if empty (max 8 gentle, peaceful particles)
+        if (this.ambientParticles.length < 5) {
+            for (let k = 0; k < 2; k++) {
+                this.spawnSingleAmbientParticle(w, h, worldIdx, true);
+            }
+        }
+
+        // Slow, graceful spawn (max 8 particles total on screen)
+        if (this.ambientParticles.length < 8 && Math.random() < 0.20) {
+            this.spawnSingleAmbientParticle(w, h, worldIdx, false);
+        }
+
+        // Render ambient particles with delicate, soft transparency
+        this.ctx.save();
+        for (let i = this.ambientParticles.length - 1; i >= 0; i--) {
+            const p = this.ambientParticles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.rotSpeed;
+            p.life--;
+
+            if (p.type === 'sakura') {
+                // Gentle pink sakura petal 🌸
+                p.x += Math.sin(Date.now() * 0.0025 + p.y * 0.03) * 0.5;
+                this.ctx.save();
+                this.ctx.translate(p.x, p.y);
+                this.ctx.rotate(p.rot);
+                this.ctx.fillStyle = p.color;
+                this.ctx.globalAlpha = Math.min(0.70, p.life / 50);
+                this.ctx.beginPath();
+                this.ctx.ellipse(0, 0, p.size * 1.1, p.size * 0.65, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+            } else if (p.type === 'ember') {
+                // Subtle rising magma spark 🌋
+                p.x += Math.sin(Date.now() * 0.003 + p.y * 0.02) * 0.4;
+                this.ctx.save();
+                this.ctx.fillStyle = p.color;
+                this.ctx.shadowColor = p.color;
+                this.ctx.shadowBlur = 6;
+                this.ctx.globalAlpha = Math.min(0.75, p.life / 40);
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+            } else if (p.type === 'wisp' || p.type === 'cyber') {
+                // Floating subtle wisp ✨
+                this.ctx.save();
+                this.ctx.fillStyle = p.color;
+                this.ctx.shadowColor = p.color;
+                this.ctx.shadowBlur = 6;
+                this.ctx.globalAlpha = Math.min(0.65, p.life / 40);
+                this.ctx.fillRect(p.x, p.y, p.size, p.size);
+                this.ctx.restore();
+            } else {
+                // Tiny star sparkle
+                this.ctx.save();
+                this.ctx.fillStyle = p.color;
+                this.ctx.globalAlpha = Math.min(0.75, p.life / 50);
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+            }
+
+            if (p.life <= 0 || p.y > h + 20 || p.y < -20 || p.x > w + 40 || p.x < -40) {
+                this.ambientParticles.splice(i, 1);
+            }
+        }
+        this.ctx.restore();
+    }
+
+    spawnSingleAmbientParticle(w, h, worldIdx, randomY = false) {
+        const startY = randomY ? Math.random() * h : (worldIdx === 1 ? (h + 10) : -10);
+        if (worldIdx === 0) {
+            this.ambientParticles.push({
+                x: Math.random() * (w + 60) - 30,
+                y: startY,
+                vx: 0.4 + Math.random() * 0.5,
+                vy: 0.5 + Math.random() * 0.5,
+                size: 3.5 + Math.random() * 2.0,
+                rot: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.04,
+                color: '#ff80ab',
+                type: 'sakura',
+                life: 400
+            });
+        } else if (worldIdx === 1) {
+            this.ambientParticles.push({
+                x: Math.random() * w,
+                y: startY,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: -(0.9 + Math.random() * 1.1),
+                size: 2.0 + Math.random() * 2.0,
+                rot: 0,
+                rotSpeed: 0,
+                color: Math.random() > 0.4 ? '#ffd600' : '#ff5722',
+                type: 'ember',
+                life: 300
+            });
+        } else if (worldIdx === 2) {
+            this.ambientParticles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: -0.3 - Math.random() * 0.3,
+                size: 2.2 + Math.random() * 2.0,
+                rot: 0,
+                rotSpeed: 0,
+                color: '#00f5ff',
+                type: 'wisp',
+                life: 250
+            });
+        } else if (worldIdx === 3) {
+            this.ambientParticles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: -0.6 - Math.random() * 0.6,
+                size: 2.0 + Math.random() * 1.5,
+                rot: 0,
+                rotSpeed: 0,
+                color: Math.random() > 0.5 ? '#00f5d4' : '#ff007f',
+                type: 'cyber',
+                life: 220
+            });
+        } else {
+            this.ambientParticles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                size: 2.0 + Math.random() * 2.0,
+                rot: 0,
+                rotSpeed: 0.02,
+                color: '#ffd700',
+                type: 'star',
+                life: 320
+            });
+        }
     }
 
     clearActivePowerUp() {
@@ -1596,7 +1971,7 @@ class Game {
             const fx = (i * 110 + time * 28) % (w + 100) - 50;
             const fy = h - 70 + Math.sin((fx + time * 28) * 0.009 + 2.5) * 16;
             
-            // Little round berry bush
+            // Lush Clover Bush
             if (i % 2 === 0) {
                 this.ctx.fillStyle = '#059669';
                 this.ctx.beginPath();
@@ -1607,12 +1982,11 @@ class Game {
                 this.ctx.arc(fx - 2, fy - 7, 6, 0, Math.PI * 2);
                 this.ctx.fill();
                 
-                // Little red berries
-                this.ctx.fillStyle = '#f43f5e';
+                // Morning Dew Glimmers ✨
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
                 this.ctx.beginPath();
-                this.ctx.arc(fx - 4, fy - 5, 2.2, 0, Math.PI * 2);
-                this.ctx.arc(fx + 3, fy - 6, 2.2, 0, Math.PI * 2);
-                this.ctx.arc(fx, fy - 9, 2.2, 0, Math.PI * 2);
+                this.ctx.arc(fx - 3, fy - 6, 1.5, 0, Math.PI * 2);
+                this.ctx.arc(fx + 3, fy - 5, 1.2, 0, Math.PI * 2);
                 this.ctx.fill();
             } else {
                 // Pretty animated swaying flower (Daisy / Tulip)
@@ -1993,163 +2367,326 @@ class Game {
     draw() {
         const currentLevel = CHAPTERS[this.currentChapterIdx]?.levels[this.currentLevelIdx];
         const theme = currentLevel?.theme || CHAPTERS[this.currentChapterIdx]?.theme || CHAPTERS[0].theme;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const time = Date.now() * 0.001;
 
-        // Rich Atmospheric Sky Gradient (Cached per theme)
+        // 1. Rich Atmospheric Sky Gradient
         const themeKey = theme.name || 'default';
         const skyGrad = this.getCachedGradient('sky_' + themeKey, (ctx) => {
-            const g = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-            g.addColorStop(0, theme.skyGradient ? theme.skyGradient[0] : theme.bg);
-            g.addColorStop(1, theme.skyGradient ? theme.skyGradient[1] : "#ffffff");
+            const g = ctx.createLinearGradient(0, 0, 0, 540);
+            if (theme.skyGradient) {
+                theme.skyGradient.forEach((c, idx) => {
+                    g.addColorStop(idx / (theme.skyGradient.length - 1), c);
+                });
+            } else {
+                g.addColorStop(0, theme.bg);
+                g.addColorStop(1, "#ffffff");
+            }
             return g;
         });
         this.ctx.fillStyle = skyGrad;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        if (this.state === 'PAUSED') {
-            this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
+        this.ctx.fillRect(0, 0, w, h);
 
-        // Celestial Orb & Weather per Theme World
+        // 2. Theme-Accurate Celestial Body (Smooth Parallax Gliding without Teleportation!)
         const isVolcano = theme.name === "Magma Caverns";
         const isSpectral = theme.name === "Spectral Void";
         const isCyber = theme.name === "Cyber Metropolis";
         const isCosmic = theme.name === "Cosmic Galaxy";
 
-        let orbColor = "#ffeb3b";
-        let glowColor = "rgba(255, 235, 59, 0.35)";
-        let cloudAlpha = 0.65;
-
-        if (isVolcano) {
-            orbColor = "#ff5722";
-            glowColor = "rgba(255, 87, 34, 0.4)";
-            cloudAlpha = 0.25;
-        } else if (isSpectral) {
-            orbColor = "#00e5ff";
-            glowColor = "rgba(0, 229, 255, 0.35)";
-            cloudAlpha = 0.30;
-        } else if (isCyber) {
-            orbColor = "#00f5d4";
-            glowColor = "rgba(0, 245, 212, 0.35)";
-            cloudAlpha = 0.20;
-        } else if (isCosmic) {
-            orbColor = "#ffd700";
-            glowColor = "rgba(255, 215, 0, 0.45)";
-            cloudAlpha = 0.15;
-        }
+        // Smoothly glide with camera panning (distant parallax scale: 0.025x)
+        const celestialX = (w * 0.82) - (this.camera.x * 0.025);
+        const celestialY = 82;
 
         this.ctx.save();
-        this.ctx.shadowColor = glowColor;
-        this.ctx.shadowBlur = 32;
-        this.ctx.fillStyle = orbColor;
-        this.ctx.beginPath();
-        this.ctx.arc(850 - this.camera.x * 0.04, 85, 42, 0, Math.PI * 2);
-        this.ctx.fill();
+        this.ctx.translate(celestialX, celestialY);
+
+        if (isSpectral) {
+            // 🌙 World 3 (Spectral Void): Mystic Crescent Moon with Silver/Cyan Aura
+            this.ctx.shadowColor = '#00f5ff';
+            this.ctx.shadowBlur = 24;
+
+            // Outer Moon Glow
+            this.ctx.fillStyle = '#00f5ff';
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 32, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Crescent Cutout
+            this.ctx.fillStyle = skyGrad;
+            this.ctx.beginPath();
+            this.ctx.arc(10, -6, 26, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Inner Silver Crescent Rim
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.beginPath();
+            this.ctx.arc(-2, 2, 28, Math.PI * 0.5, Math.PI * 1.8);
+            this.ctx.closePath();
+            this.ctx.fill();
+        } else if (isVolcano) {
+            // 🌑 World 2 (Magma Caverns): Eclipsed Blood Moon with Solar Flare Halo
+            this.ctx.shadowColor = '#ff3d00';
+            this.ctx.shadowBlur = 28;
+
+            // Fiery Solar Eclipse Corona
+            const corona = this.ctx.createRadialGradient(0, 0, 22, 0, 0, 42);
+            corona.addColorStop(0, '#ff9100');
+            corona.addColorStop(0.6, '#ff3d00');
+            corona.addColorStop(1, 'rgba(255, 61, 0, 0)');
+            this.ctx.fillStyle = corona;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 42, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Dark Volcanic Eclipse Moon Core
+            this.ctx.fillStyle = '#1c0a0a';
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 30, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#ff6d00';
+            this.ctx.lineWidth = 2.5;
+            this.ctx.stroke();
+        } else if (isCyber) {
+            // 🏙️ World 4 (Cyber Metropolis): Digital Holographic Cyber Moon
+            this.ctx.shadowColor = '#00f5d4';
+            this.ctx.shadowBlur = 24;
+
+            const cyberGrad = this.ctx.createLinearGradient(-30, -30, 30, 30);
+            cyberGrad.addColorStop(0, '#00f5d4');
+            cyberGrad.addColorStop(1, '#0f3460');
+            this.ctx.fillStyle = cyberGrad;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 32, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#ffffff';
+            this.ctx.lineWidth = 2;
+            this.ctx.stroke();
+
+            // Hologram Horizontal Latitude Scanlines
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+            this.ctx.lineWidth = 1.5;
+            for (let y = -22; y <= 22; y += 10) {
+                const rx = Math.sqrt(Math.max(0, 30*30 - y*y));
+                this.ctx.beginPath();
+                this.ctx.moveTo(-rx, y);
+                this.ctx.lineTo(rx, y);
+                this.ctx.stroke();
+            }
+        } else if (isCosmic) {
+            // 🪐 World 5 (Cosmic Galaxy): Giant Radiant Ringed Planet (Saturn-like)
+            this.ctx.shadowColor = '#ffd700';
+            this.ctx.shadowBlur = 28;
+
+            // Planet Body
+            const planetGrad = this.ctx.createLinearGradient(-26, -26, 26, 26);
+            planetGrad.addColorStop(0, '#ffd700');
+            planetGrad.addColorStop(0.5, '#e040fb');
+            planetGrad.addColorStop(1, '#311b92');
+            this.ctx.fillStyle = planetGrad;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 28, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Tilted Glowing Cosmic Nebula Rings
+            this.ctx.save();
+            this.ctx.rotate(-0.35);
+            this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.85)';
+            this.ctx.lineWidth = 3.5;
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, 48, 12, 0, 0, Math.PI * 2);
+            this.ctx.stroke();
+
+            this.ctx.strokeStyle = 'rgba(0, 245, 255, 0.65)';
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, 54, 15, 0, 0, Math.PI * 2);
+            this.ctx.stroke();
+            this.ctx.restore();
+        } else {
+            // ☀️ World 1 (Emerald Meadow - Day): Luminous Golden Sun with Soft Corona
+            this.ctx.shadowColor = '#ffd600';
+            this.ctx.shadowBlur = 32;
+
+            // Warm Radiant Corona
+            const sunCorona = this.ctx.createRadialGradient(0, 0, 20, 0, 0, 46);
+            sunCorona.addColorStop(0, '#ffffff');
+            sunCorona.addColorStop(0.4, '#ffd600');
+            sunCorona.addColorStop(0.8, '#ff9100');
+            sunCorona.addColorStop(1, 'rgba(255, 145, 0, 0)');
+            this.ctx.fillStyle = sunCorona;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 46, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // Core Sun Sphere
+            this.ctx.fillStyle = '#fff9c4';
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, 28, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
         this.ctx.restore();
 
-        // Atmospheric Weather & Clouds / Stars
+        // 3. Multi-Layer Parallax Background
         if (isCosmic || isSpectral) {
-            // Shimmering Twinkle Stars in Space/Void
+            // Space / Void Sparkling Stars
             this.ctx.save();
             this.ctx.fillStyle = "#ffffff";
-            const time = Date.now();
-            for (let s = 0; s < 30; s++) {
-                const sx = (s * 97 - this.camera.x * 0.08) % 2400;
-                const sy = 25 + (s * 37) % 280;
-                const sSize = 1.2 + Math.sin(time * 0.003 + s) * 0.7;
+            for (let s = 0; s < 45; s++) {
+                const sx = (s * 97 - this.camera.x * 0.08) % (w + 40);
+                const sy = 25 + (s * 37) % 320;
+                const sSize = 1.2 + Math.sin(time * 3 + s) * 0.8;
+                this.ctx.globalAlpha = 0.4 + Math.sin(time * 2 + s) * 0.4;
                 this.ctx.beginPath();
-                this.ctx.arc(sx < 0 ? sx + 2400 : sx, sy, Math.max(0.5, sSize), 0, Math.PI * 2);
+                this.ctx.arc(sx < 0 ? sx + w + 40 : sx, sy, Math.max(0.6, sSize), 0, Math.PI * 2);
                 this.ctx.fill();
             }
             this.ctx.restore();
+        } else if (isCyber) {
+            // Cyber Metropolis Neon Skyline
+            this.ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+            for (let i = 0; i < 8; i++) {
+                const bx = (i * 150 - this.camera.x * 0.12) % (w + 200) - 60;
+                const bw = 90;
+                const bh = 200 + (i % 4) * 45;
+                this.ctx.fillRect(bx, 460 - bh, bw, bh);
+                this.ctx.fillStyle = (i % 2 === 0) ? 'rgba(0, 245, 212, 0.25)' : 'rgba(255, 0, 127, 0.25)';
+                for (let wx = bx + 10; wx < bx + bw - 10; wx += 16) {
+                    for (let wy = 460 - bh + 15; wy < 440; wy += 22) {
+                        this.ctx.fillRect(wx, wy, 6, 9);
+                    }
+                }
+                this.ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+            }
         } else {
-            // Soft atmospheric clouds
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${cloudAlpha})`;
-            for (let i = 0; i < 14; i++) {
-                let cx = (i * 220 - this.camera.x * 0.15) % 3200;
-                if (cx < -120) cx += 3200;
-                let cy = 55 + (i % 4) * 32;
+            // Distant Mountains & Clouds
+            this.ctx.fillStyle = isVolcano ? 'rgba(40, 10, 10, 0.65)' : 'rgba(46, 125, 50, 0.25)';
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, 480);
+            for (let x = 0; x <= w + 80; x += 40) {
+                let my = 310 + Math.sin((x + this.camera.x * 0.12) * 0.006) * 45;
+                this.ctx.lineTo(x, my);
+            }
+            this.ctx.lineTo(w, 480);
+            this.ctx.fill();
+
+            // Clouds
+            this.ctx.fillStyle = isVolcano ? "rgba(255, 100, 50, 0.2)" : "rgba(255, 255, 255, 0.45)";
+            for (let i = 0; i < 6; i++) {
+                let cx = (i * 240 - this.camera.x * 0.16 + time * 10) % (w + 250) - 80;
+                let cy = 55 + (i % 3) * 35;
                 this.ctx.beginPath();
-                this.ctx.arc(cx, cy, 24, 0, Math.PI * 2);
-                this.ctx.arc(cx + 25, cy - 12, 32, 0, Math.PI * 2);
-                this.ctx.arc(cx + 52, cy, 24, 0, Math.PI * 2);
+                this.ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+                this.ctx.arc(cx + 22, cy - 10, 28, 0, Math.PI * 2);
+                this.ctx.arc(cx + 46, cy, 22, 0, Math.PI * 2);
                 this.ctx.fill();
             }
         }
 
-        // Bottom Parallax Rolling Terrain Hills ($y = 400 - 540$)
+        // 4. Mid Foothills ($y = 430 - 540$)
         this.ctx.save();
         this.ctx.fillStyle = theme.platformBorder;
-        this.ctx.globalAlpha = 0.30;
+        this.ctx.globalAlpha = 0.32;
         this.ctx.beginPath();
         this.ctx.moveTo(0, 540);
-        for (let x = 0; x <= this.canvas.width; x += 30) {
-            let hillY = 445 + Math.sin((x + this.camera.x * 0.25) * 0.007) * 30;
+        for (let x = 0; x <= w + 40; x += 25) {
+            let hillY = 440 + Math.sin((x + this.camera.x * 0.28) * 0.008) * 26;
             this.ctx.lineTo(x, hillY);
         }
-        this.ctx.lineTo(this.canvas.width, 540);
+        this.ctx.lineTo(w, 540);
         this.ctx.closePath();
         this.ctx.fill();
         this.ctx.restore();
 
-        // Bottom Animated Liquid Wave Ocean ($y = 485 - 540$)
+        // 5. Liquid Wave Ocean ($y = 488 - 540$)
         const liquidColor = theme.liquidColor || "rgba(0, 180, 216, 0.45)";
         this.ctx.save();
         this.ctx.fillStyle = liquidColor;
-        this.ctx.shadowColor = theme.platformColor;
-        this.ctx.shadowBlur = 12;
-
+        this.ctx.shadowColor = theme.platformBorder || '#00e5ff';
+        this.ctx.shadowBlur = 10;
         this.ctx.beginPath();
         this.ctx.moveTo(0, 540);
-        const waveTime = Date.now() * 0.003;
-        for (let x = 0; x <= this.canvas.width; x += 15) {
-            let waveY = 492 + Math.sin(waveTime + x * 0.02) * 5;
+        for (let x = 0; x <= w + 15; x += 15) {
+            let waveY = 490 + Math.sin(time * 3.2 + x * 0.022) * 6;
             this.ctx.lineTo(x, waveY);
         }
-        this.ctx.lineTo(this.canvas.width, 540);
+        this.ctx.lineTo(w, 540);
         this.ctx.closePath();
         this.ctx.fill();
 
-        // Wave Foam Edge Highlight
-        this.ctx.strokeStyle = "rgba(255, 255, 255, 0.60)";
+        this.ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
-        for (let x = 0; x <= this.canvas.width; x += 15) {
-            let waveY = 492 + Math.sin(waveTime + x * 0.02) * 5;
+        for (let x = 0; x <= w + 15; x += 15) {
+            let waveY = 490 + Math.sin(time * 3.2 + x * 0.022) * 6;
             if (x === 0) this.ctx.moveTo(x, waveY);
             else this.ctx.lineTo(x, waveY);
         }
         this.ctx.stroke();
         this.ctx.restore();
 
+        // 6. Real-time Ambient Weather & Atmospheric Particles! (🌸 Sakura / 🌋 Embers / 🔮 Wisps / 🏙️ Cyber / 🌌 Stardust)
+        this.updateAmbientWeather(theme);
+
+        if (this.state === 'PAUSED') {
+            this.ctx.fillStyle = 'rgba(0,0,0,0.55)';
+            this.ctx.fillRect(0, 0, w, h);
+        }
 
 
-        // Textured Platforms with Grass Trim & Shadows
+
+
+
+        // Ornate Thematic Platforms with Foliage, Inlays & Highlights
+        const worldIdx = Math.floor((this.currentChapterIdx || 0) / 5);
+
         this.platforms.forEach(p => {
             const px = p.x - this.camera.x;
             const py = p.y - this.camera.y;
 
             this.ctx.save();
             // Drop shadow
-            this.ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
             this.ctx.beginPath();
-            this.ctx.roundRect(px + 3, py + 4, p.width, p.height, 8);
+            this.ctx.roundRect(px + 3, py + 5, p.width, p.height, 8);
             this.ctx.fill();
 
-            // Main body
+            // Platform Main Body
             this.ctx.fillStyle = theme.platformColor;
             this.ctx.beginPath();
             this.ctx.roundRect(px, py, p.width, p.height, 8);
             this.ctx.fill();
 
-            // Top Border / Grass
+            // Top Trim Border
             this.ctx.fillStyle = theme.platformBorder;
             this.ctx.beginPath();
             this.ctx.roundRect(px, py, p.width, 7, [8, 8, 0, 0]);
             this.ctx.fill();
 
-            // Glossy Highlight Line
-            this.ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+            // Glossy Top Highlight Line
+            this.ctx.fillStyle = "rgba(255, 255, 255, 0.40)";
             this.ctx.fillRect(px + 4, py + 1, p.width - 8, 2);
+
+            // Thematic Edge Accents & Foliage (Clean Emerald Scallops & Tiny Golden Flowers)
+            if (worldIdx === 0) {
+                this.ctx.fillStyle = theme.platformBorder;
+                for (let gx = px + 12; gx < px + p.width - 15; gx += 18) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(gx, py + 7, 3.2, 0, Math.PI);
+                    this.ctx.fill();
+                }
+            } else if (worldIdx === 1) {
+                // World 2: Glowing Magma Veins
+                this.ctx.fillStyle = '#ff3d00';
+                for (let mx = px + 16; mx < px + p.width - 20; mx += 35) {
+                    this.ctx.fillRect(mx, py + 6, 8, 2);
+                }
+            } else if (worldIdx === 3) {
+                // World 4: Cyber LED Corner Bolts
+                this.ctx.fillStyle = '#00f5d4';
+                this.ctx.fillRect(px + 3, py + 3, 3, 3);
+                this.ctx.fillRect(px + p.width - 6, py + 3, 3, 3);
+            }
             this.ctx.restore();
         });
 
@@ -2302,10 +2839,34 @@ class Game {
             this.ctx.restore();
         });
 
-        // Floor Switches 🔘
+        // 5. Sci-Fi Pressure Floor Switches 🔘
         this.switches.forEach(sw => {
-            this.ctx.fillStyle = sw.activated ? '#76ff03' : '#ff1744';
-            this.ctx.fillRect(sw.x - this.camera.x, sw.y - this.camera.y, sw.width, sw.height);
+            const sx = sw.x - this.camera.x;
+            const sy = sw.y - this.camera.y;
+            this.ctx.save();
+
+            // Heavy Metal Base Housing
+            this.ctx.fillStyle = '#1e293b';
+            this.ctx.fillRect(sx, sy + 3, sw.width, sw.height - 3);
+            this.ctx.strokeStyle = '#475569';
+            this.ctx.lineWidth = 1;
+            this.ctx.strokeRect(sx, sy + 3, sw.width, sw.height - 3);
+
+            // Depressed or Raised Pressure Plate
+            const btnHeight = sw.activated ? 3 : 6;
+            const btnY = sw.activated ? (sy + sw.height - 3) : (sy);
+            
+            this.ctx.fillStyle = sw.activated ? '#00e676' : '#ff1744';
+            this.ctx.shadowColor = sw.activated ? '#00e676' : '#ff1744';
+            this.ctx.shadowBlur = 12;
+            this.ctx.beginPath();
+            this.ctx.roundRect(sx + 3, btnY, sw.width - 6, btnHeight, 2);
+            this.ctx.fill();
+
+            // Top Status LED Glint
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.fillRect(sx + sw.width / 2 - 2, btnY + 1, 4, 1.5);
+            this.ctx.restore();
         });
 
         // Collectibles
@@ -2339,6 +2900,18 @@ class Game {
                 this.ctx.fillRect(-2, 2, 4, 16);
                 this.ctx.fillRect(2, 8, 5, 3);
                 this.ctx.fillRect(2, 13, 6, 3);
+
+                // Orbiting Magic Star Halo ✨
+                const kTime = Date.now() * 0.004;
+                this.ctx.fillStyle = '#ffffff';
+                for (let s = 0; s < 3; s++) {
+                    const sAngle = kTime + (s * Math.PI * 2 / 3);
+                    const sx = Math.cos(sAngle) * 15;
+                    const sy = -6 + Math.sin(sAngle) * 8;
+                    this.ctx.beginPath();
+                    this.ctx.arc(sx, sy, 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
 
                 this.ctx.shadowBlur = 0;
             } else if (c.type === 'strawberry') {

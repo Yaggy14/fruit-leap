@@ -279,6 +279,92 @@ class AudioManager {
         osc.start(now);
         osc.stop(now + 0.15);
     }
+    // Magical ethereal whoosh / phase teleport chime
+    playPortal() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        
+        // Upward cosmic chime sweep
+        const osc1 = this.ctx.createOscillator();
+        const gain1 = this.ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(320, now);
+        osc1.frequency.exponentialRampToValueAtTime(1100, now + 0.24);
+        gain1.gain.setValueAtTime(0.24 * this.globalVolume, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+        osc1.connect(gain1);
+        gain1.connect(this.ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.24);
+
+        // Shimmer harmonic sparkle
+        const osc2 = this.ctx.createOscillator();
+        const gain2 = this.ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(640, now + 0.04);
+        osc2.frequency.exponentialRampToValueAtTime(1480, now + 0.30);
+        gain2.gain.setValueAtTime(0.18 * this.globalVolume, now + 0.04);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.30);
+        osc2.connect(gain2);
+        gain2.connect(this.ctx.destination);
+        osc2.start(now + 0.04);
+        osc2.stop(now + 0.30);
+    }
+
+    // Grand cinematic studio fanfare for SETOGI logo reveal
+    playSplashIntro() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        // Warm C Major 9th shimmering chord progression
+        const notes = [
+            { freq: 261.63, time: 0.00, dur: 0.65, vol: 0.22 }, // C4
+            { freq: 392.00, time: 0.08, dur: 0.60, vol: 0.24 }, // G4
+            { freq: 523.25, time: 0.16, dur: 0.55, vol: 0.25 }, // C5
+            { freq: 659.25, time: 0.24, dur: 0.50, vol: 0.22 }, // E5
+            { freq: 987.77, time: 0.32, dur: 0.70, vol: 0.26 }, // B5 (Maj7 sparkle)
+            { freq: 1046.50, time: 0.40, dur: 0.80, vol: 0.28 } // C6 (Crown note)
+        ];
+
+        notes.forEach(n => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(n.freq, now + n.time);
+            gain.gain.setValueAtTime(n.vol * this.globalVolume, now + n.time);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + n.time);
+            osc.stop(now + n.time + n.dur);
+        });
+    }
+
+    // Punchy affirmative launch chime when player taps to enter game
+    playSplashTap() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const notes = [
+            { freq: 523.25, time: 0.00, dur: 0.18, vol: 0.25 }, // C5
+            { freq: 783.99, time: 0.06, dur: 0.22, vol: 0.28 }, // G5
+            { freq: 1046.50, time: 0.12, dur: 0.35, vol: 0.32 } // C6
+        ];
+
+        notes.forEach(n => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(n.freq, now + n.time);
+            gain.gain.setValueAtTime(n.vol * this.globalVolume, now + n.time);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + n.time);
+            osc.stop(now + n.time + n.dur);
+        });
+    }
 }
 
 const audio = new AudioManager();

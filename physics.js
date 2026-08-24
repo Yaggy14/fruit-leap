@@ -1,12 +1,12 @@
 // Player & Entities Physics Engine with Matched Callback Signatures & Strict Collision Handling
 
 const CHARACTER_SKINS = [
-    { id: 'bunny', name: 'Fluffy Bunny', icon: '🐰', bodyColor: '#ffffff', earColor: '#ff80ab', priceStars: 0, perk: 'Speed 3.2', baseSpeed: 3.2 },
-    { id: 'bear', name: 'Teddy Bear', icon: '🐻', bodyColor: '#8d6e63', earColor: '#5d4037', priceStars: 5, perk: 'Speed 3.4', baseSpeed: 3.4 },
-    { id: 'kitty', name: 'Cute Kitty', icon: '🐱', bodyColor: '#ffa726', earColor: '#ffb300', priceStars: 15, perk: 'Speed 3.6', baseSpeed: 3.6 },
-    { id: 'fox', name: 'Foxy Hero', icon: '🦊', bodyColor: '#ff5722', earColor: '#d84315', priceStars: 30, perk: 'Speed 3.8', baseSpeed: 3.8 },
-    { id: 'panda', name: 'Panda Pal', icon: '🐼', bodyColor: '#ffffff', earColor: '#212121', priceStars: 45, perk: 'Speed 4.1', baseSpeed: 4.1 },
-    { id: 'unicorn', name: 'Magic Unicorn', icon: '🦄', bodyColor: '#f5f3ff', earColor: '#ea80fc', priceStars: 60, perk: 'Speed 4.4', baseSpeed: 4.4 }
+    { id: 'bunny', name: 'Fluffy Bunny', icon: '🐰', bodyColor: '#ffffff', earColor: '#ff80ab', priceStars: 0, baseSpeed: 3.2, speed: '3.2', perk: 'Double Jump' },
+    { id: 'kitty', name: 'Cute Kitty', icon: '🐱', bodyColor: '#ffa726', earColor: '#ffb300', priceStars: 35, baseSpeed: 3.5, speed: '3.5', perk: 'Agile Steps' },
+    { id: 'bear', name: 'Teddy Bear', icon: '🐻', bodyColor: '#8d6e63', earColor: '#5d4037', priceStars: 75, baseSpeed: 3.8, speed: '3.8', perk: 'High Power' },
+    { id: 'fox', name: 'Foxy Hero', icon: '🦊', bodyColor: '#ff5722', earColor: '#d84315', priceStars: 120, baseSpeed: 4.0, speed: '4.0', perk: 'Super Sprint' },
+    { id: 'panda', name: 'Panda Pal', icon: '🐼', bodyColor: '#ffffff', earColor: '#212121', priceStars: 165, baseSpeed: 4.2, speed: '4.2', perk: 'High Leap' },
+    { id: 'unicorn', name: 'Magic Unicorn', icon: '🦄', bodyColor: '#f5f3ff', earColor: '#ea80fc', priceStars: 210, baseSpeed: 4.5, speed: '4.5', perk: 'Star Glide' }
 ];
 
 class Particle {
@@ -149,6 +149,10 @@ class Player {
         this.hasBubbleShield = false;
         this.hasMagnet = false;
         this.hasSpeedBoost = false;
+        this.lastSafeX = x;
+        this.lastSafeY = y;
+        this.lastSafeX = x;
+        this.lastSafeY = y;
     }
 
     get speed() {
@@ -175,6 +179,10 @@ class Player {
         this.hasBubbleShield = false;
         this.hasMagnet = false;
         this.hasSpeedBoost = false;
+        this.lastSafeX = x;
+        this.lastSafeY = y;
+        this.lastSafeX = x;
+        this.lastSafeY = y;
     }
 
     triggerDeath(cause, onDie, particles, floatingTexts = null, triggerShake = null) {
@@ -401,6 +409,10 @@ class Player {
                     this.vy = 0;
                     this.grounded = true;
                     this.canDoubleJump = true;
+                    if (!p.vx) {
+                        this.lastSafeX = this.x;
+                        this.lastSafeY = this.y;
+                    }
                     if (p.vx) this.x += p.vx;
                 } else if (this.vy < 0) {
                     this.y = p.y + p.height;
@@ -445,7 +457,7 @@ class Player {
                         this.x = portal.exit.x + 4;
                         this.y = portal.exit.y;
                         this.teleportCooldown = 45;
-                        audio.playStar();
+                        audio.playPortal();
                         if (triggerShake) triggerShake(3, 0.1);
                         for (let p = 0; p < 16; p++) {
                             particles.push(new Particle(portal.exit.x + 15, portal.exit.y + 20, '#00f0ff', 4, (Math.random()-0.5)*5, (Math.random()-0.5)*5, 25));
@@ -652,6 +664,14 @@ class Player {
         const py = this.y - camera.y + this.height / 2;
 
         ctx.translate(px, py);
+
+        // Sinematic shrink & swirl into light portal when clearing level
+        if (this.isEnteringDoor && this.entryTimer > 0) {
+            const progress = this.entryTimer / 40; // 1 down to 0
+            ctx.scale(Math.max(0, progress), Math.max(0, progress));
+            ctx.rotate((1 - progress) * Math.PI * 4);
+            ctx.globalAlpha = Math.max(0, progress);
+        }
 
         if (this.invincibleTimer > 0 && Math.floor(this.invincibleTimer / 4) % 2 === 0) {
             ctx.globalAlpha = 0.4;
@@ -1186,8 +1206,8 @@ class BossEnemy {
         this.vy = 0;
         this.platformRef = platformRef;
         this.bossType = bossType || 5;
-        this.hp = 3;
-        this.maxHp = 3;
+        this.hp = 5;
+        this.maxHp = 5;
         this.isDead = false;
         this.isAwake = false;
         this.state = 'SLEEPING';
