@@ -361,11 +361,6 @@ class Game {
         let progress = 0;
         let tipIdx = 0;
 
-        // Try playing splash intro audio if permitted
-        setTimeout(() => {
-            try { audio.playSplashIntro(); } catch (e) {}
-        }, 150);
-
         const interval = setInterval(() => {
             // Smooth natural progress increment
             progress += Math.floor(Math.random() * 5) + 3;
@@ -398,18 +393,26 @@ class Game {
             }
         }, 40);
 
-        // Tap to Enter Game & Play BGM
+        // Tap to Enter Game & Play BGM seamlessly with zero lag
         let entered = false;
         const enterGame = () => {
             if (entered) return;
             entered = true;
             try { audio.playSplashTap(); } catch (e) {}
+
+            // Pre-reveal Main Menu behind the fading splash overlay
+            const mainMenu = document.getElementById('screen-main-menu');
+            if (mainMenu) mainMenu.classList.remove('hidden');
+            this.state = 'MENU';
+            this.updateStatsUI();
+            this.updateLanguageUI();
+            this.checkDailySpinStatus();
+            try { audio.playBGM('menu'); } catch (e) {}
+
             splashScreen.classList.add('fade-out');
             setTimeout(() => {
                 splashScreen.classList.add('hidden');
-                this.showScreen('screen-main-menu');
-                try { audio.playBGM('menu'); } catch (e) {}
-            }, 450);
+            }, 360);
         };
 
         if (btnStart) {
@@ -523,7 +526,7 @@ class Game {
             if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.keys.down = true;
             if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
                 if (!this.keys.up && this.state === 'PLAYING') {
-                    this.player.jump(this.particles);
+                    this.player.jump(this.particles, this.floatingTexts);
                 }
                 this.keys.up = true;
             }
@@ -545,7 +548,7 @@ class Game {
                 if (e) e.preventDefault();
                 btn.classList.add('pressed');
                 this.keys[keyName] = true;
-                if (keyName === 'up' && this.state === 'PLAYING') this.player.jump(this.particles);
+                if (keyName === 'up' && this.state === 'PLAYING') this.player.jump(this.particles, this.floatingTexts);
             };
 
             const releaseKey = (e) => {
@@ -590,6 +593,28 @@ class Game {
         document.getElementById('btn-win-restart').addEventListener('click', () => this.restartLevel());
         document.getElementById('btn-win-levels').addEventListener('click', () => this.showScreen('screen-chapter-select'));
         document.getElementById('btn-win-main-menu')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
+        document.getElementById('btn-win-double-score')?.addEventListener('click', () => {
+            admob.showRewardedAd(() => {
+                if (this.lastWinScore && this.lastLvlCode) {
+                    const doubled = this.lastWinScore * 2;
+                    this.progress.highScores[this.lastLvlCode] = Math.max(this.progress.highScores[this.lastLvlCode] || 0, doubled);
+                    this.progress.highScore = Object.values(this.progress.highScores).reduce((a, b) => a + b, 0);
+                    this.saveProgress();
+                    const winScoreEl = document.getElementById('win-score-val');
+                    if (winScoreEl) winScoreEl.innerText = doubled.toLocaleString();
+                    const winBestScoreEl = document.getElementById('win-best-score-val');
+                    if (winBestScoreEl) winBestScoreEl.innerText = (this.progress.highScores[this.lastLvlCode] || doubled).toLocaleString();
+                    const btnAd = document.getElementById('btn-win-double-score');
+                    if (btnAd) {
+                        btnAd.disabled = true;
+                        btnAd.innerText = (this.lang === 'tr') ? '✅ 2X SKOR ALINDI!' : '✅ 2X SCORE CLAIMED!';
+                        btnAd.style.opacity = '0.6';
+                    }
+                    audio.playWin();
+                    this.showToast((this.lang === 'tr') ? '🎉 2X Skor Hesabınıza Eklendi!' : '🎉 2X Score Added!');
+                }
+            });
+        });
         document.getElementById('btn-gameover-menu').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-no-lives-menu').addEventListener('click', () => this.showScreen('screen-main-menu'));
         document.getElementById('btn-victory-main-menu')?.addEventListener('click', () => this.showScreen('screen-main-menu'));
@@ -1060,7 +1085,9 @@ class Game {
         document.getElementById('hud-overlay').classList.remove('hidden');
         document.getElementById('touch-controls')?.classList.remove('hidden'); // SHOW TOUCH CONTROLS IN GAME!
         this.state = 'PLAYING';
-        audio.playBGM('game');
+
+        const themeTrack = this.getChapterBGMTrack(this.currentChapterIdx);
+        audio.playThematicBGM(themeTrack);
 
         // Trigger Piko Story Dialogue for Chapter
         const lData = I18N[this.lang] || I18N.tr;
@@ -1079,6 +1106,33 @@ class Game {
         this.showPikoDialogue(msg);
     }
 
+    getChapterBGMTrack(chapterIdx) {
+        const chapter = CHAPTERS[chapterIdx];
+        const chId = chapter ? chapter.id : (chapterIdx + 1);
+
+        if (chId === 1 || chId === 2) return 'world1_day';
+        if (chId === 3 || chId === 4) return 'world1_twilight';
+        if (chId === 5) return 'world1_castle';
+
+        if (chId === 6 || chId === 7) return 'world2_caves';
+        if (chId === 8 || chId === 9) return 'world2_inferno';
+        if (chId === 10) return 'world2_caldera';
+
+        if (chId === 11 || chId === 12) return 'world3_spectral';
+        if (chId === 13 || chId === 14) return 'world3_amethyst';
+        if (chId === 15) return 'world3_sanctum';
+
+        if (chId === 16 || chId === 17) return 'world4_cyber';
+        if (chId === 18 || chId === 19) return 'world4_neon';
+        if (chId === 20) return 'world4_matrix';
+
+        if (chId === 21 || chId === 22) return 'world5_cosmic';
+        if (chId === 23 || chId === 24) return 'world5_supernova';
+        if (chId >= 25) return 'world5_throne';
+
+        return 'world1_day';
+    }
+
     showPikoDialogue(text) {
         const bubble = document.getElementById('piko-speech-bubble');
         const txtEl = document.getElementById('piko-dialogue-text');
@@ -1095,7 +1149,10 @@ class Game {
         const chapter = CHAPTERS[this.currentChapterIdx];
         const level = chapter.levels[this.currentLevelIdx];
 
+        this.player.currentSkinId = this.progress.equippedSkin || 'bunny';
         this.player.reset(level.playerStart.x, level.playerStart.y);
+        this.camera.x = Math.max(0, this.player.x - this.canvas.width * 0.35);
+        this.camera.y = this.player.y - this.canvas.height * 0.58;
         
         this.platforms = level.platforms.map(p => ({ ...p, startX: p.x }));
         let maxX = 800;
@@ -1110,7 +1167,8 @@ class Game {
             platformRef: this.platforms.find(p => p.id === oc.platformId)
         })) : [];
         this.bouncyPads = level.bouncyPads ? level.bouncyPads.map(b => ({ ...b, platformRef: this.platforms.find(p => p.id === b.platformId) })) : [];
-        this.enemies = level.enemies ? level.enemies.map(e => new Enemy(e.x, e.y, e.range, this.platforms.find(p => p.id === e.platformId))) : [];
+        const currentWorldType = Math.floor((this.currentChapterIdx || 0) / 5) + 1;
+        this.enemies = level.enemies ? level.enemies.map(e => new Enemy(e.x, e.y, e.range, this.platforms.find(p => p.id === e.platformId), e.worldType || currentWorldType)) : [];
         if (level.boss) {
             const bossPlat = this.platforms.find(p => p.id === level.boss.platformId);
             this.boss = new BossEnemy(level.boss.x, level.boss.y, bossPlat, level.boss.bossType || 5);
@@ -1159,12 +1217,14 @@ class Game {
         this.state = 'PAUSED';
         document.getElementById('screen-pause').classList.remove('hidden');
         document.getElementById('touch-controls')?.classList.add('hidden');
+        audio.pauseBGM();
     }
 
     resumeGame() {
         this.state = 'PLAYING';
         document.getElementById('screen-pause').classList.add('hidden');
         document.getElementById('touch-controls')?.classList.remove('hidden');
+        audio.resumeBGM();
     }
 
     restartLevel() {
@@ -1179,9 +1239,11 @@ class Game {
         this.player.hasGoldenKey = false;
         this.loadLevelData();
         document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
-        this.showScreen('hud-overlay');
-        document.getElementById('hud-overlay').classList.remove('hidden');
+        document.getElementById('hud-overlay')?.classList.remove('hidden');
+        document.getElementById('touch-controls')?.classList.remove('hidden'); // Fix: Show touch buttons!
         this.state = 'PLAYING';
+        const themeTrack = this.getChapterBGMTrack(this.currentChapterIdx);
+        audio.playThematicBGM(themeTrack);
     }
 
     loadNextLevel() {
@@ -1209,10 +1271,9 @@ class Game {
 
     handleDie() {
         audio.playHurt();
+        audio.fadeBGMOut(0.45); // Smooth muffle & fade-out on death!
 
         if ((this.progress.globalLives || 0) <= 0) {
-            audio.playBGM(null);
-            audio.playGameOver();
             this.state = 'GAME_OVER';
             document.querySelectorAll('.ui-screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('screen-game-over').classList.remove('hidden');
@@ -1259,6 +1320,8 @@ class Game {
         if (!overlay || !numEl) {
             this.state = 'PLAYING';
             document.getElementById('touch-controls')?.classList.remove('hidden');
+            const track = (this.boss && this.boss.isAwake && !this.boss.isDead) ? 'boss' : this.getChapterBGMTrack(this.currentChapterIdx);
+            audio.playThematicBGM(track);
             return;
         }
 
@@ -1284,6 +1347,9 @@ class Game {
                 void numEl.offsetWidth;
                 numEl.style.animation = 'countdownPop 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                 audio.playStar();
+
+                const track = (this.boss && this.boss.isAwake && !this.boss.isDead) ? 'boss' : this.getChapterBGMTrack(this.currentChapterIdx);
+                audio.playThematicBGM(track);
             } else {
                 clearInterval(timer);
                 overlay.classList.add('hidden');
@@ -1295,9 +1361,9 @@ class Game {
     }
 
     handleWin() {
-        audio.playBGM(null); // Stop BGM to hear the win fanfare
         this.clearActivePowerUp();
         this.state = 'WIN';
+        audio.playWin(); // Play victory fanfare; level track continues smoothly in background!
         const level = CHAPTERS[this.currentChapterIdx].levels[this.currentLevelIdx];
         const lvlCode = `${CHAPTERS[this.currentChapterIdx].id}-${this.currentLevelIdx + 1}`;
 
@@ -1331,6 +1397,9 @@ class Game {
 
         this.progress.highScore = Object.values(this.progress.highScores).reduce((a, b) => a + b, 0);
 
+        this.lastWinScore = currentLevelScore;
+        this.lastLvlCode = lvlCode;
+
         this.saveProgress();
 
         document.getElementById('win-target-time').innerText = `${level.targetTime}s`;
@@ -1351,55 +1420,58 @@ class Game {
             }
         }
 
-        document.getElementById('req-star-1').className = 'star-req-item';
-        document.getElementById('req-star-2').className = 'star-req-item';
-        document.getElementById('req-star-3').className = 'star-req-item';
+        // Reset requirements cards
+        ['req-star-1', 'req-star-2', 'req-star-3'].forEach(id => {
+            const card = document.getElementById(id);
+            if (card) card.classList.remove('completed');
+        });
         
-        document.querySelector('#req-star-1 .req-check').innerText = star1 ? '✅' : '⬜';
-        document.querySelector('#req-star-2 .req-check').innerText = star2 ? '✅' : '⬜';
-        document.querySelector('#req-star-3 .req-check').innerText = star3 ? '✅' : '⬜';
+        const reqIcon1 = document.querySelector('#req-star-1 .req-status-icon');
+        if (reqIcon1) reqIcon1.innerText = star1 ? '✅' : '⬜';
+        const reqIcon2 = document.querySelector('#req-star-2 .req-status-icon');
+        if (reqIcon2) reqIcon2.innerText = star2 ? '✅' : '⬜';
+        const reqIcon3 = document.querySelector('#req-star-3 .req-status-icon');
+        if (reqIcon3) reqIcon3.innerText = star3 ? '✅' : '⬜';
 
-        document.getElementById('arch-star-1').className = 'arch-star';
-        document.getElementById('arch-star-2').className = 'arch-star';
-        document.getElementById('arch-star-3').className = 'arch-star';
+        // Reset Chubby Arch Stars
+        ['arch-star-1', 'arch-star-2', 'arch-star-3'].forEach(id => {
+            const starEl = document.getElementById(id);
+            if (starEl) starEl.classList.remove('earned');
+        });
 
-        const theme = level.theme || CHAPTERS[this.currentChapterIdx]?.theme || CHAPTERS[0].theme;
-        const screenWinEl = document.getElementById('screen-win');
-        const winModalEl = document.querySelector('.win-modal');
-        if (screenWinEl) {
-            screenWinEl.style.background = 'rgba(0, 0, 0, 0.45)';
-            screenWinEl.style.backdropFilter = 'blur(4px)';
+        // Reset 2X Ad Reward Button
+        const btnAd = document.getElementById('btn-win-double-score');
+        if (btnAd) {
+            btnAd.disabled = false;
+            btnAd.innerText = (this.lang === 'tr') ? '🎬 2X SKOR KAZAN (+⭐)' : '🎬 2X SCORE BONUS (+⭐)';
+            btnAd.style.opacity = '1';
         }
-        if (winModalEl && theme.platformBorder) {
-            winModalEl.style.borderColor = theme.platformBorder;
-            winModalEl.style.boxShadow = `0 0 35px ${theme.platformBorder}88`;
-        }
 
-        document.getElementById('screen-win').classList.remove('hidden');
+        document.getElementById('screen-win')?.classList.remove('hidden');
         document.getElementById('touch-controls')?.classList.add('hidden');
         
-        // Staggered Arch Star Animation
+        // Staggered Chubby 3D Star Pop Animations with Chime!
         setTimeout(() => {
             if (star1) {
-                document.getElementById('arch-star-1').classList.add('earned');
-                document.getElementById('req-star-1').classList.add('completed');
+                document.getElementById('arch-star-1')?.classList.add('earned');
+                document.getElementById('req-star-1')?.classList.add('completed');
                 audio.playStar();
             }
-        }, 500);
+        }, 400);
         setTimeout(() => {
             if (star2) {
-                document.getElementById('arch-star-2').classList.add('earned');
-                document.getElementById('req-star-2').classList.add('completed');
+                document.getElementById('arch-star-2')?.classList.add('earned');
+                document.getElementById('req-star-2')?.classList.add('completed');
                 audio.playStar();
             }
-        }, 1100);
+        }, 950);
         setTimeout(() => {
             if (star3) {
-                document.getElementById('arch-star-3').classList.add('earned');
-                document.getElementById('req-star-3').classList.add('completed');
+                document.getElementById('arch-star-3')?.classList.add('earned');
+                document.getElementById('req-star-3')?.classList.add('completed');
                 audio.playStar();
             }
-        }, 1700);
+        }, 1500);
 
         admob.showInterstitialAd();
     }
@@ -1662,14 +1734,14 @@ class Game {
         const ctx = canvas.getContext('2d');
         const isEn = (this.lang === 'en');
         const prizes = [
-            { label: '+10 ⭐', color: '#ff4081', type: 'stars', val: 10 },
-            { label: '+1 ❤️', color: '#00e5ff', type: 'life', val: 1 },
-            { label: isEn ? '🧲 MAGNET' : '🧲 MIKNATIS', color: '#ffd600', type: 'power', val: 'powerup_magnet' },
-            { label: '+25 ⭐', color: '#76ff03', type: 'stars', val: 25 },
-            { label: isEn ? '🫧 SHIELD' : '🫧 KALKAN', color: '#e040fb', type: 'power', val: 'powerup_shield' },
-            { label: '+2 ❤️', color: '#ff6d00', type: 'life', val: 2 },
-            { label: '+50 ⭐', color: '#00b0ff', type: 'stars', val: 50 },
-            { label: '⭐ JACKPOT', color: '#ffd700', type: 'stars', val: 100 }
+            { icon: '⭐', label: '+10', sub: isEn ? 'STARS' : 'YILDIZ', color: '#ec407a', darkColor: '#c2185b', type: 'stars', val: 10 },
+            { icon: '❤️', label: '+1', sub: isEn ? 'LIFE' : 'CAN', color: '#00e5ff', darkColor: '#0097a7', type: 'life', val: 1 },
+            { icon: '🧲', label: isEn ? 'MAGNET' : 'MIKNATIS', sub: 'GÜÇ', color: '#ffd600', darkColor: '#ff8f00', type: 'power', val: 'powerup_magnet' },
+            { icon: '⭐', label: '+25', sub: isEn ? 'STARS' : 'YILDIZ', color: '#76ff03', darkColor: '#388e3c', type: 'stars', val: 25 },
+            { icon: '🫧', label: isEn ? 'SHIELD' : 'KALKAN', sub: 'GÜÇ', color: '#e040fb', darkColor: '#8e24aa', type: 'power', val: 'powerup_shield' },
+            { icon: '❤️', label: '+2', sub: isEn ? 'LIVES' : 'CAN', color: '#ff9100', darkColor: '#e65100', type: 'life', val: 2 },
+            { icon: '⭐', label: '+50', sub: isEn ? 'STARS' : 'YILDIZ', color: '#2979ff', darkColor: '#1565c0', type: 'stars', val: 50 },
+            { icon: '👑', label: '100 ⭐', sub: 'JACKPOT', color: '#ffd700', darkColor: '#ff6f00', type: 'stars', val: 100 }
         ];
 
         this.wheelPrizes = prizes;
@@ -1677,36 +1749,73 @@ class Game {
         const sliceAngle = (Math.PI * 2) / numSlices;
         const cx = canvas.width / 2;
         const cy = canvas.height / 2;
-        const radius = cx - 6;
+        const radius = cx - 12;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         prizes.forEach((p, i) => {
             const startA = i * sliceAngle;
             const endA = startA + sliceAngle;
+            const midA = startA + sliceAngle / 2;
+
+            // Slice Gradient
+            const grad = ctx.createRadialGradient(cx, cy, 30, cx + Math.cos(midA) * radius, cy + Math.sin(midA) * radius, radius);
+            grad.addColorStop(0, p.color);
+            grad.addColorStop(1, p.darkColor);
 
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.arc(cx, cy, radius, startA, endA);
             ctx.closePath();
-            ctx.fillStyle = p.color;
+            ctx.fillStyle = grad;
             ctx.fill();
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 3.5;
             ctx.stroke();
 
-            // Label Text
+            // Slice Content (Centered along slice ray)
             ctx.save();
             ctx.translate(cx, cy);
-            ctx.rotate(startA + sliceAngle / 2);
-            ctx.textAlign = 'right';
+            ctx.rotate(midA);
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // 1. Text Label (Large & Crisp Outline)
+            ctx.font = '900 24px "Fredoka One", "Nunito", sans-serif';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4.5;
+            ctx.strokeText(p.label, radius * 0.58, -2);
             ctx.fillStyle = '#ffffff';
-            ctx.font = '900 13px "Fredoka One", "Nunito", sans-serif';
-            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowColor = '#000000';
+            ctx.shadowBlur = 6;
+            ctx.fillText(p.label, radius * 0.58, -2);
+
+            // 2. Icon (Large 32px)
+            ctx.font = '32px sans-serif';
             ctx.shadowBlur = 4;
-            ctx.fillText(p.label, radius - 16, 5);
+            ctx.fillText(p.icon, radius * 0.84, 0);
+
             ctx.restore();
         });
+
+        // Golden Outer Rim with Studs
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 16 Golden Studs
+        for (let s = 0; s < 16; s++) {
+            const sa = s * (Math.PI * 2 / 16);
+            const sx = cx + Math.cos(sa) * (radius + 1);
+            const sy = cy + Math.sin(sa) * (radius + 1);
+            ctx.fillStyle = (s % 2 === 0) ? '#ffffff' : '#ffd700';
+            ctx.beginPath();
+            ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         this.checkDailySpinStatus();
     }
@@ -2240,7 +2349,7 @@ class Game {
 
             this.updateHUD();
             this.draw();
-        } else if (this.state === 'PAUSED' || this.state === 'WIN') {
+        } else if (this.state === 'PAUSED' || this.state === 'WIN' || this.state === 'DEATH_CHOICE' || this.state === 'COUNTDOWN') {
             this.draw();
         } else {
             this.drawMenuBackground();
@@ -2321,6 +2430,11 @@ class Game {
             this.boss
         );
 
+        // Update Enemies
+        for (let enemy of this.enemies) {
+            enemy.update(this.platforms, this.player, this.particles);
+        }
+
         // Update Boss
         if (this.boss && this.boss.y < 1500) {
             this.boss.update(this.platforms, this.player, this.particles, (i, d) => this.triggerScreenShake(i, d));
@@ -2350,7 +2464,7 @@ class Game {
             if (this.particles[i].life <= 0) this.particles.splice(i, 1);
         }
 
-        // Smooth Camera X & Y tracking so Player & Map Bottom are ALWAYS 100% centered & visible!
+        // Smooth Camera X & Y tracking so Player is ALWAYS vertically and horizontally centered at consistent screen height!
         const targetCamX = this.player.x - this.canvas.width * 0.35;
         this.camera.x += (targetCamX - this.camera.x) * 0.12;
         if (this.camera.x < 0) this.camera.x = 0;
@@ -2358,10 +2472,9 @@ class Game {
             this.camera.x = Math.max(0, this.levelMapWidth - this.canvas.width);
         }
 
-        // Dynamic Camera Y Tracking keeps player vertically centered & ground platform visible on mobile screens!
-        const targetCamY = Math.max(0, this.player.y - this.canvas.height * 0.55);
-        this.camera.y += (targetCamY - this.camera.y) * 0.10;
-        if (this.camera.y < 0) this.camera.y = 0;
+        // Dynamic Camera Y Tracking follows the platform baseline (does NOT bounce when player jumps!)
+        const targetCamY = (this.player.groundY !== undefined ? this.player.groundY : this.player.y) - this.canvas.height * 0.58;
+        this.camera.y += (targetCamY - this.camera.y) * 0.08;
     }
 
     draw() {
@@ -3038,241 +3151,345 @@ class Game {
                 this.ctx.beginPath(); this.ctx.ellipse(3, -3, 1.5, 2, -Math.PI/6, 0, Math.PI*2); this.ctx.fill();
                 this.ctx.beginPath(); this.ctx.ellipse(0, -6, 1.5, 2, 0, 0, Math.PI*2); this.ctx.fill();
             } else if (c.type === 'exit' || c.type === 'exit_door') {
-                // 🚪✨ Theme-Fitted Magical Kingdom Star Gate Portal Door!
+                // =========================================================================
+                // ⛩️ GRAND CELESTIAL STARGATE GATEWAY (Majestic Arched Dimensional Portal)
+                // =========================================================================
                 const isUnlocked = this.player.hasGoldenKey || c.doorOpen;
                 const platY = c.platformRef ? c.platformRef.y : (c.y + 50);
                 const time = Date.now();
                 
                 this.ctx.restore();
                 this.ctx.save();
-                this.ctx.translate(c.x - this.camera.x + 15, platY - this.camera.y);
+                this.ctx.translate(c.x - this.camera.x + 18, platY - this.camera.y);
 
-                // Portal Aura Glow
-                this.ctx.shadowColor = isUnlocked ? (theme.platformBorder || '#00f0ff') : '#ffab00';
-                this.ctx.shadowBlur = isUnlocked ? 24 : 12;
+                const portalGlow = isUnlocked ? (theme.platformBorder || '#00f0ff') : '#ffd600';
+                this.ctx.shadowColor = portalGlow;
+                this.ctx.shadowBlur = isUnlocked ? 28 : 14;
 
-                // 1. Theme-Fitted Pillars Arch Frame
-                this.ctx.fillStyle = theme.platformColor || '#1e1b4b';
+                // 1. Grand Temple Arch Outer Frame (Fluted Pillars + Gothic Pediment)
+                this.ctx.fillStyle = theme.platformColor || '#0f172a';
                 this.ctx.beginPath();
-                this.ctx.roundRect(-27, -80, 54, 80, [27, 27, 0, 0]);
+                this.ctx.roundRect(-30, -88, 60, 88, [30, 30, 4, 4]);
                 this.ctx.fill();
 
-                // Ornate Theme Arch Border
+                // Gilded Runic Arch Border
                 this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
-                this.ctx.lineWidth = 3.5;
+                this.ctx.lineWidth = 4;
                 this.ctx.stroke();
 
-                // Inner Arch Inlay
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-                this.ctx.lineWidth = 1.5;
-                this.ctx.beginPath();
-                this.ctx.roundRect(-23, -76, 46, 76, [23, 23, 0, 0]);
-                this.ctx.stroke();
+                // 2. Twin Fluted Temple Pillars (Left & Right)
+                [-27, 21].forEach(px => {
+                    this.ctx.fillStyle = '#1e293b';
+                    this.ctx.fillRect(px, -62, 6, 62);
+                    this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
+                    this.ctx.lineWidth = 1.2;
+                    this.ctx.strokeRect(px, -62, 6, 62);
+                    
+                    // Pillar Capital & Plinth
+                    this.ctx.fillStyle = '#ffd700';
+                    this.ctx.fillRect(px - 1.5, -65, 9, 3.5);
+                    this.ctx.fillRect(px - 1.5, -2, 9, 3.5);
+                });
 
-                // 2. Apex Keystone Gem (Pulsing Theme Crystal 💎)
+                // 3. Crowning Keystone Gem (Pulsing Apex Crest 💎)
                 this.ctx.save();
-                const gemGlow = isUnlocked ? (theme.platformBorder || '#00f0ff') : '#ffd600';
-                this.ctx.shadowColor = gemGlow;
-                this.ctx.shadowBlur = 14;
-                this.ctx.fillStyle = isUnlocked ? (theme.slimeColor?.start || '#00e5ff') : '#ff9100';
+                this.ctx.shadowColor = isUnlocked ? '#00f0ff' : '#ffd700';
+                this.ctx.shadowBlur = 16;
+                this.ctx.fillStyle = isUnlocked ? '#00f0ff' : '#ffd700';
                 this.ctx.beginPath();
-                // 4-point Diamond Crystal at Top Apex
-                this.ctx.moveTo(0, -84);
-                this.ctx.lineTo(6, -78);
-                this.ctx.lineTo(0, -72);
-                this.ctx.lineTo(-6, -78);
+                this.ctx.moveTo(0, -96);
+                this.ctx.lineTo(8, -88);
+                this.ctx.lineTo(0, -80);
+                this.ctx.lineTo(-8, -88);
                 this.ctx.closePath();
                 this.ctx.fill();
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.beginPath();
-                this.ctx.arc(0, -78, 1.8, 0, Math.PI * 2);
+                this.ctx.arc(0, -88, 2.5, 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.restore();
 
-                // 3. Inner Theme Portal Void
-                const portalGradKey = 'portal_void_' + (theme.name || 'default');
-                const doorGrad = this.getCachedGradient(portalGradKey, (ctx) => {
-                    const g = ctx.createLinearGradient(0, -74, 0, 0);
-                    g.addColorStop(0, theme.skyGradient ? theme.skyGradient[0] : '#00f0ff');
-                    g.addColorStop(0.5, theme.platformBorder || '#e040fb');
-                    g.addColorStop(1, '#050014');
-                    return g;
-                });
-                this.ctx.fillStyle = doorGrad;
-                this.ctx.beginPath();
-                this.ctx.roundRect(-20, -73, 40, 73, [20, 20, 0, 0]);
-                this.ctx.fill();
-
-                // Swirling Cosmic Vortex Rings inside portal
-                if (isUnlocked) {
-                    this.ctx.save();
-                    this.ctx.beginPath();
-                    this.ctx.roundRect(-20, -73, 40, 73, [20, 20, 0, 0]);
-                    this.ctx.clip();
-
-                    // Swirling Nebula Rings
-                    const rot = time * 0.003;
-                    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
-                    this.ctx.lineWidth = 2;
-                    this.ctx.beginPath();
-                    this.ctx.ellipse(0, -36, 14, 22, rot, 0, Math.PI * 2);
-                    this.ctx.stroke();
-
-                    this.ctx.strokeStyle = theme.platformBorder || '#e040fb';
-                    this.ctx.lineWidth = 1.5;
-                    this.ctx.beginPath();
-                    this.ctx.ellipse(0, -36, 10, 16, -rot * 1.3, 0, Math.PI * 2);
-                    this.ctx.stroke();
-
-                    // Sparkling Stardust Particles
-                    this.ctx.fillStyle = '#ffffff';
-                    for (let sp = 0; sp < 4; sp++) {
-                        const spA = rot * 2 + sp * (Math.PI / 2);
-                        const spX = Math.cos(spA) * (6 + sp * 2.5);
-                        const spY = -36 + Math.sin(spA) * (10 + sp * 3);
-                        this.ctx.beginPath();
-                        this.ctx.arc(spX, spY, 1.2 + (sp % 2) * 0.8, 0, Math.PI * 2);
-                        this.ctx.fill();
-                    }
-                    this.ctx.restore();
-                }
-
-                // 4. Sliding Fantasy Doors Progress (0 to 1)
-                let openProgress = 0;
-                if (c.doorOpen && this.player.entryTimer) {
-                    openProgress = 1 - (this.player.entryTimer / 30);
-                }
-
-                // Apply clipping mask for door panels
+                // 4. Inner Stargate Void & Cosmic Warp Wormhole
                 this.ctx.save();
                 this.ctx.beginPath();
-                this.ctx.roundRect(-20, -73, 40, 73, [20, 20, 0, 0]);
+                this.ctx.roundRect(-21, -80, 42, 80, [21, 21, 0, 0]);
                 this.ctx.clip();
 
-                const slideDist = 20 * openProgress; // slides up to 20px left and right
+                if (isUnlocked) {
+                    // === ACTIVE HYPERDRIVE STARGATE ===
+                    const rot = time * 0.0035;
 
-                // Fantasy Panels with Theme Filigree
-                this.ctx.fillStyle = theme.platformColor || '#0f172a';
-                
-                // Left Panel
-                this.ctx.beginPath();
-                this.ctx.roundRect(-20 - slideDist, -73, 20, 73, [20, 0, 0, 0]);
-                this.ctx.fill();
-                this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
-                this.ctx.lineWidth = 1.5;
-                this.ctx.stroke();
+                    // Deep Space Event Horizon Background
+                    const wormholeGrad = this.ctx.createRadialGradient(0, -40, 4, 0, -40, 36);
+                    wormholeGrad.addColorStop(0, '#ffffff');
+                    wormholeGrad.addColorStop(0.3, theme.platformBorder || '#00f0ff');
+                    wormholeGrad.addColorStop(0.7, '#6a1b9a');
+                    wormholeGrad.addColorStop(1, '#050014');
+                    this.ctx.fillStyle = wormholeGrad;
+                    this.ctx.fillRect(-21, -80, 42, 80);
 
-                // Left Filigree Arc
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-                this.ctx.beginPath();
-                this.ctx.arc(-10 - slideDist, -36, 6, 0, Math.PI * 2);
-                this.ctx.stroke();
-                
-                // Right Panel
-                this.ctx.fillStyle = theme.platformColor || '#0f172a';
-                this.ctx.beginPath();
-                this.ctx.roundRect(0 + slideDist, -73, 20, 73, [0, 20, 0, 0]);
-                this.ctx.fill();
-                this.ctx.strokeStyle = theme.platformBorder || '#ffd700';
-                this.ctx.lineWidth = 1.5;
-                this.ctx.stroke();
+                    // Dual Counter-Rotating Galaxy Vortex Spirals
+                    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+                    this.ctx.lineWidth = 2.5;
+                    this.ctx.beginPath();
+                    this.ctx.ellipse(0, -40, 16, 26, rot, 0, Math.PI * 2);
+                    this.ctx.stroke();
 
-                // Right Filigree Arc
-                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-                this.ctx.beginPath();
-                this.ctx.arc(10 + slideDist, -36, 6, 0, Math.PI * 2);
-                this.ctx.stroke();
-                
-                this.ctx.restore(); // Remove clipping mask
+                    this.ctx.strokeStyle = theme.platformBorder || '#00f0ff';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.ellipse(0, -40, 11, 18, -rot * 1.6, 0, Math.PI * 2);
+                    this.ctx.stroke();
 
-                // 5. Golden Star Emblem Lock Badge (When not opened)
-                if (!c.doorOpen) {
+                    // Inward Streaming Stardust Warp Particles
+                    this.ctx.fillStyle = '#ffffff';
+                    for (let sp = 0; sp < 6; sp++) {
+                        const spAngle = rot * 3 + sp * (Math.PI / 3);
+                        const spDist = 6 + ((time * 0.02 + sp * 5) % 18);
+                        const spX = Math.cos(spAngle) * spDist * 0.7;
+                        const spY = -40 + Math.sin(spAngle) * spDist;
+                        this.ctx.beginPath();
+                        this.ctx.arc(spX, spY, 1.2 + (sp % 2), 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                } else {
+                    // === LOCKED MAGICAL CRYSTAL BARRIER ===
+                    const lockGrad = this.ctx.createLinearGradient(0, -80, 0, 0);
+                    lockGrad.addColorStop(0, '#1a0826');
+                    lockGrad.addColorStop(0.6, '#311b92');
+                    lockGrad.addColorStop(1, '#090514');
+                    this.ctx.fillStyle = lockGrad;
+                    this.ctx.fillRect(-21, -80, 42, 80);
+
+                    // Hexagonal Energy Forcefield Grid Lines
+                    this.ctx.strokeStyle = 'rgba(255, 214, 0, 0.35)';
+                    this.ctx.lineWidth = 1.2;
+                    for (let y = -70; y <= -10; y += 14) {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(-18, y);
+                        this.ctx.lineTo(-8, y - 5);
+                        this.ctx.lineTo(8, y - 5);
+                        this.ctx.lineTo(18, y);
+                        this.ctx.stroke();
+                    }
+
+                    // Floating 3D Ornate Golden Star Padlock
+                    const lockFloat = Math.sin(time * 0.006) * 3;
                     this.ctx.save();
-                    this.ctx.translate(0, -36);
+                    this.ctx.translate(0, -40 + lockFloat);
 
-                    if (isUnlocked) {
-                        // Unlocked: Glowing Cyan Star Sigil 🌟
-                        this.ctx.shadowColor = '#00f0ff';
-                        this.ctx.shadowBlur = 14;
-                        this.ctx.fillStyle = '#00f0ff';
-                        this.ctx.beginPath();
-                        this.ctx.arc(0, 0, 7, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.fillStyle = '#ffffff';
-                        this.ctx.beginPath();
-                        this.ctx.arc(0, 0, 3, 0, Math.PI * 2);
-                        this.ctx.fill();
-                    } else {
-                        // Locked: Golden Star Padlock 🔒✨
-                        this.ctx.shadowColor = '#ffd600';
-                        this.ctx.shadowBlur = 10;
+                    // Padlock Steel Shackle
+                    this.ctx.strokeStyle = '#ffd700';
+                    this.ctx.lineWidth = 3.5;
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, -7, 7, Math.PI, 0);
+                    this.ctx.stroke();
 
-                        // Padlock Shackle
-                        this.ctx.strokeStyle = '#ffd600';
-                        this.ctx.lineWidth = 3;
-                        this.ctx.beginPath();
-                        this.ctx.arc(0, -6, 6, Math.PI, 0);
-                        this.ctx.stroke();
+                    // Padlock Heavy Shield Body
+                    this.ctx.fillStyle = '#ffb300';
+                    this.ctx.beginPath();
+                    this.ctx.roundRect(-9, -2, 18, 17, 4);
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = '#fff8e1';
+                    this.ctx.lineWidth = 1.5;
+                    this.ctx.stroke();
 
-                        // Padlock Body (Golden Star Shield)
-                        this.ctx.fillStyle = '#ffb300';
-                        this.ctx.beginPath();
-                        this.ctx.roundRect(-8, -2, 16, 15, 4);
-                        this.ctx.fill();
-                        this.ctx.strokeStyle = '#ffe082';
-                        this.ctx.lineWidth = 1.5;
-                        this.ctx.stroke();
+                    // Star Keyhole
+                    this.ctx.fillStyle = '#1a0033';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 3, 3, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.fillStyle = '#ffd700';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 3, 1.2, 0, Math.PI * 2);
+                    this.ctx.fill();
 
-                        // Glowing Ruby Keyhole Center
-                        this.ctx.fillStyle = '#ff1744';
+                    // Orbiting Lock Sigil Stars
+                    for (let s = 0; s < 3; s++) {
+                        const sa = (time * 0.005) + (s * Math.PI * 2 / 3);
+                        const sx = Math.cos(sa) * 14;
+                        const sy = Math.sin(sa) * 10;
+                        this.ctx.fillStyle = '#ffd600';
                         this.ctx.beginPath();
-                        this.ctx.arc(0, 4, 2.5, 0, Math.PI * 2);
+                        this.ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
                         this.ctx.fill();
                     }
                     this.ctx.restore();
                 }
 
-                this.ctx.shadowBlur = 0;
+                this.ctx.restore(); // End clipping mask
+                this.ctx.restore();
             }
             this.ctx.restore();
         });
 
-        // Enemies (Theme-matched vibrant slime colors!)
-        this.enemies.forEach(e => e.draw(this.ctx, this.camera, theme.slimeColor));
+        // Enemies (Theme-matched unique procedural creatures 🍄, 🦀, 👻, 🤖, 👾!)
+        const currentWorldType = Math.floor((this.currentChapterIdx || 0) / 5) + 1;
+        this.enemies.forEach(e => e.draw(this.ctx, this.camera, theme.slimeColor, e.worldType || currentWorldType));
 
         // Particles
         this.particles.forEach(p => p.draw(this.ctx, this.camera));
 
         // Player
-        // Power-up Orbs rendering (🧲, 🫧, ⚡)
+        // Standalone 3D Power-up Boosters (🧲 Super Magnet, 🫧 Guardian Shield, ⚡ Thunder Boost)
         this.collectibles.forEach(c => {
             if (c.collected) return;
             if (c.type === 'powerup_magnet' || c.type === 'powerup_shield' || c.type === 'powerup_boost') {
                 this.ctx.save();
                 const cx = c.x - this.camera.x + 13;
                 const cy = c.y - this.camera.y + 13;
-                const pulse = Math.sin(Date.now() * 0.008) * 3;
+                const time = Date.now();
+                const hoverY = Math.sin(time * 0.005) * 3.5;
                 
-                this.ctx.translate(cx, cy);
-                this.ctx.shadowColor = c.type === 'powerup_boost' ? '#ffd600' : '#00e5ff';
-                this.ctx.shadowBlur = 16;
+                this.ctx.translate(cx, cy + hoverY);
 
-                // Outer Glowing Orb
-                this.ctx.fillStyle = c.type === 'powerup_boost' ? 'rgba(255, 214, 0, 0.3)' : 'rgba(0, 229, 255, 0.3)';
-                this.ctx.beginPath();
-                this.ctx.arc(0, 0, 16 + pulse, 0, Math.PI * 2);
-                this.ctx.fill();
+                // Ambient Beacon Light Column underneath
+                const auraColor = (c.type === 'powerup_boost') ? '#ffd600' : (c.type === 'powerup_shield' ? '#00e5ff' : '#ff1744');
+                this.ctx.shadowColor = auraColor;
+                this.ctx.shadowBlur = 18;
 
-                this.ctx.strokeStyle = '#ffffff';
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
+                if (c.type === 'powerup_magnet') {
+                    // =========================================================================
+                    // 🧲 SUPER MAGNET: 3D Horseshoe Magnet with Radiating Magnetic Flux Arcs
+                    // =========================================================================
+                    const mScale = 1 + Math.sin(time * 0.008) * 0.05;
+                    this.ctx.scale(mScale, mScale);
 
-                // Icon
-                this.ctx.font = '16px sans-serif';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                const icon = c.type === 'powerup_magnet' ? '🧲' : (c.type === 'powerup_shield' ? '🫧' : '⚡');
-                this.ctx.fillText(icon, 0, 0);
+                    // Pulsing Magnetic Flux Waves (Radiating out from poles)
+                    const wavePhase = (time * 0.006) % 1;
+                    this.ctx.strokeStyle = `rgba(0, 229, 255, ${0.8 - wavePhase * 0.7})`;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.arc(-8, -12 - wavePhase * 8, 6 + wavePhase * 6, Math.PI * 0.8, Math.PI * 1.8);
+                    this.ctx.stroke();
+                    this.ctx.beginPath();
+                    this.ctx.arc(8, -12 - wavePhase * 8, 6 + wavePhase * 6, Math.PI * 1.2, Math.PI * 2.2);
+                    this.ctx.stroke();
+
+                    // Magnet Horseshoe U-Body (Chrome Vibrant Red)
+                    this.ctx.lineWidth = 6.5;
+                    this.ctx.strokeStyle = '#d50000';
+                    this.ctx.lineCap = 'butt';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 2, 9, 0, Math.PI);
+                    this.ctx.stroke();
+
+                    // Left & Right Arms
+                    this.ctx.fillStyle = '#d50000';
+                    this.ctx.fillRect(-12.5, -7, 6.5, 9);
+                    this.ctx.fillRect(6, -7, 6.5, 9);
+
+                    // Silver Magnetic Tips
+                    this.ctx.fillStyle = '#eceff1';
+                    this.ctx.strokeStyle = '#90a4ae';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.fillRect(-12.5, -12, 6.5, 5);
+                    this.ctx.strokeRect(-12.5, -12, 6.5, 5);
+                    this.ctx.fillRect(6, -12, 6.5, 5);
+                    this.ctx.strokeRect(6, -12, 6.5, 5);
+
+                    // Pole Markers [-] [+]
+                    this.ctx.fillStyle = '#0091ea';
+                    this.ctx.fillRect(-10.5, -10, 2.5, 1.2);
+                    this.ctx.fillStyle = '#d50000';
+                    this.ctx.fillRect(8, -10, 2.5, 1.2);
+                    this.ctx.fillRect(8.7, -10.7, 1.2, 2.5);
+
+                } else if (c.type === 'powerup_shield') {
+                    // =========================================================================
+                    // 🫧 GUARDIAN SHIELD: 3D Iridescent Prism Shield with Orbiting Energy Orbs
+                    // =========================================================================
+                    const rot = time * 0.004;
+
+                    // Orbiting Crystal Energy Orbs
+                    for (let o = 0; o < 3; o++) {
+                        const oAngle = rot * 1.5 + (o * Math.PI * 2 / 3);
+                        const ox = Math.cos(oAngle) * 17;
+                        const oy = Math.sin(oAngle) * 9;
+                        this.ctx.fillStyle = '#00f0ff';
+                        this.ctx.shadowColor = '#00f0ff';
+                        this.ctx.shadowBlur = 10;
+                        this.ctx.beginPath();
+                        this.ctx.arc(ox, oy, 2.8, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.fillStyle = '#ffffff';
+                        this.ctx.beginPath();
+                        this.ctx.arc(ox, oy, 1.2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+
+                    // 3D Medieval Prismatic Shield Body
+                    const sGrad = this.ctx.createLinearGradient(-10, -14, 10, 14);
+                    sGrad.addColorStop(0, '#00f0ff');
+                    sGrad.addColorStop(0.5, '#7c4dff');
+                    sGrad.addColorStop(1, '#ff4081');
+                    this.ctx.fillStyle = sGrad;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(-11, -12);
+                    this.ctx.lineTo(11, -12);
+                    this.ctx.lineTo(11, 2);
+                    this.ctx.quadraticCurveTo(8, 14, 0, 16);
+                    this.ctx.quadraticCurveTo(-8, 14, -11, 2);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.strokeStyle = '#ffffff';
+                    this.ctx.lineWidth = 1.8;
+                    this.ctx.stroke();
+
+                    // Central Crest Star
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                } else {
+                    // =========================================================================
+                    // ⚡ THUNDER BOOST: 3D Golden Lightning Bolt with Dynamic Electric Sparks
+                    // =========================================================================
+                    // Electric Crackling Arcs
+                    this.ctx.strokeStyle = '#ffd600';
+                    this.ctx.lineWidth = 1.5;
+                    for (let i = 0; i < 3; i++) {
+                        const sa = (time * 0.008 + i * 2);
+                        const sx1 = Math.cos(sa) * 10;
+                        const sy1 = Math.sin(sa) * 10;
+                        const sx2 = sx1 + (Math.random() - 0.5) * 8;
+                        const sy2 = sy1 + (Math.random() - 0.5) * 8;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(sx1, sy1);
+                        this.ctx.lineTo(sx2, sy2);
+                        this.ctx.stroke();
+                    }
+
+                    // 3D Golden Lightning Bolt Body
+                    this.ctx.fillStyle = '#ffd600';
+                    this.ctx.strokeStyle = '#ff6d00';
+                    this.ctx.lineWidth = 1.5;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(2, -16);
+                    this.ctx.lineTo(-9, 0);
+                    this.ctx.lineTo(-1, 0);
+                    this.ctx.lineTo(-3, 16);
+                    this.ctx.lineTo(9, -2);
+                    this.ctx.lineTo(1, -2);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    this.ctx.stroke();
+
+                    // Core White Energy Streak
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(1, -12);
+                    this.ctx.lineTo(-5, 0);
+                    this.ctx.lineTo(0, 0);
+                    this.ctx.lineTo(-1, 10);
+                    this.ctx.lineTo(5, -1);
+                    this.ctx.lineTo(0, -1);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
+
                 this.ctx.restore();
             }
         });
@@ -3288,7 +3505,7 @@ class Game {
         // Confetti Particles
         this.confettiParticles.forEach(cp => cp.draw(this.ctx, this.camera));
 
-        if (this.state === 'PLAYING' || this.state === 'PAUSED') {
+        if (this.state === 'PLAYING' || this.state === 'PAUSED' || this.state === 'DEATH_CHOICE' || this.state === 'COUNTDOWN') {
             this.player.draw(this.ctx, this.camera);
         }
     }

@@ -542,36 +542,42 @@ canvas#game-canvas {
 }
 
 /* Story Intro Modal */
+.story-modal {
+    max-width: min(840px, 94vw);
+    padding: 10px 16px;
+}
+
 .story-cards-wrapper {
     display: flex;
-    gap: 16px;
-    margin: 20px 0;
+    gap: 10px;
+    margin: 8px 0;
+    width: 100%;
 }
 
 .story-card {
     flex: 1;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--card-border);
-    border-radius: 14px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 8px 10px;
     text-align: center;
 }
 
 .story-icon {
-    font-size: 2.5rem;
-    margin-bottom: 8px;
+    font-size: 1.8rem;
+    margin-bottom: 2px;
 }
 
 .story-card h3 {
-    font-size: 1rem;
+    font-size: 0.82rem;
     color: #ffd600;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
 }
 
 .story-card p {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     color: var(--text-dim);
-    line-height: 1.4;
+    line-height: 1.25;
 }
 
 /* UI Screens */
@@ -583,13 +589,19 @@ canvas#game-canvas {
     height: 100%;
     background: transparent;
     backdrop-filter: none;
-    
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 24px;
-    overflow-y: auto;
+    padding: 6px 12px;
+    overflow: hidden !important; /* STRICTLY NO SCROLLBARS ON ANY SCREEN! */
+    box-sizing: border-box;
+}
+
+#screen-death-choice {
+    background: rgba(8, 12, 24, 0.60);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 
@@ -794,15 +806,33 @@ canvas#game-canvas {
     letter-spacing: 0.5px;
 }
 
+#screen-chapter-select {
+    overflow-y: auto !important;
+}
+
+#screen-chapter-select .glass-panel.modal-large {
+    max-width: 750px;
+    max-height: 90vh;
+    overflow-y: auto !important;
+    padding: 28px;
+}
+
+#screen-chapter-select #btn-back-main {
+    margin-top: 26px !important;
+    margin-bottom: 8px !important;
+    padding: 12px 32px !important;
+    font-size: 1.05rem !important;
+}
+
 .new-record-badge {
     display: inline-block;
     background: linear-gradient(135deg, #ff007f, #ff9100);
     color: #ffffff;
     font-family: var(--font-retro);
-    font-size: 0.85rem;
-    padding: 4px 12px;
-    border-radius: 12px;
-    box-shadow: 0 0 14px rgba(255, 0, 127, 0.7);
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 0, 127, 0.7);
     animation: recordPulse 0.8s ease-in-out infinite alternate;
 }
 
@@ -811,53 +841,70 @@ canvas#game-canvas {
     100% { transform: scale(1.08); box-shadow: 0 0 18px rgba(255, 145, 0, 0.9); }
 }
 
-/* Character Shop Grid */
+/* Character Shop Grid (Fits all 6 skins on mobile screen!) */
+.shop-modal {
+    max-width: min(880px, 96vw) !important;
+    padding: 10px 14px !important;
+}
+
+.modal-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
 .shop-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
     width: 100%;
-    max-width: 650px;
-    margin-top: 12px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 .shop-card {
     background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 14px;
+    border: 1.5px solid var(--card-border);
+    border-radius: 12px;
+    padding: 6px 3px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 8px;
-    transition: transform 0.2s;
+    gap: 2px;
+    transition: transform 0.15s;
 }
 
 .shop-card.equipped {
     border: 2px solid var(--accent);
-    box-shadow: 0 0 16px rgba(118, 255, 3, 0.4);
+    box-shadow: 0 0 14px rgba(118, 255, 3, 0.4);
 }
 
-.char-icon {
-    font-size: 3rem;
+.shop-card .char-icon {
+    font-size: 1.7rem;
+    line-height: 1;
 }
 
-.char-name {
+.shop-card .char-name {
     font-weight: 800;
-    font-size: 1rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
 }
 
-.char-perk {
-    font-size: 0.75rem;
+.shop-card .char-perk {
+    font-size: 0.62rem;
     color: var(--accent-gold);
+    white-space: nowrap;
 }
 
 .btn-buy {
-    font-size: 0.8rem;
-    padding: 6px 12px;
-    border-radius: 10px;
-    width: 100%;
+    font-size: 0.68rem !important;
+    padding: 3px 6px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    margin-top: 2px !important;
 }
 
 /* 3-Star Requirements Checklist */
@@ -893,41 +940,52 @@ canvas#game-canvas {
 .glass-panel {
     background: rgba(18, 22, 44, 0.94);
     border: 2px solid rgba(255, 255, 255, 0.35);
-    border-radius: 24px;
-    padding: 28px;
+    border-radius: 20px;
+    padding: 10px 16px;
     text-align: center;
     width: 100%;
+    max-height: 94vh;
+    max-height: 94dvh;
+    overflow: hidden !important; /* STRICTLY NO SCROLLBARS! */
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal {
-    max-width: 400px;
+    max-width: min(420px, 92vw);
 }
 
 .modal-large {
-    max-width: 750px;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-width: min(860px, 95vw);
+    max-height: 94vh;
+    max-height: 94dvh;
+    overflow: hidden !important;
 }
 
 .modal-card {
     background: rgba(18, 22, 44, 0.94);
     border: 2px solid rgba(255, 255, 255, 0.35);
-    border-radius: 24px;
-    padding: 28px;
+    border-radius: 20px;
+    padding: 10px 16px;
     text-align: center;
     width: 100%;
-    max-width: 400px;
+    max-width: min(460px, 92vw);
+    max-height: 94vh;
+    max-height: 94dvh;
+    overflow: hidden !important;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
 }
 
 .btn-bottom,
 #btn-back-main {
-    margin-top: 26px !important;
-    margin-bottom: 8px !important;
-    padding: 12px 32px;
+    margin-top: 8px !important;
+    margin-bottom: 2px !important;
+    padding: 6px 24px !important;
     display: inline-block;
-    font-size: 1.05rem;
+    font-size: 0.88rem !important;
 }
 
 /* Floating Game Toast Notification */
@@ -1397,27 +1455,29 @@ html {
 /* Lucky Wheel UI Container */
 .wheel-container {
     position: relative;
-    width: 260px;
-    height: 260px;
-    margin: 16px auto;
+    width: min(240px, 44vh);
+    height: min(240px, 44vh);
+    margin: 4px auto;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 #wheel-canvas {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    box-shadow: 0 0 30px rgba(255, 214, 0, 0.6), inset 0 0 15px rgba(0, 0, 0, 0.5);
-    border: 4px solid #ffffff;
+    box-shadow: 0 0 25px rgba(255, 214, 0, 0.6), inset 0 0 15px rgba(0, 0, 0, 0.5);
+    border: 3.5px solid #ffffff;
     transition: transform 4.5s cubic-bezier(0.15, 0.90, 0.10, 1.0);
 }
 
 .wheel-ticker {
     position: absolute;
-    top: -12px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     z-index: 10;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
@@ -1427,37 +1487,37 @@ html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(135deg, #ffd700, #ff8f00);
-    border: 3px solid #ffffff;
+    border: 2.5px solid #ffffff;
     border-radius: 50%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     z-index: 5;
     pointer-events: none;
 }
 
 .spin-cooldown-text {
     font-family: 'Nunito', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.78rem;
     color: #ffab40;
-    margin-top: 10px;
+    margin-top: 4px;
     font-weight: 800;
 }
 
 .prize-result-box {
-    margin-top: 12px;
-    padding: 10px 18px;
+    margin-top: 4px;
+    padding: 4px 14px;
     background: rgba(255, 214, 0, 0.15);
     border: 1.5px solid #ffd600;
-    border-radius: 16px;
+    border-radius: 12px;
     color: #ffd600;
     font-family: 'Fredoka One', cursive, sans-serif;
-    font-size: 1.1rem;
+    font-size: 0.92rem;
     animation: bounce 0.6s ease;
 }
 
@@ -2333,9 +2393,18 @@ html {
    ========================================================================== */
 /* Pause Modal */
 .pause-modal {
-    max-width: 400px;
-    border: 2px solid rgba(0, 229, 255, 0.4);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 229, 255, 0.2);
+    max-width: 420px;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 24px !important;
+    border: 2px solid rgba(0, 229, 255, 0.45);
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 229, 255, 0.25);
 }
 
 .pause-header-badge {
@@ -2344,14 +2413,16 @@ html {
     justify-content: center;
     gap: 8px;
     margin-bottom: 4px;
+    text-align: center;
 }
 
 .pause-title {
     font-family: var(--font-retro);
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     color: #00f0ff;
     text-shadow: 0 0 14px rgba(0, 240, 255, 0.6);
     margin: 0;
+    text-align: center;
 }
 
 .pause-level-tag {
@@ -2359,83 +2430,445 @@ html {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
-    padding: 3px 14px;
+    padding: 4px 16px;
     font-size: 0.82rem;
     font-weight: 800;
     color: #ffd600;
     margin: 6px auto 14px auto;
+    text-align: center;
 }
 
 .pause-actions-list {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 10px;
     width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
 }
 
 .btn-pause-action {
     width: 100%;
-    padding: 10px 16px !important;
-    font-size: 0.90rem !important;
+    padding: 11px 16px !important;
+    font-size: 0.92rem !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    text-align: center;
+    gap: 10px;
     border-radius: 14px !important;
 }
 
 .pause-sub-buttons {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     width: 100%;
+    margin: 0 auto;
 }
 
 .btn-pause-sub {
     flex: 1;
-    padding: 8px 10px !important;
-    font-size: 0.78rem !important;
+    padding: 9px 12px !important;
+    font-size: 0.80rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     border-radius: 12px !important;
 }
 
-/* Win Modal Actions & Layout */
-.win-modal-actions {
-    margin-top: 14px;
+/* ==========================================================================
+   AAA MOBILE POLISHED LEVEL WIN (BITİRİŞ) SCREEN & CHUBBY 3D STARS
+   ========================================================================== */
+.win-modal-modern {
+    max-width: 680px !important;
+    width: 94% !important;
+    padding: 12px 20px !important;
+    background: linear-gradient(145deg, rgba(20, 27, 58, 0.96) 0%, rgba(10, 14, 30, 0.98) 100%) !important;
+    border: 2px solid rgba(255, 214, 0, 0.45) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 214, 0, 0.25) !important;
+}
+
+.win-banner-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 2px;
+}
+
+.win-banner-wings {
+    font-size: 1.2rem;
+    animation: pulse 1.2s infinite alternate;
+}
+
+.win-title-modern {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 1.55rem;
+    letter-spacing: 1.5px;
+    margin: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ff9100 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(255, 214, 0, 0.5));
+}
+
+/* Chubby 3D Cartoon Stars Arch */
+.win-stars-arch-modern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    height: 82px;
+    margin: 2px 0 10px 0;
+}
+
+.arch-star-box {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(var(--rot)) translateY(var(--ty));
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.arch-star-box.star-crown {
+    width: 80px;
+    height: 80px;
+    z-index: 3;
+}
+
+.chubby-star-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+    overflow: visible;
+}
+
+/* Unearned State (Soft frosted slate with subtle gold tint) */
+.arch-star-box .star-outline {
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 4;
+    fill: none;
+}
+
+.arch-star-box .star-body {
+    fill: #182036;
+    stroke: #263354;
+    stroke-width: 3;
+    transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+.arch-star-box .star-facet {
+    fill: rgba(0, 0, 0, 0.22);
+}
+
+.arch-star-box .star-gloss {
+    fill: rgba(255, 255, 255, 0.08);
+}
+
+.arch-star-box .star-sparkle {
+    fill: transparent;
+    opacity: 0;
+}
+
+.arch-star-box .star-badge-num {
+    position: absolute;
+    bottom: -4px;
+    right: -2px;
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.70rem;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Earned State: Chubby 3D Golden Star with Elastic Bounce & Sparkle */
+.arch-star-box.earned {
+    animation: chubbyStarEarnedPop 0.70s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes chubbyStarEarnedPop {
+    0% {
+        transform: rotate(var(--rot)) translateY(var(--ty)) scale(0.2);
+        opacity: 0;
+    }
+    55% {
+        transform: rotate(calc(var(--rot) + 10deg)) translateY(calc(var(--ty) - 8px)) scale(1.45);
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(var(--rot)) translateY(var(--ty)) scale(1.0);
+        opacity: 1;
+    }
+}
+
+.arch-star-box.earned .star-body {
+    fill: #ffd600;
+    stroke: #ff8f00;
+    stroke-width: 3.5;
+    filter: drop-shadow(0 0 16px rgba(255, 214, 0, 0.95)) drop-shadow(0 0 32px rgba(255, 145, 0, 0.6));
+}
+
+.arch-star-box.earned .star-outline {
+    stroke: #ffffff;
+    stroke-width: 2;
+}
+
+.arch-star-box.earned .star-facet {
+    fill: rgba(255, 255, 255, 0.28);
+}
+
+.arch-star-box.earned .star-gloss {
+    fill: rgba(255, 255, 255, 0.85);
+}
+
+.arch-star-box.earned .star-sparkle {
+    fill: #ffffff;
+    opacity: 1;
+    filter: drop-shadow(0 0 6px #ffffff);
+    animation: starSparkleTwinkle 2s infinite ease-in-out;
+}
+
+@keyframes starSparkleTwinkle {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 10px #ffffff); }
+}
+
+.arch-star-box.earned .star-badge-num {
+    color: #1a1a1a;
+    background: #ffd600;
+    border-color: #ffffff;
+    font-weight: 900;
+    box-shadow: 0 0 10px rgba(255, 214, 0, 0.9);
+}
+
+/* Split Landscape Grid Layout */
+.win-grid-container {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    width: 100%;
+}
+
+.win-left-panel {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.win-checklist {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 100%;
 }
 
-.btn-win-next {
-    width: 100%;
-    padding: 12px 20px !important;
-    font-size: 1.05rem !important;
-    font-weight: 900;
+.win-req-card {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
+    padding: 7px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.win-req-card.completed {
+    background: rgba(0, 230, 118, 0.12);
+    border-color: #00e676;
+    box-shadow: 0 0 14px rgba(0, 230, 118, 0.25);
+    transform: translateX(2px);
+}
+
+.req-status-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.win-req-card.completed .req-status-icon {
+    filter: drop-shadow(0 0 6px #00e676);
+}
+
+.req-text-wrap {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.req-title {
+    font-weight: 800;
+    font-size: 0.82rem;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.req-sub {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    margin-top: 1px;
+}
+
+.req-star-pill {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 0.75rem;
+    color: #ffd600;
+    background: rgba(255, 214, 0, 0.18);
+    border: 1px solid rgba(255, 214, 0, 0.35);
+    border-radius: 10px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+}
+
+/* Right Panel: Score Card & Buttons */
+.win-right-panel {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+}
+
+.win-score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1.5px solid rgba(255, 214, 0, 0.35);
+    border-radius: 16px;
+    padding: 6px 12px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.win-score-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: #a5f3fc;
+    letter-spacing: 2px;
+}
+
+.win-score-num {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 2.1rem;
+    color: #ffd700;
+    text-shadow: 0 0 18px rgba(255, 215, 0, 0.85);
+    line-height: 1.05;
+    margin: 2px 0;
+}
+
+.win-best-line {
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    font-weight: 700;
+}
+
+.win-record-badge {
+    margin-top: 3px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff1744, #f50057);
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 23, 68, 0.6);
+    animation: pulse 1s infinite alternate;
+}
+
+.win-actions-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.btn-win-main {
+    width: 100%;
+    padding: 10px 16px !important;
+    font-size: 0.95rem !important;
     border-radius: 16px !important;
     animation: winButtonPulse 2s infinite ease-in-out;
 }
 
-@keyframes winButtonPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 6px 20px rgba(118, 255, 3, 0.4); }
-    50% { transform: scale(1.02); box-shadow: 0 8px 28px rgba(118, 255, 3, 0.7); }
+.btn-win-ad {
+    width: 100%;
+    padding: 7px 12px !important;
+    font-size: 0.80rem !important;
+    border-radius: 12px !important;
 }
 
-.win-sub-actions {
+.win-actions-row {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     width: 100%;
 }
 
 .btn-win-sub {
     flex: 1;
-    padding: 8px 10px !important;
-    font-size: 0.80rem !important;
-    border-radius: 12px !important;
+    padding: 6px 8px !important;
+    font-size: 0.74rem !important;
+    border-radius: 10px !important;
 }
+
+/* Mobile landscape compact adjustments */
+@media (max-height: 500px) {
+    .win-modal-modern {
+        padding: 8px 16px !important;
+    }
+    .win-title-modern {
+        font-size: 1.25rem;
+    }
+    .win-stars-arch-modern {
+        height: 64px;
+        margin: 2px 0 6px 0;
+        gap: 12px;
+    }
+    .arch-star-box {
+        width: 52px;
+        height: 52px;
+    }
+    .arch-star-box.star-crown {
+        width: 64px;
+        height: 64px;
+    }
+    .win-req-card {
+        padding: 4px 8px;
+        gap: 6px;
+    }
+    .req-title {
+        font-size: 0.74rem;
+    }
+    .req-sub {
+        font-size: 0.62rem;
+    }
+    .win-score-num {
+        font-size: 1.6rem;
+    }
+    .btn-win-main {
+        padding: 7px 12px !important;
+        font-size: 0.84rem !important;
+    }
+}
+
 
 /* ==========================================================================
    AAA SHOWCASE CHARACTER SHOP STYLING
@@ -2814,9 +3247,9 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 1000;
     overflow: hidden;
-    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.35s ease-out, transform 0.35s ease-out;
     opacity: 1;
     transform: scale(1);
     pointer-events: auto;
@@ -2824,7 +3257,7 @@ html {
 
 .splash-screen.fade-out {
     opacity: 0 !important;
-    transform: scale(1.05) !important;
+    transform: scale(1.04) !important;
     pointer-events: none !important;
 }
 

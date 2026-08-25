@@ -131,12 +131,15 @@ class Player {
         this.height = 36;
         this.vx = 0;
         this.vy = 0;
-        this.jumpForce = -14.2;
         this.gravity = 0.98;
 
         this.grounded = false;
+        this.groundY = y;
+        this.jumpCount = 0;
         this.canDoubleJump = true;
         this.isCrouching = false;
+        this.isGroundPounding = false;
+        this.isGliding = false;
         this.facing = 'right';
         this.invincibleTimer = 0;
         this.teleportCooldown = 0;
@@ -151,23 +154,50 @@ class Player {
         this.hasSpeedBoost = false;
         this.lastSafeX = x;
         this.lastSafeY = y;
-        this.lastSafeX = x;
-        this.lastSafeY = y;
+    }
+
+    get skin() {
+        return CHARACTER_SKINS.find(s => s.id === this.currentSkinId) || CHARACTER_SKINS[0];
+    }
+
+    get maxJumps() {
+        if (this.currentSkinId === 'kitty') return 3; // Cute Kitty: Agile Triple Jump!
+        return 2; // Standard: Double Jump
+    }
+
+    get jumpForce() {
+        if (this.currentSkinId === 'panda') return -16.8; // Panda Pal: Mega High Leap!
+        if (this.currentSkinId === 'bunny') return -15.0; // Fluffy Bunny: Springy Leap
+        if (this.currentSkinId === 'unicorn') return -14.6; // Magic Unicorn: Starlight Leap
+        if (this.currentSkinId === 'fox') return -14.3; // Foxy Hero: Nimble Leap
+        if (this.currentSkinId === 'bear') return -13.8; // Teddy Bear: Heavy Leap
+        if (this.currentSkinId === 'kitty') return -14.0; // Cute Kitty: Agile Leap
+        return -14.2;
     }
 
     get speed() {
-        const skin = CHARACTER_SKINS.find(s => s.id === this.currentSkinId) || CHARACTER_SKINS[0];
-        const base = skin.baseSpeed || 3.2;
+        let base = 3.4;
+        if (this.currentSkinId === 'fox') base = 4.8; // Foxy Hero: Super Sprint!
+        else if (this.currentSkinId === 'unicorn') base = 4.2;
+        else if (this.currentSkinId === 'kitty') base = 3.8;
+        else if (this.currentSkinId === 'panda') base = 3.6;
+        else if (this.currentSkinId === 'bear') base = 3.5;
+        else if (this.currentSkinId === 'bunny') base = 3.4;
+
         return this.hasSpeedBoost ? base * 1.45 : base;
     }
 
     reset(x, y) {
         this.x = x;
         this.y = y;
+        this.groundY = y;
         this.vx = 0;
         this.vy = 0;
         this.grounded = false;
+        this.jumpCount = 0;
         this.canDoubleJump = true;
+        this.isGroundPounding = false;
+        this.isGliding = false;
         this.isCrouching = false;
         this.height = 36;
         this.invincibleTimer = 0;
@@ -181,11 +211,9 @@ class Player {
         this.hasSpeedBoost = false;
         this.lastSafeX = x;
         this.lastSafeY = y;
-        this.lastSafeX = x;
-        this.lastSafeY = y;
     }
 
-    triggerDeath(cause, onDie, particles, floatingTexts = null, triggerShake = null) {
+    triggerDeath(cause, onDie, particles, floatingTexts = null, triggerShake = null, enemyWorldType = null) {
         if (this.hasBubbleShield) {
             this.hasBubbleShield = false;
             this.invincibleTimer = 90;
@@ -213,7 +241,11 @@ class Player {
             this.deathTimer = 1.2;
             this.vx = 0;
             this.vy = -2.0;
-            audio.playHurt();
+            if (cause === 'enemy') {
+                audio.playEnemyDeathSFX(enemyWorldType || 1);
+            } else {
+                audio.playHurt();
+            }
             if (triggerShake) triggerShake(4, 0.15);
             
             const starColors = ['#ffd600', '#ffeb3b', '#ffffff', '#80d8ff'];
@@ -231,19 +263,41 @@ class Player {
         }
     }
 
-    jump(particles) {
+    jump(particles, floatingTexts = null) {
         if (this.isDead || this.isEnteringDoor || this.isCrouching) return;
+        
         if (this.grounded) {
             this.vy = this.jumpForce;
             this.grounded = false;
-            this.canDoubleJump = true;
+            this.jumpCount = 1;
+            this.isGroundPounding = false;
             audio.playJump();
-            this.createDust(particles, 6, '#ffb74d');
-        } else if (this.canDoubleJump) {
+
+            if (this.currentSkinId === 'panda') {
+                this.createDust(particles, 12, '#a7f3d0');
+            } else if (this.currentSkinId === 'fox') {
+                this.createDust(particles, 10, '#ff5722');
+            } else if (this.currentSkinId === 'unicorn') {
+                this.createDust(particles, 10, '#ea80fc');
+            } else {
+                this.createDust(particles, 6, '#ffb74d');
+            }
+        } else if (this.jumpCount < this.maxJumps) {
+            this.jumpCount++;
             this.vy = this.jumpForce * 0.92;
-            this.canDoubleJump = false;
+            this.isGroundPounding = false;
             audio.playJump();
-            this.createDust(particles, 8, '#81d4fa');
+
+            if (this.currentSkinId === 'kitty' && this.jumpCount === 3) {
+                this.createDust(particles, 12, '#ffd54f');
+                if (floatingTexts) {
+                    floatingTexts.push(new FloatingText(this.x + this.width / 2, this.y - 14, 'TRIPLE JUMP! 🐱✨', '#ffd54f', 24));
+                }
+            } else if (this.currentSkinId === 'unicorn') {
+                this.createDust(particles, 10, '#00e5ff');
+            } else {
+                this.createDust(particles, 8, '#81d4fa');
+            }
         }
     }
 
@@ -346,14 +400,14 @@ class Player {
         }
 
         if (this.isCrouching) {
-            targetVx *= 0.45;
+            targetVx *= (this.currentSkinId === 'kitty' ? 0.80 : 0.45);
         }
 
         this.vx = targetVx;
         this.x += this.vx;
 
-        if (this.hasSpeedBoost && Math.abs(this.vx) > 1 && Math.random() < 0.35) {
-            const colors = ['#00e5ff', '#e040fb', '#ffd600'];
+        if ((this.hasSpeedBoost || this.currentSkinId === 'fox') && Math.abs(this.vx) > 1.5 && Math.random() < 0.4) {
+            const colors = this.currentSkinId === 'fox' ? ['#ff5722', '#ff9800', '#ffeb3b'] : ['#00e5ff', '#e040fb', '#ffd600'];
             particles.push(new Particle(
                 this.x + (this.facing === 'right' ? -4 : this.width + 4),
                 this.y + this.height - 8,
@@ -363,6 +417,34 @@ class Player {
                 (Math.random() - 0.5) * 1.5,
                 16
             ));
+        }
+
+        // Unicorn Star Glide (Hold UP/Jump while in air falling)
+        this.isGliding = false;
+        if (this.currentSkinId === 'unicorn' && simKeys.up && !this.grounded && this.vy > 0.5) {
+            this.isGliding = true;
+            this.vy = Math.min(this.vy, 1.8);
+            if (Math.random() < 0.4) {
+                const colors = ['#ea80fc', '#00e5ff', '#ffd600', '#ffffff'];
+                particles.push(new Particle(
+                    this.x + this.width / 2 + (Math.random() - 0.5) * 12,
+                    this.y + 4,
+                    colors[Math.floor(Math.random() * colors.length)],
+                    Math.random() * 2.5 + 2,
+                    (Math.random() - 0.5) * 2,
+                    (Math.random() - 0.5) * 2,
+                    20
+                ));
+            }
+        }
+
+        // Bear Ground Pound (Press DOWN while in air)
+        if (this.currentSkinId === 'bear' && simKeys.down && !this.grounded && !this.isGroundPounding && this.vy > -2) {
+            this.isGroundPounding = true;
+            this.vy = 16.0;
+            if (floatingTexts) {
+                floatingTexts.push(new FloatingText(this.x + this.width / 2, this.y - 12, 'BEAR SLAM! 🐻⚡', '#ffd600', 22));
+            }
         }
 
         for (let p of platforms) {
@@ -397,7 +479,7 @@ class Player {
         }
         
         this.vy += appliedGravity;
-        if (this.vy > 13.5) this.vy = 13.5; // Smooth terminal velocity (no sudden slamming)
+        if (this.vy > 13.5 && !this.isGroundPounding) this.vy = 13.5; // Smooth terminal velocity
         this.y += this.vy;
 
         this.grounded = false;
@@ -405,15 +487,37 @@ class Player {
         for (let p of platforms) {
             if (this.checkCollision(this, p)) {
                 if (this.vy > 0) {
+                    const wasPounding = this.isGroundPounding;
+                    const fallVel = this.vy;
                     this.y = p.y - this.height;
                     this.vy = 0;
                     this.grounded = true;
+                    this.jumpCount = 0;
+                    this.isGroundPounding = false;
                     this.canDoubleJump = true;
                     if (!p.vx) {
                         this.lastSafeX = this.x;
                         this.lastSafeY = this.y;
                     }
                     if (p.vx) this.x += p.vx;
+
+                    // Bear Heavy Slam Shockwave
+                    if (this.currentSkinId === 'bear' && (wasPounding || fallVel > 10.5)) {
+                        if (triggerShake) triggerShake(5, 0.2);
+                        for (let sp = 0; sp < 14; sp++) {
+                            particles.push(new Particle(this.x + this.width / 2, this.y + this.height, '#ffd600', 4, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 3, 20));
+                        }
+                        for (let enemy of enemies) {
+                            if (!enemy.isDead && Math.abs((enemy.x + 16) - (this.x + this.width / 2)) < 90 && Math.abs(enemy.y - this.y) < 40) {
+                                enemy.isDead = true;
+                                audio.playEnemyStompSFX(enemy.worldType || 1);
+                                if (floatingTexts) floatingTexts.push(new FloatingText(enemy.x + 16, enemy.y - 14, 'SHOCKWAVE! 🐻💥 +500', '#ffd600', 28));
+                                for (let p = 0; p < 12; p++) {
+                                    particles.push(new Particle(enemy.x + 16, enemy.y + 14, '#ffd600', 4, (Math.random()-0.5)*5, (Math.random()-0.5)*5, 22));
+                                }
+                            }
+                        }
+                    }
                 } else if (this.vy < 0) {
                     this.y = p.y + p.height;
                     this.vy = 0;
@@ -426,7 +530,7 @@ class Player {
                 if (this.vy < 0) {
                     this.y = oc.y + oc.height;
                     this.vy = 0;
-                } else if (this.vy > 0) {
+                } else if (this.vy > 0 && (this.y + this.height - this.vy) <= oc.y + 6) {
                     this.y = oc.y - this.height;
                     this.vy = 0;
                     this.grounded = true;
@@ -446,6 +550,12 @@ class Player {
                     this.vy = 0;
                 }
             }
+        }
+
+        if (this.grounded) {
+            this.groundY = this.y;
+        } else if (this.y > this.groundY + 110) {
+            this.groundY = this.y - 110;
         }
 
         if (this.teleportCooldown > 0) this.teleportCooldown--;
@@ -501,8 +611,8 @@ class Player {
                     this.vy = -24.5;
                     this.grounded = false;
                     this.canDoubleJump = true;
-                    audio.playJump();
-                    if (triggerShake) triggerShake(3, 0.1);
+                    audio.playBoing();
+                    if (triggerShake) triggerShake(4, 0.15);
                     if (floatingTexts) floatingTexts.push(new FloatingText(pad.x + 15, pad.y - 10, 'BOING! 👟', '#00f0ff', 16));
                     this.createDust(particles, 12, '#ff4081');
                 }
@@ -525,20 +635,38 @@ class Player {
             let enemy = enemies[i];
             if (enemy.isDead) continue;
             if (this.checkCollision(this, enemy)) {
-                if (this.vy > 0 && (this.y + this.height - this.vy) <= (enemy.y + 14)) {
+                if (this.vy > 0 && (this.y + this.height - this.vy) <= (enemy.y + 16)) {
                     enemy.isDead = true;
                     this.y = enemy.y - this.height;
-                    this.vy = -12.5;
-                    audio.playJump();
+                    this.vy = -12.8;
+                    audio.playEnemyStompSFX(enemy.worldType || 1);
                     if (triggerShake) triggerShake(4, 0.12);
+                    
+                    const enemyLabels = {
+                        1: 'SHROOM POP! 🍄 +300',
+                        2: 'CRAB CRUNCH! 🦀 +300',
+                        3: 'PHANTOM PURGE! 👻 +300',
+                        4: 'DRONE SMASH! 🤖 +300',
+                        5: 'STAR BURST! 👾 +300'
+                    };
+                    const enemyPColors = {
+                        1: '#f44336',
+                        2: '#ff5722',
+                        3: '#00f0ff',
+                        4: '#00f5d4',
+                        5: '#ffd700'
+                    };
+                    const textLabel = enemyLabels[enemy.worldType || 1] || 'STOMP! 👾 +300';
+                    const pColor = enemyPColors[enemy.worldType || 1] || '#e040fb';
+
                     if (floatingTexts) {
-                        floatingTexts.push(new FloatingText(enemy.x + 13, enemy.y - 14, 'STOMP! 👾 +300', '#ff4081', 30));
+                        floatingTexts.push(new FloatingText(enemy.x + 16, enemy.y - 14, textLabel, pColor, 30));
                     }
-                    for (let p = 0; p < 12; p++) {
-                        particles.push(new Particle(enemy.x + 13, enemy.y + 12, '#e040fb', 3.5, (Math.random()-0.5)*4, (Math.random()-0.5)*4, 20));
+                    for (let p = 0; p < 14; p++) {
+                        particles.push(new Particle(enemy.x + 16, enemy.y + 14, pColor, 3.5, (Math.random()-0.5)*5, (Math.random()-0.5)*5, 22));
                     }
                 } else if (this.invincibleTimer <= 0) {
-                    this.triggerDeath('enemy', onDie, particles, floatingTexts, triggerShake);
+                    this.triggerDeath('enemy', onDie, particles, floatingTexts, triggerShake, enemy.worldType || 1);
                     return;
                 }
             }
@@ -550,7 +678,7 @@ class Player {
                     boss.takeDamage(1, particles, floatingTexts, triggerShake, collectibles);
                     this.y = boss.y - this.height;
                     this.vy = -14.0;
-                    audio.playJump();
+                    audio.playStomp();
                 } else if (this.invincibleTimer <= 0 && boss.state !== 'HURT') {
                     this.triggerDeath('boss', onDie, particles, floatingTexts, triggerShake);
                     return;
@@ -569,17 +697,19 @@ class Player {
             }
         }
 
-        if (this.hasMagnet) {
+        if (this.hasMagnet || this.currentSkinId === 'unicorn') {
             const playerCenterX = this.x + this.width / 2;
             const playerCenterY = this.y + this.height / 2;
+            const magRadius = this.hasMagnet ? 220 : 130;
+            const magSpeed = this.hasMagnet ? 7.5 : 4.0;
             for (let item of collectibles) {
                 if (!item.collected && (item.type !== 'exit' && item.type !== 'exit_door')) {
                     const dx = playerCenterX - (item.x + 12);
                     const dy = playerCenterY - (item.y + 12);
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 220) {
-                        item.x += (dx / dist) * 7.5;
-                        item.y += (dy / dist) * 7.5;
+                    if (dist < magRadius) {
+                        item.x += (dx / dist) * magSpeed;
+                        item.y += (dy / dist) * magSpeed;
                     }
                 }
             }
@@ -1094,14 +1224,26 @@ class Player {
 }
 
 class Enemy {
-    constructor(x, y, range, platformRef) {
+    constructor(x, y, range, platformRef, worldType = 1) {
         this.x = x;
         this.y = y;
-        this.width = 26;
-        this.height = 24;
-        this.vx = 0.6;
+        this.width = 32;
+        this.height = 28;
+        this.vx = 0.7;
         this.isDead = false;
         this.platformRef = platformRef;
+        this.worldType = worldType || 1;
+        
+        // Special Mechanic State Variables per Creature
+        this.actionTimer = Math.floor(Math.random() * 100);
+        this.hopY = 0;
+        this.hopVy = 0;
+        this.floatY = 0;
+        this.isCharging = false;
+        this.isPhasing = false;
+        this.isTurbo = false;
+        this.phaseAlpha = 1.0;
+
         if (platformRef) {
             this.localX = Math.max(4, Math.min(x - platformRef.x, platformRef.width - this.width - 4));
         } else {
@@ -1110,10 +1252,95 @@ class Enemy {
         }
     }
 
-    update(platforms) {
+    update(platforms, player = null, particles = null) {
         if (this.isDead) return;
+        this.actionTimer++;
+
+        let currentVx = this.vx;
+
+        // 1. World 1 (🍄 Shroomie): Rhythmic High Spring Hop & Spore Dust
+        if (this.worldType === 1) {
+            if (this.hopY < 0 || this.hopVy !== 0) {
+                this.hopY += this.hopVy;
+                this.hopVy += 0.32; // Gravity
+                if (this.hopY >= 0) {
+                    this.hopY = 0;
+                    this.hopVy = 0;
+                    if (particles && Math.random() < 0.6) {
+                        particles.push(new Particle(this.x + 16, this.y + 24, '#ff4081', 3, (Math.random()-0.5)*3, -Math.random()*2, 16));
+                    }
+                }
+            } else if (this.actionTimer % 85 === 0) {
+                this.hopVy = -6.5; // High joyful bounce!
+                if (particles) {
+                    particles.push(new Particle(this.x + 16, this.y + 26, '#ffd54f', 3, (Math.random()-0.5)*3, -1, 14));
+                }
+            }
+        }
+
+        // 2. World 2 (🦀 Magma Crab): Lava Snap Charge & Burning Embers
+        if (this.worldType === 2) {
+            const isNearPlayer = player && Math.abs(player.x - this.x) < 180 && Math.abs(player.y - this.y) < 50;
+            const chargeCycle = this.actionTimer % 130;
+            if (chargeCycle < 45 || isNearPlayer) {
+                currentVx = this.vx * 2.2; // Aggressive burst charge!
+                this.isCharging = true;
+                if (particles && Math.random() < 0.45) {
+                    particles.push(new Particle(this.x + 16, this.y + 20, '#ff3d00', 3, (Math.random()-0.5)*3, -Math.random()*2.5, 18));
+                }
+            } else {
+                this.isCharging = false;
+            }
+        }
+
+        // 3. World 3 (👻 Spectral Phantom): Floating Wave & Spirit Invisibility Phasing
+        if (this.worldType === 3) {
+            this.floatY = Math.sin(this.actionTimer * 0.055) * 8;
+            const phaseCycle = this.actionTimer % 160;
+            if (phaseCycle < 70) {
+                this.isPhasing = true;
+                this.phaseAlpha = 0.40;
+                currentVx = this.vx * 1.35; // Glide swiftly
+                if (particles && Math.random() < 0.35) {
+                    particles.push(new Particle(this.x + 16, this.y + 14, '#00f0ff', 2.5, (Math.random()-0.5)*2, -Math.random()*2, 20));
+                }
+            } else {
+                this.isPhasing = false;
+                this.phaseAlpha = 0.95;
+            }
+        }
+
+        // 4. World 4 (🤖 Cyber Drone): Scanning Radar & High-Speed Plasma Jet Dash
+        if (this.worldType === 4) {
+            this.floatY = Math.sin(this.actionTimer * 0.065) * 5;
+            const turboCycle = this.actionTimer % 120;
+            if (turboCycle < 40) {
+                currentVx = this.vx * 2.8; // Plasma turbo dash!
+                this.isTurbo = true;
+                if (particles && Math.random() < 0.6) {
+                    const jetOffset = this.vx > 0 ? -6 : 38;
+                    particles.push(new Particle(this.x + jetOffset, this.y + 14, '#00f5d4', 3.5, -Math.sign(this.vx)*4 + (Math.random()-0.5)*2, (Math.random()-0.5)*2, 16));
+                }
+            } else {
+                this.isTurbo = false;
+            }
+        }
+
+        // 5. World 5 (👾 Astral Crystal): Cosmic Orbit & Celestial Gravity Pulse
+        if (this.worldType === 5) {
+            this.floatY = Math.sin(this.actionTimer * 0.045) * 7;
+            if (this.actionTimer % 110 === 0 && particles) {
+                for (let s = 0; s < 8; s++) {
+                    const ang = s * (Math.PI / 4);
+                    particles.push(new Particle(this.x + 16, this.y + 14, '#ffd700', 3.5, Math.cos(ang)*3.5, Math.sin(ang)*3.5, 22));
+                }
+            }
+        }
+
+        const effectiveHopY = (this.hopY || 0) + (this.floatY || 0);
+
         if (this.platformRef) {
-            this.localX += this.vx;
+            this.localX += currentVx;
             const minLocal = 4;
             const maxLocal = this.platformRef.width - this.width - 4;
             if (this.localX <= minLocal) {
@@ -1124,73 +1351,331 @@ class Enemy {
                 this.vx = -Math.abs(this.vx);
             }
             this.x = this.platformRef.x + this.localX;
-            this.y = this.platformRef.y - this.height;
+            this.y = this.platformRef.y - this.height + effectiveHopY;
         } else {
-            this.x += this.vx;
+            this.x += currentVx;
             if (Math.abs(this.x - this.startX) > 100) this.vx *= -1;
+            this.y += effectiveHopY;
         }
     }
 
-    draw(ctx, camera, themeSlime = null) {
+    draw(ctx, camera, themeSlime = null, worldTypeOverride = null) {
         if (this.isDead) return;
         ctx.save();
         const ex = this.x - camera.x;
         const ey = this.y - camera.y;
-        
-        ctx.translate(ex + 13, ey + 12);
+        const time = Date.now();
+        const wType = worldTypeOverride || this.worldType || 1;
 
-        const squish = Math.sin(Date.now() * 0.008) * 1.5;
-        const scaleX = 1 + squish * 0.05;
-        const scaleY = 1 - squish * 0.05;
-        ctx.scale(scaleX, scaleY);
+        // Ground anchor: Translate to bottom center of enemy, sitting exactly on platform top (y = 0 is floor)
+        ctx.translate(ex + this.width / 2, ey + this.height);
 
-        const sColor = themeSlime || { start: "#ff007f", mid: "#e040fb", end: "#7c4dff", glow: "#ff007f", horn: "#76ff03" };
+        const eyeOffset = this.vx > 0 ? 2.5 : -2.5;
 
-        ctx.shadowColor = sColor.glow || '#d500f9';
-        ctx.shadowBlur = 16;
+        if (wType === 1) {
+            // =========================================================================
+            // 🍄 WORLD 1: BOUNCY SHROOMIE (Ruby Spotted Mushroom with Bouncy Hop & Cheeks)
+            // =========================================================================
+            const isAirborne = this.hopY < 0;
+            const squish = isAirborne ? -0.15 : (Math.sin(time * 0.01) * 0.08);
+            ctx.scale(1 - squish, 1 + squish);
 
-        const slimeGrad = ctx.createRadialGradient(-3, -4, 2, 0, 0, 14);
-        slimeGrad.addColorStop(0, sColor.start || '#ff4081');
-        slimeGrad.addColorStop(0.5, sColor.mid || '#e040fb');
-        slimeGrad.addColorStop(1, sColor.end || '#651fff');
+            // Walking cute feet (grounded at y = 0)
+            const footCycle = Math.sin(time * 0.018);
+            ctx.fillStyle = '#f57f17';
+            ctx.beginPath();
+            ctx.ellipse(-7 - footCycle * 3, -2, 4.5, 2.5, 0, 0, Math.PI * 2);
+            ctx.ellipse(7 + footCycle * 3, -2, 4.5, 2.5, 0, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.fillStyle = slimeGrad;
-        ctx.beginPath();
-        ctx.moveTo(0, -14);
-        ctx.bezierCurveTo(14, -14, 15, 6, 14, 11);
-        ctx.bezierCurveTo(10, 14, -10, 14, -14, 11);
-        ctx.bezierCurveTo(-15, 6, -14, -14, 0, -14);
-        ctx.closePath();
-        ctx.fill();
+            // Stalk / Body
+            ctx.fillStyle = '#fffde7';
+            ctx.strokeStyle = '#fbc02d';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.roundRect(-10, -18, 20, 17, [6, 6, 8, 8]);
+            ctx.fill();
+            ctx.stroke();
 
-        ctx.fillStyle = sColor.horn || '#76ff03';
-        ctx.beginPath();
-        ctx.arc(0, -14, 3.5, 0, Math.PI * 2);
-        ctx.fill();
+            // Mushroom Cap (Large Vibrant Ruby Dome)
+            ctx.shadowColor = 'rgba(244, 67, 54, 0.6)';
+            ctx.shadowBlur = 12;
+            ctx.fillStyle = '#d50000';
+            ctx.beginPath();
+            ctx.arc(0, -17, 17, Math.PI, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-        ctx.beginPath();
-        ctx.ellipse(-5, -6, 4, 2, Math.PI / 4, 0, Math.PI * 2);
-        ctx.fill();
+            // White Spots on Cap
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(0, -25, 3.8, 0, Math.PI * 2);
+            ctx.arc(-10, -20, 2.8, 0, Math.PI * 2);
+            ctx.arc(10, -20, 2.8, 0, Math.PI * 2);
+            ctx.fill();
 
-        const eyeOffset = this.vx > 0 ? 2 : -2;
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(-5 + eyeOffset, -2, 4.5, 0, Math.PI * 2);
-        ctx.arc(5 + eyeOffset, -2, 4.5, 0, Math.PI * 2);
-        ctx.fill();
+            // Cheerful Blushing Cheeks
+            ctx.fillStyle = 'rgba(255, 64, 129, 0.6)';
+            ctx.beginPath();
+            ctx.arc(-7, -8, 2.5, 0, Math.PI * 2);
+            ctx.arc(7, -8, 2.5, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.fillStyle = '#1a237e';
-        ctx.beginPath();
-        ctx.arc(-4 + eyeOffset * 1.3, -2, 2.2, 0, Math.PI * 2);
-        ctx.arc(6 + eyeOffset * 1.3, -2, 2.2, 0, Math.PI * 2);
-        ctx.fill();
+            // Cute Beady Eyes
+            ctx.fillStyle = '#212121';
+            ctx.beginPath();
+            ctx.arc(-5 + eyeOffset, -10, 2.4, 0, Math.PI * 2);
+            ctx.arc(5 + eyeOffset, -10, 2.4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(-5.5 + eyeOffset, -11, 0.9, 0, Math.PI * 2);
+            ctx.arc(4.5 + eyeOffset, -11, 0.9, 0, Math.PI * 2);
+            ctx.fill();
 
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(-5 + eyeOffset * 1.3, -3, 0.8, 0, Math.PI * 2);
-        ctx.arc(5 + eyeOffset * 1.3, -3, 0.8, 0, Math.PI * 2);
-        ctx.fill();
+        } else if (wType === 2) {
+            // =========================================================================
+            // 🦀 WORLD 2: MAGMA ROCK-CRAB (Volcanic Basalt with Snapping Fiery Pincers)
+            // =========================================================================
+            const pincerAngle = Math.sin(time * 0.012) * 0.35;
+
+            // Fiery Molten Aura
+            ctx.shadowColor = '#ff3d00';
+            ctx.shadowBlur = 14;
+
+            // Spiky Rock Legs (Grounded at y = 0)
+            ctx.strokeStyle = '#d84315';
+            ctx.lineWidth = 2.5;
+            [-12, -6, 6, 12].forEach(lx => {
+                ctx.beginPath();
+                ctx.moveTo(lx, -12);
+                ctx.lineTo(lx > 0 ? lx + 5 : lx - 5, -1);
+                ctx.stroke();
+            });
+
+            // Snapping Left Fiery Pincer
+            ctx.save();
+            ctx.translate(-13, -15);
+            ctx.rotate(-0.4 + pincerAngle);
+            ctx.fillStyle = '#ff3d00';
+            ctx.beginPath();
+            ctx.arc(-5, -2, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffd600';
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            ctx.restore();
+
+            // Snapping Right Fiery Pincer
+            ctx.save();
+            ctx.translate(13, -15);
+            ctx.rotate(0.4 - pincerAngle);
+            ctx.fillStyle = '#ff3d00';
+            ctx.beginPath();
+            ctx.arc(5, -2, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffd600';
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+            ctx.restore();
+
+            // Heavy Basalt Core Shell
+            const rockGrad = ctx.createRadialGradient(-3, -16, 2, 0, -12, 16);
+            rockGrad.addColorStop(0, '#4e342e');
+            rockGrad.addColorStop(0.7, '#1b0000');
+            rockGrad.addColorStop(1, '#ff3d00');
+            ctx.fillStyle = rockGrad;
+            ctx.beginPath();
+            ctx.roundRect(-14, -24, 28, 22, [8, 8, 10, 10]);
+            ctx.fill();
+            ctx.strokeStyle = '#ff6d00';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Glowing Molten Lava Vein Cracks
+            ctx.strokeStyle = '#ffd600';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(-9, -16); ctx.lineTo(-2, -12); ctx.lineTo(7, -17);
+            ctx.stroke();
+
+            // Glowing Fiery Eyes
+            ctx.fillStyle = '#ffd600';
+            ctx.beginPath();
+            ctx.arc(-5 + eyeOffset, -18, 3.5, 0, Math.PI * 2);
+            ctx.arc(5 + eyeOffset, -18, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#b71c1c';
+            ctx.beginPath();
+            ctx.arc(-5 + eyeOffset, -18, 1.8, 0, Math.PI * 2);
+            ctx.arc(5 + eyeOffset, -18, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+
+        } else if (wType === 3) {
+            // =========================================================================
+            // 👻 WORLD 3: SPECTRAL WISP / SHADOW PHANTOM (Ethereal Hovering Ghost with Tail)
+            // =========================================================================
+            const floatY = Math.sin(time * 0.007) * 4 - 6; // Floats cleanly 6px above floor
+            ctx.translate(0, floatY);
+
+            // Translucent Spirit Phase Modulation
+            const phasePulse = Math.sin(time * 0.004) * 0.25;
+            ctx.globalAlpha = 0.85 + phasePulse;
+
+            ctx.shadowColor = '#00f0ff';
+            ctx.shadowBlur = 18;
+
+            // Ghostly Ethereal Tail Wave
+            const tWave = Math.sin(time * 0.012) * 4;
+            const ghostGrad = ctx.createLinearGradient(0, -28, 0, 0);
+            ghostGrad.addColorStop(0, 'rgba(0, 240, 255, 0.95)');
+            ghostGrad.addColorStop(0.5, 'rgba(124, 77, 255, 0.85)');
+            ghostGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            ctx.fillStyle = ghostGrad;
+            ctx.beginPath();
+            ctx.moveTo(-13, -14);
+            ctx.bezierCurveTo(-14, -28, 14, -28, 13, -14);
+            ctx.lineTo(9, -2);
+            ctx.quadraticCurveTo(0 + tWave, -8, -9, -2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Inner Ethereal Spirit Core
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(0, -17, 7, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Glowing Spectral Hollow Eyes
+            ctx.fillStyle = '#311b92';
+            ctx.beginPath();
+            ctx.arc(-5 + eyeOffset, -17, 3.5, 0, Math.PI * 2);
+            ctx.arc(5 + eyeOffset, -17, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#00f0ff';
+            ctx.beginPath();
+            ctx.arc(-5 + eyeOffset, -17, 1.8, 0, Math.PI * 2);
+            ctx.arc(5 + eyeOffset, -17, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Floating Amethyst Spirit Crown
+            ctx.fillStyle = '#e040fb';
+            ctx.beginPath();
+            ctx.arc(0, -29, 3.2, 0, Math.PI * 2);
+            ctx.fill();
+
+        } else if (wType === 4) {
+            // =========================================================================
+            // 🤖 WORLD 4: CYBER DRONE BOT (High-Tech Sentry with Laser Scanner & Plasma Jet)
+            // =========================================================================
+            const hoverCycle = Math.sin(time * 0.01) * 3 - 6; // Hovering 6px above floor
+            ctx.translate(0, hoverCycle);
+
+            ctx.shadowColor = '#00f5d4';
+            ctx.shadowBlur = 16;
+
+            // Holographic Forward Radar / Scanner Cone
+            const radarDir = this.vx > 0 ? 1 : -1;
+            const radarAlpha = (Math.sin(time * 0.008) + 1) * 0.15 + 0.1;
+            ctx.fillStyle = `rgba(0, 245, 212, ${radarAlpha})`;
+            ctx.beginPath();
+            ctx.moveTo(radarDir * 14, -14);
+            ctx.lineTo(radarDir * 38, -26);
+            ctx.lineTo(radarDir * 38, -2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Blue Plasma Jet Thrust Flame
+            const thrustH = 6 + Math.random() * 5;
+            ctx.fillStyle = '#00f5d4';
+            ctx.beginPath();
+            ctx.moveTo(-5, -2);
+            ctx.lineTo(0, -2 + thrustH);
+            ctx.lineTo(5, -2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Titanium Sentry Chassis
+            ctx.fillStyle = '#0f172a';
+            ctx.strokeStyle = '#00f5d4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-14, -25, 28, 23, 5);
+            ctx.fill();
+            ctx.stroke();
+
+            // Side Antennae / Stabilizers
+            ctx.strokeStyle = '#00bbf9';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(-14, -18); ctx.lineTo(-19, -24);
+            ctx.moveTo(14, -18); ctx.lineTo(19, -24);
+            ctx.stroke();
+
+            // Laser Optical Sensor Visor
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(-10, -19, 20, 9);
+
+            // Scanning Red / Teal Laser Eye
+            const scanX = Math.sin(time * 0.01) * 7;
+            ctx.fillStyle = '#ff1744';
+            ctx.shadowColor = '#ff1744';
+            ctx.shadowBlur = 10;
+            ctx.fillRect(-2.5 + scanX, -18, 5, 7);
+
+        } else {
+            // =========================================================================
+            // 👾 WORLD 5: STARDUST ASTRAL CRYSTAL (Radiant 4-Pointed Star with Orbiting Shards)
+            // =========================================================================
+            const floatY = Math.sin(time * 0.007) * 4 - 8;
+            ctx.translate(0, floatY);
+
+            const rot = time * 0.0035;
+            const pulse = (Math.sin(time * 0.008) + 1) * 0.5;
+
+            ctx.shadowColor = '#ffd700';
+            ctx.shadowBlur = 18 + pulse * 10;
+
+            // 3 Orbiting Diamond Satellites
+            for (let s = 0; s < 3; s++) {
+                const sAngle = rot * 2 + (s * Math.PI * 2 / 3);
+                const sx = Math.cos(sAngle) * 20;
+                const sy = -14 + Math.sin(sAngle) * 12;
+                ctx.fillStyle = '#e040fb';
+                ctx.beginPath();
+                ctx.arc(sx, sy, 2.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 4-Pointed Star Crystal Core
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.moveTo(0, -31);
+            ctx.lineTo(6, -18);
+            ctx.lineTo(19, -14);
+            ctx.lineTo(6, -10);
+            ctx.lineTo(0, 3);
+            ctx.lineTo(-6, -10);
+            ctx.lineTo(-19, -14);
+            ctx.lineTo(-6, -18);
+            ctx.closePath();
+            ctx.fill();
+
+            // Inner Crystal Facet
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(0, -14, 5.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Astral Beady Eyes
+            ctx.fillStyle = '#4a148c';
+            ctx.beginPath();
+            ctx.arc(-4 + eyeOffset, -15, 2.2, 0, Math.PI * 2);
+            ctx.arc(4 + eyeOffset, -15, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         ctx.restore();
     }
@@ -1228,7 +1713,7 @@ class BossEnemy {
         this.hurtTimer = 120;
         this.state = 'HURT';
         this.stateTimer = 45;
-        audio.playBossHit();
+        audio.playBossDamage();
         if (triggerShake) triggerShake(8, 0.25);
         
         const bType = this.bossType || 5;
@@ -1309,8 +1794,9 @@ class BossEnemy {
                 this.state = 'AWAKENING';
                 this.stateTimer = 55;
                 this.isAwake = true;
-                audio.playBossRoar();
-                if (triggerShake) triggerShake(7, 0.4);
+                audio.playBossAwaken(bType);
+                audio.playThematicBGM('boss'); // Switch to adrenaline Boss Battle OST!
+                if (triggerShake) triggerShake(10, 0.48);
             }
             return;
         }
@@ -1353,25 +1839,27 @@ class BossEnemy {
                     this.state = 'MAGMA_CHARGE';
                     this.stateTimer = 40;
                     this.vx = (player.x > this.x ? 4.8 : -4.8);
-                    audio.playBossRoar();
+                    audio.playBossAttack(10);
                 } else if (bType === 15) {
                     this.state = 'PHANTOM_TELEPORT';
                     this.stateTimer = 30;
+                    audio.playBossAttack(15);
                 } else if (bType === 20) {
                     this.state = 'MECHA_HOVER';
                     this.stateTimer = 50;
                     this.vy = -17.5;
                     this.vx = (player.x > this.x ? 2.5 : -2.5);
-                    audio.playBossJump();
+                    audio.playBossAttack(20);
                 } else if (bType === 25) {
                     this.state = 'COSMIC_LEAP';
                     this.stateTimer = 60;
                     this.vy = -18.0;
                     this.vx = (player.x > this.x ? 2.0 : -2.0);
-                    audio.playBossJump();
+                    audio.playBossAttack(25);
                 } else {
                     this.state = 'PREPARE_JUMP';
                     this.stateTimer = 40;
+                    audio.playBossAttack(5);
                 }
             }
         } else if (this.state === 'MAGMA_CHARGE') {
@@ -1420,8 +1908,8 @@ class BossEnemy {
                 this.state = 'PATROL';
                 this.jumpCooldown = 150;
                 this.vx = (this.vx > 0 ? 1.4 : -1.4);
-                audio.playBossHit();
-                if (triggerShake) triggerShake(8, 0.3);
+                audio.playBossLand(20);
+                if (triggerShake) triggerShake(10, 0.38);
                 for (let d = 0; d < 20; d++) {
                     particles.push(new Particle(this.x + this.width / 2, this.y + this.height, '#00ffcc', 3, (Math.random()-0.5)*8, -Math.random()*4, 25));
                 }
@@ -1438,8 +1926,8 @@ class BossEnemy {
                 this.state = 'PATROL';
                 this.jumpCooldown = 160;
                 this.vx = (this.vx > 0 ? 1.3 : -1.3);
-                audio.playBossHit();
-                if (triggerShake) triggerShake(8, 0.35);
+                audio.playBossLand(25);
+                if (triggerShake) triggerShake(12, 0.44);
                 for (let d = 0; d < 22; d++) {
                     particles.push(new Particle(this.x + this.width / 2, this.y + this.height, '#ffd700', 3.5, (Math.random()-0.5)*9, -Math.random()*4, 30));
                 }
@@ -1463,10 +1951,10 @@ class BossEnemy {
                 this.state = 'PATROL';
                 this.jumpCooldown = 160;
                 this.vx = (this.vx > 0 ? 1.4 : -1.4);
-                audio.playBossHit();
-                if (triggerShake) triggerShake(6, 0.2);
-                for (let d = 0; d < 14; d++) {
-                    particles.push(new Particle(this.x + (d % 2 === 0 ? 0 : this.width), this.y + this.height, '#ffd700', 3, (Math.random()-0.5)*5, -Math.random()*3, 20));
+                audio.playBossLand(bType);
+                if (triggerShake) triggerShake(bType === 10 ? 10 : 8, 0.35);
+                for (let d = 0; d < 16; d++) {
+                    particles.push(new Particle(this.x + (d % 2 === 0 ? 0 : this.width), this.y + this.height, '#ffd700', 3, (Math.random()-0.5)*6, -Math.random()*3.5, 20));
                 }
             }
         } else if (this.state === 'HURT') {

@@ -90,7 +90,7 @@ function generate25Chapters() {
     const chapters = [];
 
     for (let c = 1; c <= 25; c++) {
-        const themeIdx = (c - 1) % CHAPTER_THEMES.length;
+        const themeIdx = Math.min(CHAPTER_THEMES.length - 1, Math.floor((c - 1) / 5));
         const themeObj = CHAPTER_THEMES[themeIdx];
         const isBossChapter = (c % 5 === 0);
 
@@ -145,8 +145,11 @@ function generate25Chapters() {
                 const gap = 55 + Math.round(rng() * 45);
                 let pWidth = 170 + Math.round(rng() * 160); 
                 
-                const heightRange = (l === 2) ? 40 : (l === 3 ? 55 : 25);
-                const pY = 330 + Math.round((rng() - 0.5) * heightRange); 
+                // 🏔️ Upward Vertical Map Progression: Level climbs steadily upwards towards the sky/summit!
+                const mapProgress = Math.min(1.0, curX / mapWidth);
+                const targetSlopeY = 390 - (mapProgress * 210); // Smooth climb from Y=390 up to Y=180
+                const heightVariation = (l === 2) ? 35 : (l === 3 ? 45 : 25);
+                const pY = Math.max(150, Math.min(420, Math.round(targetSlopeY + (rng() - 0.5) * heightVariation))); 
 
                 const hasEnemy = (c >= 3) && (rng() < Math.min(0.70, 0.35 + c * 0.015));
                 const hasSpikes = (c >= 6) && (rng() < Math.min(0.60, 0.28 + c * 0.014)) && !hasEnemy;
@@ -171,14 +174,13 @@ function generate25Chapters() {
 
                 // 🔮 PORTALS: Guaranteed starting from Chapter 2 and scaling with chapters
                 let hasPortalOnThisPlatform = false;
-                const mapProgress = curX / mapWidth;
                 const nextCheckpoint = portalCheckpoints[portalCount];
                 const shouldSpawnPortal = (targetPortals > 0 && portalCount < targetPortals && nextCheckpoint !== undefined && mapProgress >= nextCheckpoint);
 
                 if (shouldSpawnPortal && !isMoving) {
                     hasPortalOnThisPlatform = true;
                     const portExitX = curX + 130 + Math.round(rng() * 50);
-                    const portExitY = Math.max(160, pY - 95 - Math.round(rng() * 30));
+                    const portExitY = Math.max(150, pY - 80 - Math.round(rng() * 25));
                     
                     // Sturdy portal destination island
                     const portPlat = { id: platformIndex++, x: portExitX, y: portExitY, width: 180, height: 24 };
@@ -195,18 +197,27 @@ function generate25Chapters() {
                     curX = Math.max(curX, portPlat.x + portPlat.width);
                 }
 
-                // 🔽 DUCK CROUCHING CEILINGS vs 🦘 TRAMPOLINES (Strict Mutually Exclusive Check!)
+                // 🔽 DUCK CROUCHING CEILINGS (Platform length is guaranteed to be 2X the duck ceiling length!)
                 let hasDuckCeilingOnThisPlatform = false;
 
                 if (c >= 3 && !hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && ceilingCount < maxCeilings && rng() > 0.45) {
+                    const ceilingWidth = 90;
+                    // Ground platform length is at least 2x the duck ceiling length (180px+)
+                    const requiredPlatWidth = ceilingWidth * 2;
+                    if (platformObj.width < requiredPlatWidth) {
+                        platformObj.width = requiredPlatWidth;
+                        curX = platformObj.x + platformObj.width;
+                    }
+                    
+                    const ceilingOffsetX = Math.round((platformObj.width - ceilingWidth) / 2);
                     overheadCeilings.push({
                         id: platformIndex++,
-                        x: platformObj.x + 35,
+                        x: platformObj.x + ceilingOffsetX,
                         y: pY - 48,
-                        width: Math.min(120, pWidth - 65),
+                        width: ceilingWidth,
                         height: 24,
                         platformId: platformObj.id,
-                        offsetX: 35
+                        offsetX: ceilingOffsetX
                     });
                     ceilingCount++;
                     hasDuckCeilingOnThisPlatform = true;
@@ -214,7 +225,7 @@ function generate25Chapters() {
 
                 // 🦘 TRAMPOLINES: Only spawn if there is NO duck ceiling on this platform!
                 if (!hasDuckCeilingOnThisPlatform && !hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && bouncyCount < maxBouncy && rng() > 0.45) {
-                    const highY = pY - 145 - Math.round(rng() * 25);
+                    const highY = Math.max(130, pY - 125 - Math.round(rng() * 20));
                     const highPlat = {
                         id: platformIndex++,
                         x: platformObj.x + 130,
@@ -311,28 +322,29 @@ function generate25Chapters() {
                     }
                 }
 
-                // Enemy (Slime 👾)
+                // Enemy (Unique Creature per World Theme 🍄, 🦀, 👻, 🤖, 👾)
                 if (hasEnemy) {
                     enemies.push({
                         x: platformObj.x + pWidth - 60,
                         y: pY - 24,
                         range: pWidth - 70,
-                        platformId: platformObj.id
+                        platformId: platformObj.id,
+                        worldType: Math.floor((c - 1) / 5) + 1
                     });
                 }
             }
 
-            // Exit Platform & Boss Arena Setup
-            // Normal levels: 450, Boss levels: arena platform (980)
+            // 👑 Exit Platform & Boss Arena Setup: Positioned high up at the celestial summit!
+            const exitPlatY = isBossLevel ? 260 : 180; // High in altitude compared to start (Y=420)
             const exitPlatWidth = isBossLevel ? 980 : 450;
-            const exitPlat = { id: platformIndex++, x: curX + 80, y: 360, width: exitPlatWidth, height: 120 };
+            const exitPlat = { id: platformIndex++, x: curX + 80, y: exitPlatY, width: exitPlatWidth, height: 120 };
             platforms.push(exitPlat);
 
-            // Door at the very end of the final platform
+            // Door at the very end of the final elevated summit platform
             fruitCollectibles.push({ 
                 type: 'exit', 
                 x: exitPlat.x + exitPlatWidth - 90, 
-                y: 290, 
+                y: exitPlatY - 70, 
                 width: 36, 
                 height: 70, 
                 platformId: exitPlat.id, 

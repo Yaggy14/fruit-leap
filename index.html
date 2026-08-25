@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=48">
+    <link rel="stylesheet" href="style.css?v=65">
 </head>
 <body>
     <script>
@@ -359,38 +359,40 @@
 
             <!-- Settings Screen -->
             <div id="screen-settings" class="ui-screen hidden">
-                <div class="glass-panel modal">
-                    <h2 data-i18n="settingsTitle">⚙️ SETTINGS</h2>
+                <div class="glass-panel modal" style="max-width: 440px; padding: 12px 20px;">
+                    <h2 data-i18n="settingsTitle" style="font-size: 1.15rem; margin-bottom: 8px;">⚙️ SETTINGS</h2>
                     
-                    <div style="margin: 20px 0; text-align: left;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;" data-i18n="masterVolume">🔊 Master Volume</label>
-                        <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1" style="width: 100%;">
-                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 6px 0;">
+                        <div style="text-align: left;">
+                            <label style="display: block; margin-bottom: 4px; font-size: 0.78rem; font-weight: bold;" data-i18n="masterVolume">🔊 Master Volume</label>
+                            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1" style="width: 100%;">
+                        </div>
 
-                    <div style="margin: 20px 0; text-align: left;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;" data-i18n="musicVolume">🎵 Music Volume</label>
-                        <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.1" value="1" style="width: 100%;">
+                        <div style="text-align: left;">
+                            <label style="display: block; margin-bottom: 4px; font-size: 0.78rem; font-weight: bold;" data-i18n="musicVolume">🎵 Music Volume</label>
+                            <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.1" value="1" style="width: 100%;">
+                        </div>
                     </div>
                     
-                    <div style="margin: 20px 0; text-align: left;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;" data-i18n="controlsSize">🕹️ Controls Size</label>
-                        <div style="display: flex; gap: 10px;" id="settings-controls-size">
-                            <button class="btn size-btn" data-size="small" data-i18n="sizeSmall" style="flex: 1; padding: 10px 5px; font-size: 0.8rem;">Small</button>
-                            <button class="btn size-btn" data-size="medium" data-i18n="sizeMedium" style="flex: 1; padding: 10px 5px; font-size: 0.8rem;">Medium</button>
-                            <button class="btn size-btn" data-size="large" data-i18n="sizeLarge" style="flex: 1; padding: 10px 5px; font-size: 0.8rem;">Large</button>
+                    <div style="margin: 6px 0; text-align: left; width: 100%;">
+                        <label style="display: block; margin-bottom: 4px; font-size: 0.78rem; font-weight: bold;" data-i18n="controlsSize">🕹️ Controls Size</label>
+                        <div style="display: flex; gap: 8px;" id="settings-controls-size">
+                            <button class="btn size-btn" data-size="small" data-i18n="sizeSmall" style="flex: 1; padding: 5px 4px; font-size: 0.75rem;">Small</button>
+                            <button class="btn size-btn" data-size="medium" data-i18n="sizeMedium" style="flex: 1; padding: 5px 4px; font-size: 0.75rem;">Medium</button>
+                            <button class="btn size-btn" data-size="large" data-i18n="sizeLarge" style="flex: 1; padding: 5px 4px; font-size: 0.75rem;">Large</button>
                         </div>
                     </div>
 
-                    <div style="margin: 20px 0; text-align: left;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: bold;" data-i18n="language">🌐 Language</label>
-                        <div style="display: flex; gap: 10px;" id="settings-lang-select">
-                            <button class="btn lang-btn" data-lang="tr" style="flex: 1; padding: 10px 5px; font-size: 0.85rem;">🇹🇷 Türkçe</button>
-                            <button class="btn lang-btn" data-lang="en" style="flex: 1; padding: 10px 5px; font-size: 0.85rem;">🇬🇧 English</button>
+                    <div style="margin: 6px 0; text-align: left; width: 100%;">
+                        <label style="display: block; margin-bottom: 4px; font-size: 0.78rem; font-weight: bold;" data-i18n="language">🌐 Language</label>
+                        <div style="display: flex; gap: 8px;" id="settings-lang-select">
+                            <button class="btn lang-btn" data-lang="tr" style="flex: 1; padding: 5px 4px; font-size: 0.78rem;">🇹🇷 Türkçe</button>
+                            <button class="btn lang-btn" data-lang="en" style="flex: 1; padding: 5px 4px; font-size: 0.78rem;">🇬🇧 English</button>
                         </div>
                     </div>
 
-                    <div class="modal-buttons" style="margin-top: 30px;">
-                        <button id="btn-settings-close" class="btn btn-primary" data-i18n="close" style="width: 100%;">✔ Close</button>
+                    <div class="modal-buttons" style="margin-top: 10px; width: 100%;">
+                        <button id="btn-settings-close" class="btn btn-primary" data-i18n="close" style="width: 100%; padding: 7px 16px; font-size: 0.88rem;">✔ Close</button>
                     </div>
                 </div>
             </div>
@@ -407,55 +409,107 @@
                 </div>
             </div>
 
-            <!-- Level Win 3-Star Screen -->
+            <!-- Level Win 3-Star Screen (AAA Mobile Polished) -->
             <div id="screen-win" class="ui-screen hidden">
-                <div class="glass-panel modal win-modal" style="max-width: 650px; padding: 15px 25px;">
-                    <div class="win-stars-arch" style="height: 70px; margin-bottom: -5px;">
-                        <div class="arch-star" id="arch-star-1" style="--start-rot: -20deg; --start-y: 10px; --end-scale: 0.9;">⭐</div>
-                        <div class="arch-star" id="arch-star-2" style="--start-rot: 0deg; --start-y: -10px; --end-scale: 1.15;">⭐</div>
-                        <div class="arch-star" id="arch-star-3" style="--start-rot: 20deg; --start-y: 10px; --end-scale: 0.9;">⭐</div>
+                <div class="glass-panel modal-card win-modal-modern">
+                    <!-- Top Celebratory Banner -->
+                    <div class="win-banner-wrap">
+                        <span class="win-banner-wings">✨</span>
+                        <h2 class="win-title-modern" data-i18n="winLevelCleared">BÖLÜM GEÇİLDİ!</h2>
+                        <span class="win-banner-wings">✨</span>
                     </div>
-                    <h2 class="win-title" style="margin-top: 5px; font-size: 1.8rem; margin-bottom: 10px;" data-i18n="winLevelCleared">LEVEL CLEARED!</h2>
-                    
-                    <div style="display: flex; gap: 20px; align-items: stretch;">
-                        <!-- Left: Checklist & Stats -->
-                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px;">
-                            <div class="star-checklist" style="margin-top: 0;">
-                                <div class="star-req-item" id="req-star-1" style="padding: 6px 10px;">
-                                    <span class="req-check">⬜</span>
-                                    <span class="req-text" style="font-size: 0.85rem;" data-i18n="winFinishLevel">Finish Level</span>
-                                </div>
-                                <div class="star-req-item" id="req-star-2" style="padding: 6px 10px;">
-                                    <span class="req-check">⬜</span>
-                                    <span class="req-text" style="font-size: 0.85rem;" data-i18n="winCollectFruits">Collect ALL Fruits (🍓)</span>
-                                </div>
-                                <div class="star-req-item" id="req-star-3" style="padding: 6px 10px;">
-                                    <span class="req-check">⬜</span>
-                                    <span class="req-text" style="font-size: 0.85rem;"><span data-i18n="winSpeedrun">Speedrun</span> (<span id="win-target-time">0</span>s)</span>
-                                </div>
-                            </div>
 
-                            <div class="score-summary" style="margin-top: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.35); border-radius: 14px; border: 1px solid rgba(255,255,255,0.18);">
-                                <div style="display: flex; justify-content: space-around; width: 100%; font-size: 0.9rem;">
-                                    <span>🍓 <strong id="win-fruits-count">0 / 0</strong></span>
-                                    <span>⏱️ <strong id="win-time">0.0s</strong></span>
+                    <!-- Chubby 3D Cartoon Stars Arch -->
+                    <div class="win-stars-arch-modern">
+                        <!-- Star 1 (Left) -->
+                        <div class="arch-star-box" id="arch-star-1" style="--rot: -14deg; --ty: 6px;">
+                            <svg class="chubby-star-svg" viewBox="0 0 100 100">
+                                <path class="star-outline" d="M 50,6 L 62,34 L 92,36 L 69,56 L 76,86 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" stroke-linejoin="round" stroke-linecap="round" />
+                                <path class="star-body" d="M 50,6 L 62,34 L 92,36 L 69,56 L 76,86 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" stroke-linejoin="round" stroke-linecap="round" />
+                                <path class="star-facet" d="M 50,6 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" />
+                                <path class="star-gloss" d="M 50,14 L 58,34 L 42,34 Z" />
+                                <path class="star-sparkle" d="M 75,20 Q 75,26 81,26 Q 75,26 75,32 Q 75,26 69,26 Q 75,26 75,20 Z" />
+                            </svg>
+                        </div>
+
+                        <!-- Star 2 (Center - Crown Star) -->
+                        <div class="arch-star-box star-crown" id="arch-star-2" style="--rot: 0deg; --ty: -10px;">
+                            <svg class="chubby-star-svg" viewBox="0 0 100 100">
+                                <path class="star-outline" d="M 50,6 L 62,34 L 92,36 L 69,56 L 76,86 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" stroke-linejoin="round" stroke-linecap="round" />
+                                <path class="star-body" d="M 50,6 L 62,34 L 92,36 L 69,56 L 76,86 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" stroke-linejoin="round" stroke-linecap="round" />
+                                <path class="star-facet" d="M 50,6 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" />
+                                <path class="star-gloss" d="M 50,14 L 58,34 L 42,34 Z" />
+                                <path class="star-sparkle" d="M 75,20 Q 75,26 81,26 Q 75,26 75,32 Q 75,26 69,26 Q 75,26 75,20 Z" />
+                            </svg>
+                        </div>
+
+                        <!-- Star 3 (Right) -->
+                        <div class="arch-star-box" id="arch-star-3" style="--rot: 14deg; --ty: 6px;">
+                            <svg class="chubby-star-svg" viewBox="0 0 100 100">
+                                <path class="star-outline" d="M 50,6 L 62,34 L 92,36 L 69,56 L 76,86 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" stroke-linejoin="round" stroke-linecap="round" />
+                                <path class="star-body" d="M 50,6 L 62,34 L 92,36 L 69,56 L 76,86 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" stroke-linejoin="round" stroke-linecap="round" />
+                                <path class="star-facet" d="M 50,6 L 50,70 L 24,86 L 31,56 L 8,36 L 38,34 Z" />
+                                <path class="star-gloss" d="M 50,14 L 58,34 L 42,34 Z" />
+                                <path class="star-sparkle" d="M 75,20 Q 75,26 81,26 Q 75,26 75,32 Q 75,26 69,26 Q 75,26 75,20 Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Split Landscape Layout Grid -->
+                    <div class="win-grid-container">
+                        <!-- Left Panel: Objectives Checklist & Quick Stats -->
+                        <div class="win-left-panel">
+                            <div class="win-checklist">
+                                <div class="win-req-card" id="req-star-1">
+                                    <div class="req-status-icon">⬜</div>
+                                    <div class="req-text-wrap">
+                                        <span class="req-title" data-i18n="winFinishLevel">Bölümü Bitir</span>
+                                        <span class="req-sub">Temel Seviye Hedefi</span>
+                                    </div>
+                                    <span class="req-star-pill">+⭐</span>
                                 </div>
-                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 6px;">
-                                    <span style="font-size: 0.8rem; color: #e0e7ff; font-weight: 700; letter-spacing: 1px;" data-i18n="score">SCORE</span>
-                                    <div id="win-score-val" style="color: #ffd700; font-family: var(--font-retro); font-size: 2.3rem; text-shadow: 0 0 20px rgba(255, 215, 0, 0.75); line-height: 1.1;">0</div>
-                                    <div style="font-size: 0.85rem; color: #a5f3fc; margin-top: 2px;">🏆 <span data-i18n="best">BEST</span>: <strong id="win-best-score-val" style="color: #38bdf8;">0</strong></div>
+
+                                <div class="win-req-card" id="req-star-2">
+                                    <div class="req-status-icon">⬜</div>
+                                    <div class="req-text-wrap">
+                                        <span class="req-title" data-i18n="winCollectFruits">Tüm Meyveleri Topla (🍓)</span>
+                                        <span class="req-sub"><strong id="win-fruits-count">0 / 0</strong> Meyve</span>
+                                    </div>
+                                    <span class="req-star-pill">+⭐</span>
                                 </div>
-                                <div id="win-new-record-badge" class="new-record-badge hidden" style="align-self: center; margin-top: 2px;" data-i18n="newRecord">🔥 YENİ REKOR!</div>
+
+                                <div class="win-req-card" id="req-star-3">
+                                    <div class="req-status-icon">⬜</div>
+                                    <div class="req-text-wrap">
+                                        <span class="req-title"><span data-i18n="winSpeedrun">Hızlı Koşu</span> (&lt;<span id="win-target-time">0</span>s)</span>
+                                        <span class="req-sub">Süren: <strong id="win-time">0.0s</strong></span>
+                                    </div>
+                                    <span class="req-star-pill">+⭐</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Right: Buttons -->
-                        <div class="modal-actions" style="flex: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 0; justify-content: center;">
-                            <button id="btn-next-level" class="btn btn-primary-play" style="width: 100%; padding: 12px;" data-i18n="winNextLevel">🚀 NEXT LEVEL</button>
-                            <button id="btn-win-restart" class="btn btn-chapters" style="width: 100%; padding: 10px;" data-i18n="winRetry">🔄 RETRY</button>
-                            <div style="display: flex; gap: 10px; width: 100%;">
-                                <button id="btn-win-levels" class="btn btn-story" style="flex: 1; padding: 8px; font-size: 0.8rem;" data-i18n="winLevels">🗺️ LEVELS</button>
-                                <button id="btn-win-main-menu" class="btn btn-shop-neon" style="flex: 1; padding: 8px; font-size: 0.8rem;" data-i18n="winMenu">🏠 MENU</button>
+                        <!-- Right Panel: Score Card & Juicy Buttons -->
+                        <div class="win-right-panel">
+                            <div class="win-score-box">
+                                <div class="win-score-label" data-i18n="score">SKOR</div>
+                                <div class="win-score-num" id="win-score-val">0</div>
+                                <div class="win-best-line">🏆 <span data-i18n="best">EN İYİ</span>: <strong id="win-best-score-val">0</strong></div>
+                                <div id="win-new-record-badge" class="win-record-badge hidden" data-i18n="newRecord">🔥 YENİ REKOR!</div>
+                            </div>
+
+                            <div class="win-actions-box">
+                                <button id="btn-next-level" class="btn btn-primary-play btn-win-main" data-i18n="winNextLevel">
+                                    🚀 SONRAKİ BÖLÜM
+                                </button>
+                                <button id="btn-win-double-score" class="btn btn-ad-gold btn-win-ad">
+                                    🎬 2X SKOR KAZAN (+⭐)
+                                </button>
+                                <div class="win-actions-row">
+                                    <button id="btn-win-restart" class="btn btn-chapters btn-win-sub" data-i18n="winRetry">🔄 TEKRAR</button>
+                                    <button id="btn-win-levels" class="btn btn-story btn-win-sub" data-i18n="winLevels">🗺️ BÖLÜMLER</button>
+                                    <button id="btn-win-main-menu" class="btn btn-shop-neon btn-win-sub" data-i18n="winMenu">🏠 MENÜ</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -490,9 +544,9 @@
     <audio id="bgm-game" src="audio/game.wav" loop preload="auto"></audio>
 
     <script src="admob_manager.js" onerror="this.onerror=null;this.src='js/admob_manager.js'"></script>
-        <script src="audio.js?v=48" onerror="this.onerror=null;this.src='js/audio.js?v=48'"></script>
-    <script src="physics.js?v=48" onerror="this.onerror=null;this.src='js/physics.js?v=48'"></script>
-    <script src="levels.js?v=48" onerror="this.onerror=null;this.src='js/levels.js?v=48'"></script>
-    <script src="game.js?v=48" onerror="this.onerror=null;this.src='js/game.js?v=48'"></script>
+        <script src="audio.js?v=65" onerror="this.onerror=null;this.src='js/audio.js?v=65'"></script>
+    <script src="physics.js?v=65" onerror="this.onerror=null;this.src='js/physics.js?v=65'"></script>
+    <script src="levels.js?v=65" onerror="this.onerror=null;this.src='js/levels.js?v=65'"></script>
+    <script src="game.js?v=65" onerror="this.onerror=null;this.src='js/game.js?v=65'"></script>
 </body>
 </html>
