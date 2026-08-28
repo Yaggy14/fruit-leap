@@ -1058,18 +1058,102 @@ class AudioManager {
     }
 
     playCoin() {
+        this.playFruitCombo(1);
+    }
+
+    playFruitCombo(combo = 1) {
         if (this.muted) return;
         this.init();
         const now = this.ctx.currentTime;
+
+        // Ascending pentatonic / major scale from C5 (523Hz) to C6 (1046Hz)
+        const scale = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50, 1174.66, 1318.51];
+        const noteIdx = Math.min(scale.length - 1, Math.max(0, (combo - 1) % scale.length));
+        const rootFreq = scale[noteIdx];
+        const fifthFreq = rootFreq * 1.5;
+
         const notes = [
-            { freq: 659.25, time: 0, dur: 0.15, vol: 0.18 },
-            { freq: 880.00, time: 0.04, dur: 0.18, vol: 0.20 }
+            { freq: rootFreq, time: 0, dur: 0.14, vol: 0.18 + Math.min(0.08, combo * 0.01) },
+            { freq: fifthFreq, time: 0.035, dur: 0.16, vol: 0.20 + Math.min(0.08, combo * 0.01) }
         ];
+
+        // Extra sparkling chime octave on high combos (5+)
+        if (combo >= 5) {
+            notes.push({ freq: rootFreq * 2, time: 0.07, dur: 0.22, vol: 0.22 });
+        }
 
         notes.forEach(n => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
-            osc.type = 'sine';
+            osc.type = combo >= 5 ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(n.freq, now + n.time);
+            gain.gain.setValueAtTime(n.vol * this.globalVolume, now + n.time);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + n.time);
+            osc.stop(now + n.time + n.dur);
+        });
+    }
+
+    playCrumble() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.22);
+
+        gain.gain.setValueAtTime(0.20 * this.globalVolume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.22);
+    }
+
+    playIceSlide() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.linearRampToValueAtTime(1200, now + 0.10);
+
+        gain.gain.setValueAtTime(0.08 * this.globalVolume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.10);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.10);
+    }
+
+    playFanfare() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const fanfareNotes = [
+            { freq: 523.25, time: 0.00, dur: 0.12, vol: 0.20 }, // C5
+            { freq: 659.25, time: 0.09, dur: 0.12, vol: 0.22 }, // E5
+            { freq: 783.99, time: 0.18, dur: 0.15, vol: 0.24 }, // G5
+            { freq: 1046.50, time: 0.28, dur: 0.40, vol: 0.30 }, // C6
+            { freq: 1318.51, time: 0.35, dur: 0.45, vol: 0.28 }  // E6
+        ];
+
+        fanfareNotes.forEach(n => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
             osc.frequency.setValueAtTime(n.freq, now + n.time);
             gain.gain.setValueAtTime(n.vol * this.globalVolume, now + n.time);
             gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);

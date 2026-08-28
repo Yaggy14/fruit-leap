@@ -37,7 +37,7 @@ const I18N = {
         stars: "YILDIZ",
         playGame: "▶ OYUNA BAŞLA",
         storyQuest: "📖 HİKAYE & GÖREV",
-        chapters: "🗺️ CHAPTERLAR",
+        chapters: "🗺️ BÖLÜMLER",
         shop: "🛍️ KARAKTER MARKETİ",
         dailySpin: "🎁 GÜNLÜK ÇARK",
         freeLife: "📺 ÜCRETSİZ CAN (+1 ❤️)",
@@ -47,12 +47,10 @@ const I18N = {
 
         // Story Modal
         storyTitle: "✨ PİKO'NUN EFSANESİ ✨",
-        storyCard1Title: "1. Meyve Vadisi",
-        storyCard1Text: "Meyve Vadisi'nin neşesi ve yaşam kaynağı, gökyüzündeki Dev Saman Yolu Meyve Ağacı'ydı...",
-        storyCard2Title: "2. Çalınan Yıldızlar",
-        storyCard2Text: "Bir gece kötü Gölge Balçıkları (Slime'lar) ağacın büyülü 25 Yıldız Anahtarını ve meyvelerini çalıp boyut portallarına saçtı!",
-        storyCard3Title: "3. Cesur Tavşan Piko",
-        storyCard3Text: "Tavşan Piko pelerinini taktı! Portallardan geçip 25 Yıldız Anahtarını toplamak ve vadisini kurtarmak için yola çıkıyor!",
+        storyUnlocked: "AÇILDI",
+        storyPrev: "◀ Önceki",
+        storyNext: "Sonraki ▶",
+        storyBackToGame: "🚀 OYUNA DÖN",
         startAdventure: "🚀 MACERAYA BAŞLA!",
         mainMenu: "🏠 Ana Menü",
 
@@ -72,6 +70,12 @@ const I18N = {
         outOfLivesDesc: "Oynamak için en az 1 Canın olmalı. Canlar her 30 dakikada 1 yenilenir!",
         nextLifeIn: "Sıradaki Can:",
         watchAdLife: "📺 Reklam İzle (+1 Can)",
+        livesLeft: "Kalan Can",
+
+        // Death Choice Modal
+        deathTitle: "CAN KAYBEDİLDİ!",
+        deathReviveAd: "🎬 Kaldığın Yerden Devam Et (Reklam)",
+        deathRetry: "🔄 Baştan Başla (-1 Can)",
 
         // Shop
         characterShop: "Karakter Marketi",
@@ -79,13 +83,18 @@ const I18N = {
         // Win Screen
         winLevelCleared: "BÖLÜM GEÇİLDİ!",
         winFinishLevel: "Bölümü Bitir",
-        winCollectFruits: "TÜM Meyveleri Topla (🍓)",
+        winFinishSub: "Temel Seviye Hedefi",
+        winCollectFruits: "Tüm Meyveleri Topla (🍓)",
         winSpeedrun: "Hızlı Koşu",
+        winYourTime: "Süren:",
+        winFruitsSub: "Meyve",
         winNextLevel: "🚀 SONRAKİ BÖLÜM",
+        winDoubleScore: "🎬 2X SKOR KAZAN (+⭐)",
+        winDoubleScoreClaimed: "✅ 2X SKOR ALINDI!",
         winRetry: "🔄 TEKRAR DENE",
         winLevels: "🗺️ BÖLÜMLER",
         winMenu: "🏠 MENÜ",
-        score: "PUAN",
+        score: "SKOR",
         best: "EN İYİ",
         newRecord: "🔥 YENİ REKOR!",
 
@@ -133,7 +142,13 @@ const I18N = {
         spinCloseBtn: "KAPAT",
         spinPrizeStars: "⭐ Tebrikler! +{val} YILDIZ KAZANDIN!",
         spinPrizeLife: "❤️ Harika! +{val} EKSTRA CAN KAZANDIN!",
-        spinPrizePower: "🎁 BÜYÜLÜ ÖDÜL! +30 Yıldız Kazandın!"
+        spinPrizePower: "🎁 BÜYÜLÜ ÖDÜL! +30 Yıldız Kazandın!",
+
+        // SETOGI Showcase
+        setogiTagline: "YARATICI BAĞIMSIZ OYUN STÜDYOSU",
+        setogiDesc: "SETOGI, oyunculara yüksek tempolu, görsel açıdan zengin ve akıcı arcade platform deneyimleri sunan bağımsız bir oyun stüdyosudur.",
+        setogiGiftBtn: "🎁 STÜDYO HEDİYESİ (+300 🍓)",
+        setogiGiftClaimed: "✅ HEDİYE ALINDI!"
     },
     en: {
         stars: "STARS",
@@ -149,12 +164,10 @@ const I18N = {
 
         // Story Modal
         storyTitle: "✨ THE LEGEND OF PIKO ✨",
-        storyCard1Title: "1. Fruit Valley",
-        storyCard1Text: "The joy and life source of Fruit Valley was the Giant Milky Way Tree in the sky...",
-        storyCard2Title: "2. The Stolen Stars",
-        storyCard2Text: "One night, the evil Shadow Slimes stole the 25 Star Keys and magic fruits, scattering them into portals!",
-        storyCard3Title: "3. Brave Bunny Piko",
-        storyCard3Text: "Bunny Piko wore his cape! He embarks on a quest through portals to collect all 25 Star Keys and save his valley!",
+        storyUnlocked: "UNLOCKED",
+        storyPrev: "◀ Prev",
+        storyNext: "Next ▶",
+        storyBackToGame: "🚀 BACK TO GAME",
         startAdventure: "🚀 START ADVENTURE!",
         mainMenu: "🏠 Main Menu",
 
@@ -174,6 +187,12 @@ const I18N = {
         outOfLivesDesc: "You need at least 1 Life to play. Lives regenerate 1 every 30 minutes!",
         nextLifeIn: "Next Life In:",
         watchAdLife: "📺 Watch Ad (+1 Life)",
+        livesLeft: "Lives Left",
+
+        // Death Choice Modal
+        deathTitle: "LIFE LOST!",
+        deathReviveAd: "🎬 Revive Here (Watch Ad)",
+        deathRetry: "🔄 Restart (-1 Life)",
 
         // Shop
         characterShop: "Character Shop",
@@ -181,9 +200,14 @@ const I18N = {
         // Win Screen
         winLevelCleared: "LEVEL CLEARED!",
         winFinishLevel: "Finish Level",
+        winFinishSub: "Basic Level Goal",
         winCollectFruits: "Collect ALL Fruits (🍓)",
         winSpeedrun: "Speedrun",
+        winYourTime: "Your Time:",
+        winFruitsSub: "Fruits",
         winNextLevel: "🚀 NEXT LEVEL",
+        winDoubleScore: "🎬 DOUBLE SCORE (+⭐)",
+        winDoubleScoreClaimed: "✅ 2X SCORE CLAIMED!",
         winRetry: "🔄 RETRY",
         winLevels: "🗺️ LEVELS",
         winMenu: "🏠 MENU",
@@ -235,9 +259,100 @@ const I18N = {
         spinCloseBtn: "CLOSE",
         spinPrizeStars: "⭐ Congratulations! +{val} STARS WON!",
         spinPrizeLife: "❤️ Awesome! +{val} EXTRA LIFE WON!",
-        spinPrizePower: "🎁 MAGIC REWARD! +30 Stars Won!"
+        spinPrizePower: "🎁 MAGIC REWARD! +30 Stars Won!",
+
+        // SETOGI Showcase
+        setogiTagline: "CREATIVE INDIE GAME STUDIO",
+        setogiDesc: "SETOGI is an independent game studio crafting high-octane, visually rich, and smooth arcade platformer adventures.",
+        setogiGiftBtn: "🎁 STUDIO GIFT (+300 🍓)",
+        setogiGiftClaimed: "✅ GIFT CLAIMED!"
     }
 };
+
+const STORY_TOMES = [
+    {
+        id: 0,
+        reqChapter: 0,
+        tabTitleTr: "📜 Giriş",
+        tabTitleEn: "📜 Prologue",
+        titleTr: "✨ 1. Saman Yolu Ağacı & Çalınan Yıldızlar",
+        titleEn: "✨ 1. The Milky Way Tree & Stolen Stars",
+        icon: "🌳✨🐰",
+        descTr: "Meyve Vadisi'nin neşesi ve yaşam kaynağı, gökyüzündeki Dev Saman Yolu Meyve Ağacı'ydı. Bir gece kötü Gölge Balçıkları ağacın büyülü 25 Yıldız Anahtarını ve meyvelerini çalıp boyut portallarına saçtı! Cesur Tavşan Piko pelerinini takıp vadisini kurtarmak için portallardan geçti!",
+        descEn: "Fruit Valley flourished under the celestial glow of the Giant Milky Way Tree. One fateful night, Shadow Slimes stole the 25 Star Keys and scattered them across cosmic dimensions! Brave Bunny Piko donned his cape to embark on a grand quest to save his home!",
+        rewardStars: 15
+    },
+    {
+        id: 1,
+        reqChapter: 5,
+        bossNameTr: "👑 Kral Slime (Chapter 5)",
+        bossNameEn: "👑 King Slime (Chapter 5)",
+        tabTitleTr: "👑 Bölüm 1",
+        tabTitleEn: "👑 Chapter 1",
+        titleTr: "👑 Kral Slime'ın Düşüşü & İlk 5 Yıldız",
+        titleEn: "👑 King Slime's Fall & The First 5 Stars",
+        icon: "👑🌸🗝️",
+        descTr: "Piko, Zümrüt Çayırları'nın efendisi dev Kral Slime'ı zekasıyla alt etti! Saray avlusundan kurtarılan ilk 5 Yıldız Anahtarı Saman Yolu Ağacı'nın ilk köklerini yeniden yeşertti. Ancak yerin altından lav sesleri yükseliyor...",
+        descEn: "Piko outsmarted the colossal King Slime in the Royal Palace Courtyard! Recovering the first 5 Star Keys revived the ancient roots of the Milky Way Tree. Yet deep below, the earth rumbles with blazing magma...",
+        rewardStars: 25
+    },
+    {
+        id: 2,
+        reqChapter: 10,
+        bossNameTr: "🌋 Lav Golemi (Chapter 10)",
+        bossNameEn: "🌋 Magma Golem (Chapter 10)",
+        tabTitleTr: "🌋 Bölüm 2",
+        tabTitleEn: "🌋 Chapter 2",
+        titleTr: "🌋 Cehennem Krateri & Ateşin Sırrı",
+        titleEn: "🌋 Inferno Caldera & The Flame Secret",
+        icon: "🌋🔥🗝️",
+        descTr: "Alev püskürten devasa Lav Golemi mağaranın kızgın lavlarına gömüldü! 10 Yıldız Anahtarı bir araya geldiğinde vadiyi kaplayan dumanlar dağıldı ve gizemli Hayalet Boyutu'na giden eflatun sisli geçit açıldı!",
+        descEn: "The mighty Magma Golem was shattered into the glowing depths of the Caldera! With 10 Star Keys united, toxic ash cleared from the valley, unlocking the misty purple rift into the Spectral Void!",
+        rewardStars: 35
+    },
+    {
+        id: 3,
+        reqChapter: 15,
+        bossNameTr: "👻 Gölge Lordu (Chapter 15)",
+        bossNameEn: "👻 Shadow Phantom (Chapter 15)",
+        tabTitleTr: "👻 Bölüm 3",
+        tabTitleEn: "👻 Chapter 3",
+        titleTr: "👻 Ruhlar Diyarı & Gölge Lordunun Sonu",
+        titleEn: "👻 Spectral Sanctum & Shadow's Defeat",
+        icon: "👻🔮🗝️",
+        descTr: "Karanlığın hükümdarı Gölge Lordu'nun kalkanı kırıldı. Piko ve dostları 15. Yıldız Anahtarı ile ruhlar aleminde hapsolmuş sihirli meyveleri kurtararak neon ışıklı Siber Şehir'e doğru yola çıktı!",
+        descEn: "The elusive Shadow Phantom's spectral shield was shattered! Piko liberated the ethereal fruits trapped in the void and secured 15 Star Keys, paving the way toward the futuristic Cyber Metropolis!",
+        rewardStars: 45
+    },
+    {
+        id: 4,
+        reqChapter: 20,
+        bossNameTr: "🤖 Siber Mecha Slime (Chapter 20)",
+        bossNameEn: "🤖 Cyber Mecha (Chapter 20)",
+        tabTitleTr: "🤖 Bölüm 4",
+        tabTitleEn: "🤖 Chapter 4",
+        titleTr: "🤖 Çelik Şehir & Mecha Titan'ın Çöküşü",
+        titleEn: "🤖 Steel Citadel & The Mecha Collapse",
+        icon: "🤖⚡🗝️",
+        descTr: "Lazer tarayıcılarla korunan Sibernetik Mecha Slime devre dışı bırakıldı! 20 Yıldız Anahtarının parıltısı Saman Yolu Ağacı'nı gökyüzüne kadar uzattı. Artık önlerinde tek bir engel kaldı: Evrenin sınırındaki Kozmik Titan!",
+        descEn: "The high-tech Cyber Mecha Sentry was permanently offline! 20 radiant Star Keys caused the Milky Way Tree to branch straight into the cosmos. Only one final guardian remains: The Cosmic Titan!",
+        rewardStars: 60
+    },
+    {
+        id: 5,
+        reqChapter: 25,
+        bossNameTr: "🌌 Kozmik Titan (Chapter 25)",
+        bossNameEn: "🌌 Cosmic Titan (Chapter 25)",
+        tabTitleTr: "🌌 Final",
+        tabTitleEn: "🌌 Finale",
+        titleTr: "🌌 Final: Meyve Vadisi Ebediyen Özgür!",
+        titleEn: "🌌 Finale: Fruit Valley Restored Forever!",
+        icon: "🌌👑🏆",
+        descTr: "Evrenin sınırındaki Dev Kozmik Titan dize getirildi! 25 Yıldız Anahtarının tamamı Dev Saman Yolu Ağacı'nın zirvesindeki yerine yerleşti. Meyve Vadisi ebedi neşe ve huzuruna kavuştu! Piko ve arkadaşları vadinin efsanevi koruyucuları oldu!",
+        descEn: "The almighty Cosmic Titan was conquered at the edge of the universe! All 25 Star Keys crowned the summit of the Great Milky Way Tree. Fruit Valley rejoiced with eternal peace! Piko and his companions became legends!",
+        rewardStars: 100
+    }
+];
 
 class Game {
     constructor() {
@@ -451,7 +566,8 @@ class Game {
             unlockedSkins: ['bunny'],
             equippedSkin: 'bunny',
             globalLives: 5,
-            lastHeartRegenTime: Date.now()
+            lastHeartRegenTime: Date.now(),
+            claimedStoryRewards: []
         };
         if (saved) {
             try { 
@@ -461,6 +577,7 @@ class Game {
         }
         if (prog.globalLives === undefined) prog.globalLives = 5;
         if (!prog.lastHeartRegenTime) prog.lastHeartRegenTime = Date.now();
+        if (!prog.claimedStoryRewards) prog.claimedStoryRewards = [];
         return prog;
     }
 
@@ -574,6 +691,20 @@ class Game {
         document.getElementById('btn-story-intro').addEventListener('click', () => this.showScreen('screen-story-intro'));
         document.getElementById('btn-start-adventure').addEventListener('click', () => this.resumeGamePlay());
         document.getElementById('btn-story-back').addEventListener('click', () => this.showScreen('screen-main-menu'));
+        document.getElementById('btn-story-prev')?.addEventListener('click', () => {
+            if (this.activeStoryTomeIdx > 0) {
+                this.activeStoryTomeIdx--;
+                audio.playJump();
+                this.renderStoryModal();
+            }
+        });
+        document.getElementById('btn-story-next')?.addEventListener('click', () => {
+            if (this.activeStoryTomeIdx < STORY_TOMES.length - 1) {
+                this.activeStoryTomeIdx++;
+                audio.playJump();
+                this.renderStoryModal();
+            }
+        });
         document.getElementById('btn-character-shop').addEventListener('click', () => this.showScreen('screen-character-shop'));
         document.getElementById('btn-chapter-select').addEventListener('click', () => this.showScreen('screen-chapter-select'));
         document.getElementById('btn-back-main').addEventListener('click', () => this.showScreen('screen-main-menu'));
@@ -827,6 +958,10 @@ class Game {
             });
         }
         
+        this.renderChapterChips();
+        this.renderLevelGrid(this.currentChapterIdx !== undefined ? (this.currentChapterIdx + 1) : 1);
+        this.renderShopGrid();
+        this.renderStoryModal();
         this.initDailySpin();
         this.checkDailySpinStatus();
     }
@@ -839,15 +974,16 @@ class Game {
         const starsSpan = document.getElementById('select-total-stars-val');
         if (starsSpan) starsSpan.innerText = this.progress.totalStars || 0;
 
+        const isTr = (this.lang === 'tr');
         CHAPTERS.forEach((c) => {
             const chip = document.createElement('div');
             const isFinal = (c.id === 25);
             const isActive = c.id === (this.currentChapterIdx + 1 || 1);
             chip.className = `chapter-chip ${isActive ? 'active' : ''} ${isFinal ? 'chip-final' : ''}`;
             
-            let label = `Ch.${c.id}`;
-            if (c.id === 0) label = 'Ch.0 🧪';
-            else if (isFinal) label = 'Ch.25 👑 FINAL';
+            let label = isTr ? `Bölüm ${c.id}` : `Ch.${c.id}`;
+            if (c.id === 0) label = isTr ? 'Bölüm 0 🧪' : 'Ch.0 🧪';
+            else if (isFinal) label = isTr ? 'Bölüm 25 👑 FİNAL' : 'Ch.25 👑 FINAL';
             
             chip.innerText = label;
             chip.addEventListener('click', () => {
@@ -877,7 +1013,8 @@ class Game {
         // Update active Chapter Info Banner
         const bannerText = document.getElementById('chapter-title-text');
         if (bannerText) {
-            bannerText.innerText = `${chapter.title || `Chapter ${chapterId}: ${chapter.theme.name}`}`;
+            const themeName = isTr ? (chapter.theme.nameTr || chapter.theme.name) : chapter.theme.name;
+            bannerText.innerText = isTr ? `Bölüm ${chapterId}: ${themeName}` : `Chapter ${chapterId}: ${themeName}`;
         }
 
         const playText = isTr ? 'OYNA' : 'PLAY';
@@ -893,10 +1030,11 @@ class Game {
             card.className = `level-card ${isBoss ? 'boss-card' : ''}`;
             
             let bossTagHtml = isBoss ? `<div class="level-boss-tag">👑 BOSS</div>` : '';
+            const lvlNumLabel = isBoss ? '👑 Boss' : (isTr ? `Seviye ${idx + 1}` : `Level ${idx + 1}`);
 
             card.innerHTML = `
                 ${bossTagHtml}
-                <div class="level-num">${isBoss ? '👑 Boss' : `Level ${idx + 1}`}</div>
+                <div class="level-num">${lvlNumLabel}</div>
                 <div class="level-stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
                 <div class="level-score-badge">${scoreLabel}</div>
                 <div class="level-play-btn">${playText}</div>
@@ -935,10 +1073,13 @@ class Game {
                 btnMarkup = `<button class="btn btn-shop-action btn-buy-star">⭐ ${skin.priceStars}</button>`;
             }
 
+            const displayName = isTr ? (skin.nameTr || skin.name) : skin.name;
+            const displayPerk = isTr ? (skin.perkTr || skin.perkEn) : skin.perkEn;
+
             card.innerHTML = `
                 <div class="char-icon">${skin.icon}</div>
-                <div class="char-name">${skin.name}</div>
-                <div class="char-perk">⚡ ${skin.speed} • ${skin.perk}</div>
+                <div class="char-name">${displayName}</div>
+                <div class="char-perk" title="${displayPerk}">⚡ ${skin.speed} • ${displayPerk}</div>
                 ${btnMarkup}
             `;
 
@@ -1000,6 +1141,130 @@ class Game {
             audio.playBGM('menu');
             this.renderShopGrid();
         }
+        if (screenId === 'screen-story-intro') {
+            this.state = 'STORY';
+            audio.playBGM('menu');
+            this.renderStoryModal();
+        }
+    }
+
+    isStoryTomeUnlocked(tome) {
+        if (!tome || tome.reqChapter === 0) return true;
+        const bossLvlCode = `${tome.reqChapter}-3`;
+        const altBossLvlCode = `${tome.reqChapter}-1`;
+        return (this.progress.levelStars && ((this.progress.levelStars[bossLvlCode] > 0) || (this.progress.levelStars[altBossLvlCode] > 0)));
+    }
+
+    renderStoryModal() {
+        const tabsNav = document.getElementById('story-tabs-nav');
+        const stage = document.getElementById('story-scroll-stage');
+        const countSpan = document.getElementById('story-unlocked-count');
+        if (!tabsNav || !stage) return;
+
+        const isTr = (this.lang === 'tr');
+        if (this.activeStoryTomeIdx === undefined) this.activeStoryTomeIdx = 0;
+
+        const unlockedCount = STORY_TOMES.filter(t => this.isStoryTomeUnlocked(t)).length;
+        if (countSpan) countSpan.innerText = `${unlockedCount}/${STORY_TOMES.length}`;
+
+        // 1. Render Navigation Tabs
+        tabsNav.innerHTML = '';
+        STORY_TOMES.forEach((tome, idx) => {
+            const isUnlocked = this.isStoryTomeUnlocked(tome);
+            const isActive = (idx === this.activeStoryTomeIdx);
+
+            const chip = document.createElement('div');
+            chip.className = `story-tab-chip ${isActive ? 'active' : ''} ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+            const label = isTr ? tome.tabTitleTr : tome.tabTitleEn;
+            const lockIcon = isUnlocked ? '' : ' 🔒';
+            chip.innerHTML = `${label}${lockIcon}`;
+
+            chip.addEventListener('click', () => {
+                this.activeStoryTomeIdx = idx;
+                audio.playJump();
+                this.renderStoryModal();
+            });
+
+            tabsNav.appendChild(chip);
+        });
+
+        // 2. Render Active Tome Card
+        const activeTome = STORY_TOMES[this.activeStoryTomeIdx] || STORY_TOMES[0];
+        const isUnlocked = this.isStoryTomeUnlocked(activeTome);
+        const isClaimed = (this.progress.claimedStoryRewards || []).includes(activeTome.id);
+
+        stage.innerHTML = '';
+        const card = document.createElement('div');
+        card.className = 'story-tome-card';
+
+        const title = isTr ? activeTome.titleTr : activeTome.titleEn;
+        const desc = isTr ? activeTome.descTr : activeTome.descEn;
+        const bossName = isTr ? activeTome.bossNameTr : activeTome.bossNameEn;
+
+        if (isUnlocked) {
+            let claimBtnHtml = '';
+            if (isClaimed) {
+                claimBtnHtml = `<button class="btn-story-claim claimed" disabled>✓ ${isTr ? 'ÖDÜL ALINDI' : 'CLAIMED'}</button>`;
+            } else {
+                claimBtnHtml = `<button class="btn-story-claim" id="btn-claim-story-reward">🎁 ${isTr ? `+${activeTome.rewardStars} ⭐ ÖDÜLÜ AL` : `CLAIM +${activeTome.rewardStars} ⭐`}</button>`;
+            }
+
+            card.innerHTML = `
+                <div class="story-tome-visual">
+                    <div class="story-tome-icon">${activeTome.icon}</div>
+                    <div class="story-tome-req">${isTr ? 'AÇILDI ✨' : 'UNLOCKED ✨'}</div>
+                </div>
+                <div class="story-tome-body">
+                    <div class="story-tome-title">${title}</div>
+                    <div class="story-tome-desc">${desc}</div>
+                    <div class="story-tome-footer">
+                        <span style="font-size: 0.72rem; color: #ffd600; font-weight: 800;">⭐ ${isTr ? 'Bölüm Ödülü:' : 'Chapter Reward:'} +${activeTome.rewardStars}</span>
+                        ${claimBtnHtml}
+                    </div>
+                </div>
+            `;
+
+            const claimBtn = card.querySelector('#btn-claim-story-reward');
+            if (claimBtn) {
+                claimBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.claimStoryReward(activeTome);
+                });
+            }
+        } else {
+            card.innerHTML = `
+                <div class="story-tome-visual">
+                    <div class="story-tome-icon" style="filter: grayscale(1) opacity(0.5);">🔒</div>
+                    <div class="story-tome-req" style="color: #ff5252;">${isTr ? 'KİLİTLİ' : 'LOCKED'}</div>
+                </div>
+                <div class="story-tome-body">
+                    <div class="story-tome-title" style="color: #b0bec5;">🔒 ${title}</div>
+                    <div class="story-tome-desc" style="color: #90a4ae;">
+                        ${isTr ? `⚔️ Bu efsanevi hikaye parşömeninin kilidini açmak için <strong>${bossName}</strong> bossunu yenmelisin!` : `⚔️ Defeat <strong>${bossName}</strong> to unlock this legendary story tome!`}
+                    </div>
+                    <div class="story-tome-footer">
+                        <div class="story-locked-badge">
+                            <span>🔒 ${isTr ? 'Gereksinim: ' + bossName : 'Required: ' + bossName}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        stage.appendChild(card);
+    }
+
+    claimStoryReward(tome) {
+        if (!tome || (this.progress.claimedStoryRewards || []).includes(tome.id)) return;
+        this.progress.claimedStoryRewards = this.progress.claimedStoryRewards || [];
+        this.progress.claimedStoryRewards.push(tome.id);
+        this.progress.totalStars = (this.progress.totalStars || 0) + tome.rewardStars;
+        this.saveProgress();
+        audio.playWin();
+        audio.playCoin();
+        this.showToast((this.lang === 'tr') ? `🎉 +${tome.rewardStars} Yıldız Ödülü Hesabına Eklendi!` : `🎉 +${tome.rewardStars} Stars Claimed!`);
+        this.renderStoryModal();
     }
 
     requestMobileLandscape() {
@@ -2144,33 +2409,120 @@ class Game {
 
         // 8. Main Characters Running & Bouncing across the Meadow!
         // We render Fluffy Bunny (the Hero with Cape), Foxy, and Kitty!
+        // 8. Main Characters Running, Flipping, Slidng & Gliding across the Meadow!
+        // All 5 Playable Heroes: Bunny, Fox, Kitty, Bear, and Unicorn with Unique Movement Styles!
         const heroList = [
-            { type: 'bunny', bodyColor: '#ffffff', earColor: '#ff80ab', cape: true, offset: 0, speed: 50 },
-            { type: 'fox', bodyColor: '#ff5722', earColor: '#d84315', cape: true, offset: 110, speed: 50 },
-            { type: 'kitty', bodyColor: '#ffa726', earColor: '#ffb300', cape: false, offset: 220, speed: 50 }
+            { type: 'bunny', bodyColor: '#ffffff', earColor: '#ff80ab', cape: true, offset: 0, speed: 52, style: 'flip' },
+            { type: 'fox', bodyColor: '#ff5722', earColor: '#d84315', cape: true, offset: 95, speed: 70, style: 'dash' },
+            { type: 'kitty', bodyColor: '#ffa726', earColor: '#ffb300', cape: false, offset: 185, speed: 46, style: 'slide' },
+            { type: 'bear', bodyColor: '#5d4037', earColor: '#8d6e63', cape: false, offset: 275, speed: 38, style: 'thump' },
+            { type: 'unicorn', bodyColor: '#f3e5f5', earColor: '#ea80fc', cape: false, offset: 365, speed: 56, style: 'glide' }
         ];
 
+        const tMs = Date.now();
+
         heroList.forEach((hero, index) => {
-            let hx = (w + 120 - (time * hero.speed + hero.offset) % (w + 240));
+            let hx = (w + 140 - (time * hero.speed + hero.offset) % (w + 280));
             const groundY = h - 70 + Math.sin((hx + time * 28) * 0.009 + 2.5) * 16;
             
-            // Cute running hop animation
-            const hopTime = time * 12 + index * 1.5;
-            const bounce = Math.abs(Math.sin(hopTime));
-            const squash = 1 - bounce * 0.18;
-            const stretch = 1 + bounce * 0.18;
-            const hy = groundY - 14 - (bounce * 28);
+            let hy = groundY - 14;
+            let rot = 0;
+            let squash = 1;
+            let stretch = 1;
+
+            if (hero.style === 'flip') {
+                // 🐰 Bunny: Energetic High Jump with Somersault Spin Flip
+                const cycle = (time * 2.8 + index) % Math.PI;
+                const jumpPhase = Math.sin(cycle);
+                const isAirborne = jumpPhase > 0.4;
+                hy = groundY - 14 - (jumpPhase * 38);
+                if (isAirborne) {
+                    rot = -(time * 8.5) % (Math.PI * 2);
+                } else {
+                    squash = 1 - jumpPhase * 0.2;
+                    stretch = 1 + jumpPhase * 0.2;
+                }
+            } else if (hero.style === 'dash') {
+                // 🦊 Fox: Low Agile High-Speed Sprint with Fiery Dash Trail
+                const hopTime = time * 18 + index;
+                const bounce = Math.abs(Math.sin(hopTime));
+                hy = groundY - 12 - (bounce * 14);
+                squash = 1.15;
+                stretch = 0.88;
+                rot = -0.15; // Leaning aggressively forward into the sprint!
+
+                // Fiery orange dash particles trailing behind
+                if (Math.random() < 0.3) {
+                    this.ctx.fillStyle = '#ff6d00';
+                    this.ctx.beginPath();
+                    this.ctx.arc(hx + 18 + Math.random() * 8, hy + 4 + (Math.random()-0.5)*8, 2.5, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            } else if (hero.style === 'slide') {
+                // 🐱 Kitty: Playful Low Slide / Crawl followed by Springy Pounce
+                const cycle = (time * 1.8 + index) % 4;
+                if (cycle < 2) {
+                    // Low crawl slide
+                    hy = groundY - 8;
+                    squash = 1.35;
+                    stretch = 0.70;
+                    rot = 0.05;
+                } else {
+                    // High spring pounce!
+                    const pounceProg = (cycle - 2) / 2;
+                    const pounceY = Math.sin(pounceProg * Math.PI) * 32;
+                    hy = groundY - 14 - pounceY;
+                    squash = 0.85;
+                    stretch = 1.25;
+                    rot = -0.25;
+                }
+            } else if (hero.style === 'thump') {
+                // 🐻 Bear: Heavy Funny Stomp & Belly Flop Bounce with Mini Ground Puffs
+                const hopTime = time * 7.5 + index;
+                const bounce = Math.abs(Math.sin(hopTime));
+                hy = groundY - 16 - (bounce * 20);
+                squash = 1.18 - bounce * 0.25;
+                stretch = 0.9 + bounce * 0.25;
+
+                // Dust puff on landing
+                if (bounce < 0.08 && Math.random() < 0.4) {
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(hx - 8, groundY + 2, 4, 0, Math.PI * 2);
+                    this.ctx.arc(hx + 8, groundY + 2, 4, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            } else if (hero.style === 'glide') {
+                // 🦄 Unicorn: Elegant Floating Air Glide with Rainbow Sparkle Trail
+                const hoverWave = Math.sin(time * 3.5 + index) * 12;
+                hy = groundY - 36 + hoverWave; // Floats majestically in the air
+                squash = 0.95;
+                stretch = 1.05;
+                rot = Math.sin(time * 2) * 0.08;
+
+                // Shimmering Rainbow Sparkles Trail behind Unicorn
+                const rainbowColors = ['#ff4081', '#7c4dff', '#00e5ff', '#ffd600', '#69f0ae'];
+                for (let r = 0; r < 2; r++) {
+                    const rX = hx + 16 + r * 10 + Math.random() * 6;
+                    const rY = hy + (Math.random() - 0.5) * 12;
+                    this.ctx.fillStyle = rainbowColors[(Math.floor(time * 8) + r) % rainbowColors.length];
+                    this.ctx.shadowColor = this.ctx.fillStyle;
+                    this.ctx.shadowBlur = 6;
+                    this.ctx.beginPath();
+                    this.ctx.arc(rX, rY, 2.2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                this.ctx.shadowBlur = 0;
+            }
             
             this.ctx.save();
             this.ctx.translate(hx, hy);
+            this.ctx.rotate(rot);
             this.ctx.scale(squash, stretch);
 
-            const isRight = false; // running leftwards across screen
-            const tMs = Date.now();
-
-            // Cape for Bunny and Fox
+            // 1. Cape for Bunny and Fox
             if (hero.cape) {
-                const capeWave = Math.sin(tMs * 0.018 + index) * 6;
+                const capeWave = Math.sin(tMs * 0.018 + index) * 7;
                 this.ctx.fillStyle = '#ff1744';
                 this.ctx.beginPath();
                 this.ctx.moveTo(6, -2);
@@ -2181,9 +2533,9 @@ class Game {
                 this.ctx.fill();
             }
 
-            // Tails for Fox and Kitty
+            // 2. Tails
             if (hero.type === 'fox') {
-                const tailWave = Math.sin(tMs * 0.015) * 5;
+                const tailWave = Math.sin(tMs * 0.02) * 6;
                 this.ctx.fillStyle = '#ff5722';
                 this.ctx.beginPath();
                 this.ctx.ellipse(14, 4 + tailWave, 10, 6, 0.4, 0, Math.PI * 2);
@@ -2201,9 +2553,20 @@ class Game {
                 this.ctx.moveTo(10, 4);
                 this.ctx.quadraticCurveTo(18, -2 + tailWave, 16, -10 + tailWave);
                 this.ctx.stroke();
+            } else if (hero.type === 'bear') {
+                this.ctx.fillStyle = '#4e342e';
+                this.ctx.beginPath();
+                this.ctx.arc(12, 6, 4, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'unicorn') {
+                // Flowing Pastel Tail
+                this.ctx.fillStyle = '#ea80fc';
+                this.ctx.beginPath();
+                this.ctx.ellipse(14, 2, 8, 4, -0.3, 0, Math.PI * 2);
+                this.ctx.fill();
             }
 
-            // Ears
+            // 3. Ears & Horn
             if (hero.type === 'bunny') {
                 // Long Cute Bunny Ears
                 this.ctx.fillStyle = '#ffffff';
@@ -2211,7 +2574,6 @@ class Game {
                 this.ctx.ellipse(-4, -22, 5, 13, -0.15, 0, Math.PI * 2);
                 this.ctx.ellipse(5, -23, 5, 14, 0.12, 0, Math.PI * 2);
                 this.ctx.fill();
-                // Pink inner ear
                 this.ctx.fillStyle = '#ff80ab';
                 this.ctx.beginPath();
                 this.ctx.ellipse(-4, -22, 2.8, 9, -0.15, 0, Math.PI * 2);
@@ -2239,15 +2601,46 @@ class Game {
                 this.ctx.moveTo(-10, -8); this.ctx.lineTo(-9, -16); this.ctx.lineTo(-4, -10); this.ctx.fill();
                 this.ctx.beginPath();
                 this.ctx.moveTo(4, -10); this.ctx.lineTo(9, -16); this.ctx.lineTo(10, -8); this.ctx.fill();
+            } else if (hero.type === 'bear') {
+                // Round Teddy Ears
+                this.ctx.fillStyle = '#5d4037';
+                this.ctx.beginPath();
+                this.ctx.arc(-11, -12, 6, 0, Math.PI * 2);
+                this.ctx.arc(11, -12, 6, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.fillStyle = '#8d6e63';
+                this.ctx.beginPath();
+                this.ctx.arc(-11, -12, 3.5, 0, Math.PI * 2);
+                this.ctx.arc(11, -12, 3.5, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'unicorn') {
+                // Cute Ears + Golden Spiral Horn
+                this.ctx.fillStyle = '#f3e5f5';
+                this.ctx.beginPath();
+                this.ctx.ellipse(-8, -16, 3.5, 7, -0.3, 0, Math.PI * 2);
+                this.ctx.ellipse(8, -16, 3.5, 7, 0.3, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Golden Horn
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.shadowColor = '#ffd700';
+                this.ctx.shadowBlur = 8;
+                this.ctx.beginPath();
+                this.ctx.moveTo(-3, -13);
+                this.ctx.lineTo(0, -28);
+                this.ctx.lineTo(3, -13);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.shadowBlur = 0;
             }
 
-            // Main Body Round
+            // 4. Main Body Round
             this.ctx.fillStyle = hero.bodyColor;
             this.ctx.beginPath();
-            this.ctx.arc(0, 0, 14.5, 0, Math.PI * 2);
+            this.ctx.arc(0, 0, (hero.type === 'bear' ? 16 : 14.5), 0, Math.PI * 2);
             this.ctx.fill();
 
-            // Muzzle / Tummy details
+            // 5. Muzzle / Tummy details
             if (hero.type === 'bunny') {
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.beginPath();
@@ -2264,16 +2657,26 @@ class Game {
                 this.ctx.beginPath();
                 this.ctx.ellipse(0, 4, 7, 5, 0, 0, Math.PI * 2);
                 this.ctx.fill();
+            } else if (hero.type === 'bear') {
+                this.ctx.fillStyle = '#8d6e63';
+                this.ctx.beginPath();
+                this.ctx.ellipse(0, 4, 9, 8, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+            } else if (hero.type === 'unicorn') {
+                this.ctx.fillStyle = '#ea80fc';
+                this.ctx.beginPath();
+                this.ctx.ellipse(0, 4, 7, 5, 0, 0, Math.PI * 2);
+                this.ctx.fill();
             }
 
-            // Cute Pink Blush Cheeks
+            // 6. Cute Pink Blush Cheeks
             this.ctx.fillStyle = 'rgba(255, 64, 129, 0.45)';
             this.ctx.beginPath();
             this.ctx.arc(-8, 3.5, 3, 0, Math.PI * 2);
             this.ctx.arc(8, 3.5, 3, 0, Math.PI * 2);
             this.ctx.fill();
 
-            // Expressive Big Eyes (Looking left)
+            // 7. Expressive Eyes (Looking left)
             this.ctx.fillStyle = '#212121';
             this.ctx.beginPath();
             this.ctx.ellipse(-5, -2, 3.2, 4.2, 0, 0, Math.PI * 2);
@@ -2289,19 +2692,19 @@ class Game {
             this.ctx.arc(5, -0.8, 0.8, 0, Math.PI * 2);
             this.ctx.fill();
 
-            // Cute Nose
-            this.ctx.fillStyle = hero.type === 'fox' ? '#212121' : '#ff4081';
+            // 8. Cute Nose
+            this.ctx.fillStyle = (hero.type === 'fox' || hero.type === 'bear') ? '#212121' : '#ff4081';
             this.ctx.beginPath();
             this.ctx.ellipse(-1, 2, 1.8, 1.3, 0, 0, Math.PI * 2);
             this.ctx.fill();
 
-            // Running Cute Feet!
-            const footColor = (hero.type === 'fox') ? '#212121' : hero.bodyColor;
+            // 9. Running Cute Feet!
+            const footColor = (hero.type === 'fox' || hero.type === 'bear') ? '#212121' : (hero.type === 'unicorn' ? '#ffd700' : hero.bodyColor);
             this.ctx.fillStyle = footColor;
             
             const footCycle = Math.sin(tMs * 0.02 + index);
-            const lFootY = 12.5 + footCycle * 3;
-            const rFootY = 12.5 - footCycle * 3;
+            const lFootY = (hero.type === 'bear' ? 14 : 12.5) + footCycle * 3;
+            const rFootY = (hero.type === 'bear' ? 14 : 12.5) - footCycle * 3;
             const lFootX = -6 - footCycle * 2;
             const rFootX = 6 + footCycle * 2;
 
@@ -2310,8 +2713,7 @@ class Game {
             this.ctx.ellipse(rFootX, rFootY, 4.5, 3, 0, 0, Math.PI * 2);
             this.ctx.fill();
 
-            // Outline for feet if white
-            if (footColor === '#ffffff') {
+            if (footColor === '#ffffff' || footColor === '#f3e5f5') {
                 this.ctx.strokeStyle = '#e0e0e0';
                 this.ctx.lineWidth = 1;
                 this.ctx.stroke();
@@ -2439,6 +2841,84 @@ class Game {
         if (this.boss && this.boss.y < 1500) {
             this.boss.update(this.platforms, this.player, this.particles, (i, d) => this.triggerScreenShake(i, d));
             this.updateBossHUD();
+        }
+
+        // Update Timed Retractable Hazards (Spikes)
+        for (let h of (this.hazards || [])) {
+            if (h.isRetractable) {
+                h.timer = (h.timer || 0) + 1;
+                const totalCycle = h.cycleTicks || 280;
+                const t = (h.timer + (h.phaseOffset || 0)) % totalCycle;
+
+                // ⏰ Timed Spike State Machine:
+                // 0 to 125: EXTENDED (1.0) - ~2.1s lethal spikes out
+                // 125 to 145: RETRACTING (1.0 -> 0.0) - ~0.33s sinking into ground
+                // 145 to 235: HIDDEN (0.0) - ~1.5s completely inside floor (SAFE)
+                // 235 to 268: WARNING (shaking & spark particles) - ~0.55s pre-warning
+                // 268 to 280: EXTENDING (0.0 -> 1.0) - ~0.2s snap up!
+
+                if (t < 125) {
+                    h.state = 'EXTENDED';
+                    h.extensionRatio = 1.0;
+                } else if (t < 145) {
+                    h.state = 'RETRACTING';
+                    h.extensionRatio = Math.max(0, 1.0 - ((t - 125) / 20));
+                } else if (t < 235) {
+                    h.state = 'HIDDEN';
+                    h.extensionRatio = 0.0;
+                } else if (t < 268) {
+                    h.state = 'WARNING';
+                    const prog = (t - 235) / 33;
+                    h.extensionRatio = Math.max(0, Math.sin(prog * Math.PI * 5) * 0.15);
+                    if (Math.random() < 0.35 && this.particles) {
+                        const sparkX = h.x + Math.random() * h.width;
+                        this.particles.push(new Particle(sparkX, h.y + h.height, '#ffd600', 2.5, (Math.random()-0.5)*3, -Math.random()*2, 14));
+                    }
+                } else {
+                    h.state = 'EXTENDING';
+                    h.extensionRatio = Math.min(1.0, (t - 268) / 12);
+                }
+            }
+        }
+
+        // Update Crumbling / Fragile Platforms
+        for (let p of (this.platforms || [])) {
+            if (p.isCrumbling) {
+                if (p.isBroken) {
+                    p.respawnTimer--;
+                    if (p.respawnTimer <= 0) {
+                        p.isBroken = false;
+                        p.isSteppedOn = false;
+                        p.crumbleTimer = p.maxCrumble || 68;
+                        p.shakeX = 0;
+                        p.shakeY = 0;
+                        if (this.particles) {
+                            for (let sp = 0; sp < 6; sp++) {
+                                this.particles.push(new Particle(p.x + Math.random() * p.width, p.y + Math.random() * p.height, '#00e5ff', 3, (Math.random()-0.5)*3, (Math.random()-0.5)*3, 20));
+                            }
+                        }
+                    }
+                } else if (p.isSteppedOn) {
+                    p.crumbleTimer--;
+                    p.shakeX = (Math.random() - 0.5) * 4;
+                    p.shakeY = (Math.random() - 0.5) * 3;
+
+                    if (Math.random() < 0.35 && this.particles) {
+                        this.particles.push(new Particle(p.x + Math.random() * p.width, p.y + p.height, '#8d6e63', 2.5, (Math.random()-0.5)*2, Math.random()*2, 14));
+                    }
+
+                    if (p.crumbleTimer <= 0) {
+                        p.isBroken = true;
+                        p.respawnTimer = 180; // 3s respawn
+                        audio.playCrumble();
+                        if (this.particles) {
+                            for (let sp = 0; sp < 10; sp++) {
+                                this.particles.push(new Particle(p.x + Math.random() * p.width, p.y + p.height, '#5d4037', 3.5, (Math.random()-0.5)*4, Math.random()*3 + 1, 24));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Update Active Power-up Timer
@@ -2752,12 +3232,44 @@ class Game {
 
         // Ornate Thematic Platforms with Foliage, Inlays & Highlights
         const worldIdx = Math.floor((this.currentChapterIdx || 0) / 5);
+        const camX = Math.round(this.camera.x);
+        const camY = Math.round(this.camera.y);
 
         this.platforms.forEach(p => {
-            const px = p.x - this.camera.x;
-            const py = p.y - this.camera.y;
+            let px = Math.round(p.x - camX);
+            let py = Math.round(p.y - camY);
+
+            // Skip offscreen platforms
+            if (px + p.width < -50 || px > w + 50) return;
 
             this.ctx.save();
+
+            // 1. Broken Crumbling Platform (Ghost Respawn Indicator)
+            if (p.isBroken) {
+                const respawnProg = 1.0 - (p.respawnTimer / 180);
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                this.ctx.lineWidth = 1.5;
+                this.ctx.setLineDash([4, 4]);
+                this.ctx.strokeRect(px, py, p.width, p.height);
+
+                // Mini respawn progress ring in center
+                this.ctx.beginPath();
+                this.ctx.arc(px + p.width / 2, py + p.height / 2, 6, -Math.PI / 2, -Math.PI / 2 + respawnProg * Math.PI * 2);
+                this.ctx.strokeStyle = '#00e5ff';
+                this.ctx.lineWidth = 2;
+                this.ctx.setLineDash([]);
+                this.ctx.stroke();
+
+                this.ctx.restore();
+                return;
+            }
+
+            // Apply Crumble Shake
+            if (p.isCrumbling && p.isSteppedOn) {
+                px += Math.round(p.shakeX || 0);
+                py += Math.round(p.shakeY || 0);
+            }
+
             // Drop shadow
             this.ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
             this.ctx.beginPath();
@@ -2765,110 +3277,596 @@ class Game {
             this.ctx.fill();
 
             // Platform Main Body
-            this.ctx.fillStyle = theme.platformColor;
+            if (p.isCrumbling) {
+                // Fragile Wood / Cracked Stone Tone
+                this.ctx.fillStyle = (worldIdx === 1) ? '#3e2723' : (worldIdx === 2 ? '#2a1b40' : '#4e342e');
+            } else if (p.isIcy) {
+                // 🧊 Vibrant Glacial Crystal Ice Body (Distinct, luminous & naturally crystalline)
+                const iceGrad = this.getCachedGradient('ice_plat_' + worldIdx, (ctx) => {
+                    const g = ctx.createLinearGradient(0, 0, 0, 24);
+                    g.addColorStop(0, '#48cae4');
+                    g.addColorStop(0.35, '#0096c7');
+                    g.addColorStop(1, '#023e8a');
+                    return g;
+                });
+                this.ctx.fillStyle = iceGrad;
+            } else {
+                this.ctx.fillStyle = theme.platformColor;
+            }
+
             this.ctx.beginPath();
             this.ctx.roundRect(px, py, p.width, p.height, 8);
             this.ctx.fill();
 
+            // Distinct Ice Crystal Facet Lines (Geometric ice refraction)
+            if (p.isIcy) {
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+                this.ctx.lineWidth = 1.2;
+                this.ctx.beginPath();
+                for (let fx = 24; fx < p.width - 20; fx += 38) {
+                    this.ctx.moveTo(px + fx, py + 4);
+                    this.ctx.lineTo(px + fx + 12, py + p.height - 4);
+                    this.ctx.lineTo(px + fx + 24, py + 6);
+                }
+                this.ctx.stroke();
+            }
+
             // Top Trim Border
-            this.ctx.fillStyle = theme.platformBorder;
+            if (p.isIcy) {
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.shadowColor = '#00f5ff';
+                this.ctx.shadowBlur = 14;
+            } else if (p.isCrumbling) {
+                this.ctx.fillStyle = (worldIdx === 1) ? '#ff5722' : '#8d6e63';
+                this.ctx.shadowBlur = 0;
+            } else {
+                this.ctx.fillStyle = theme.platformBorder;
+                this.ctx.shadowBlur = 0;
+            }
             this.ctx.beginPath();
             this.ctx.roundRect(px, py, p.width, 7, [8, 8, 0, 0]);
             this.ctx.fill();
 
             // Glossy Top Highlight Line
-            this.ctx.fillStyle = "rgba(255, 255, 255, 0.40)";
+            this.ctx.fillStyle = p.isIcy ? "rgba(255, 255, 255, 0.95)" : "rgba(255, 255, 255, 0.40)";
             this.ctx.fillRect(px + 4, py + 1, p.width - 8, 2);
 
-            // Thematic Edge Accents & Foliage (Clean Emerald Scallops & Tiny Golden Flowers)
-            if (worldIdx === 0) {
-                this.ctx.fillStyle = theme.platformBorder;
-                for (let gx = px + 12; gx < px + p.width - 15; gx += 18) {
+            // Crumbling Warning Fissure Cracks
+            if (p.isCrumbling && p.isSteppedOn) {
+                const crackProg = 1.0 - (p.crumbleTimer / (p.maxCrumble || 68));
+                this.ctx.strokeStyle = '#ffd600';
+                this.ctx.lineWidth = 1.8;
+                this.ctx.beginPath();
+                this.ctx.moveTo(px + p.width * 0.3, py + 2);
+                this.ctx.lineTo(px + p.width * 0.35, py + 12);
+                this.ctx.lineTo(px + p.width * 0.32, py + 22);
+                if (crackProg > 0.4) {
+                    this.ctx.moveTo(px + p.width * 0.7, py + 2);
+                    this.ctx.lineTo(px + p.width * 0.65, py + 14);
+                    this.ctx.lineTo(px + p.width * 0.72, py + 22);
+                }
+                this.ctx.stroke();
+            }
+
+            // ❄️ Icy Sparkling Crystals & Hanging Icicles!
+            if (p.isIcy) {
+                // 1. Shimmering Starlight Sparkles on Surface
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.shadowColor = '#00f5ff';
+                this.ctx.shadowBlur = 8;
+                for (let ix = 14; ix < p.width - 14; ix += 24) {
+                    const sparkle = (Math.sin(time * 3.0 + (p.id * 19 + ix * 0.12)) + 1) * 0.5;
                     this.ctx.beginPath();
-                    this.ctx.arc(gx, py + 7, 3.2, 0, Math.PI);
+                    this.ctx.arc(px + ix, py + 3.5, 1.6 * sparkle + 1.2, 0, Math.PI * 2);
                     this.ctx.fill();
                 }
-            } else if (worldIdx === 1) {
-                // World 2: Glowing Magma Veins
-                this.ctx.fillStyle = '#ff3d00';
-                for (let mx = px + 16; mx < px + p.width - 20; mx += 35) {
-                    this.ctx.fillRect(mx, py + 6, 8, 2);
+
+                // 2. Hanging Crystalline Icicles along Bottom Rim
+                this.ctx.fillStyle = '#caf0f8';
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+                this.ctx.lineWidth = 1;
+                for (let icx = 18; icx < p.width - 18; icx += 32) {
+                    const icLen = 7 + (icx % 5) * 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(px + icx - 4, py + p.height);
+                    this.ctx.lineTo(px + icx, py + p.height + icLen);
+                    this.ctx.lineTo(px + icx + 4, py + p.height);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    this.ctx.stroke();
                 }
+                this.ctx.shadowBlur = 0;
+            }
+
+            // =========================================================================
+            // 🌿 THEMATIC AMBIENT DETAILS (WORLD SPACE OSCILLATIONS - ZERO JITTER)
+            // =========================================================================
+            if (worldIdx === 0) {
+                // 🌸 World 1 (Emerald Meadow): Lush Hanging Ivy Vines & Swaying Wildflowers
+                // 1. Organic Grassy Top Fringe
+                this.ctx.fillStyle = theme.platformBorder;
+                for (let gx = 8; gx < p.width - 10; gx += 14) {
+                    const grassWave = Math.sin(time * 2.2 + (p.id * 33 + gx * 0.1)) * 1.5;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(px + gx, py);
+                    this.ctx.lineTo(px + gx + 2 + grassWave, py - 4);
+                    this.ctx.lineTo(px + gx + 5, py);
+                    this.ctx.fill();
+                }
+
+                // 2. High-Detail Hanging Ivy Tendrils with Paired Leaf Clusters
+                for (let vx = 26; vx < p.width - 26; vx += 56) {
+                    const vineSway = Math.sin(time * 1.8 + (p.id * 77 + vx * 0.08)) * 3.0;
+                    const vineLen = 18 + (vx % 12);
+                    const rootX = px + vx;
+                    const rootY = py + p.height;
+                    
+                    // Main Vine Stem (Natural Curve)
+                    this.ctx.strokeStyle = '#1b5e20';
+                    this.ctx.lineWidth = 1.8;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(rootX, rootY);
+                    this.ctx.quadraticCurveTo(rootX + vineSway * 1.2, rootY + (vineLen * 0.5), rootX + vineSway, rootY + vineLen);
+                    this.ctx.stroke();
+
+                    // Paired Leaf Nodes
+                    for (let step = 0.3; step <= 0.9; step += 0.3) {
+                        const lx = rootX + vineSway * step;
+                        const ly = rootY + (vineLen * step);
+                        
+                        // Left Leaf
+                        this.ctx.fillStyle = '#4caf50';
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(lx - 4, ly - 1, 3.5, 2.2, -0.6, 0, Math.PI * 2);
+                        this.ctx.fill();
+
+                        // Right Leaf (Bright Highlight)
+                        this.ctx.fillStyle = '#81c784';
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(lx + 4, ly + 1, 3.5, 2.2, 0.6, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+
+                    // Blooming Bluebell / Buttercup at Vine Tip
+                    const tipX = rootX + vineSway;
+                    const tipY = rootY + vineLen;
+                    this.ctx.fillStyle = (vx % 2 === 0) ? '#ff4081' : '#ffd600';
+                    this.ctx.beginPath();
+                    this.ctx.arc(tipX, tipY, 2.8, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+
+                // 3. Gentle Swaying Chamomile / Daisy Flowers on Top Surface
+                for (let fx = 20; fx < p.width - 24; fx += 70) {
+                    const sway = Math.sin(time * 2.2 + (p.id * 55 + fx * 0.1)) * 2.2;
+                    const flowerBaseX = px + fx;
+                    this.ctx.strokeStyle = '#2e7d32';
+                    this.ctx.lineWidth = 1.5;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(flowerBaseX, py + 1);
+                    this.ctx.quadraticCurveTo(flowerBaseX + sway * 0.5, py - 4, flowerBaseX + sway, py - 8);
+                    this.ctx.stroke();
+
+                    // White Flower Petals
+                    this.ctx.fillStyle = '#ffffff';
+                    for (let pAngle = 0; pAngle < Math.PI * 2; pAngle += Math.PI / 3) {
+                        const pxF = flowerBaseX + sway + Math.cos(pAngle) * 3.2;
+                        const pyF = py - 8 + Math.sin(pAngle) * 3.2;
+                        this.ctx.beginPath();
+                        this.ctx.arc(pxF, pyF, 1.6, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                    // Yellow Center
+                    this.ctx.fillStyle = '#ffd600';
+                    this.ctx.beginPath();
+                    this.ctx.arc(flowerBaseX + sway, py - 8, 1.8, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+
+            } else if (worldIdx === 1) {
+                // 🌋 World 2 (Magma Caverns): Basalt Roots, Molten Veins & Teardrop Lava Drips
+                this.ctx.fillStyle = '#ff3d00';
+                for (let mx = 16; mx < p.width - 20; mx += 32) {
+                    this.ctx.fillRect(px + mx, py + 6, 9, 2);
+                }
+
+                // Basalt Stalactite Mounts with Teardrop Lava Drops
+                for (let lx = 30; lx < p.width - 30; lx += 48) {
+                    const dropBaseX = px + lx;
+                    // Dark Basalt Root Tooth
+                    this.ctx.fillStyle = '#21100b';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(dropBaseX - 5, py + p.height);
+                    this.ctx.lineTo(dropBaseX, py + p.height + 6);
+                    this.ctx.lineTo(dropBaseX + 5, py + p.height);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    // Animated Lava Teardrop Physics
+                    const dripCycle = (time * 1.2 + (p.id * 40 + lx * 0.05)) % 1;
+                    const dropY = py + p.height + 6 + (dripCycle * 16);
+                    const dropScale = (1 - dripCycle * 0.45);
+
+                    // Outer Orange Glow
+                    this.ctx.fillStyle = '#ff3d00';
+                    this.ctx.shadowColor = '#ff1744';
+                    this.ctx.shadowBlur = 8;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(dropBaseX, dropY - 3 * dropScale);
+                    this.ctx.quadraticCurveTo(dropBaseX + 3 * dropScale, dropY + 2, dropBaseX, dropY + 4 * dropScale);
+                    this.ctx.quadraticCurveTo(dropBaseX - 3 * dropScale, dropY + 2, dropBaseX, dropY - 3 * dropScale);
+                    this.ctx.fill();
+
+                    // Inner Superheated White-Yellow Core
+                    this.ctx.fillStyle = '#ffff8d';
+                    this.ctx.beginPath();
+                    this.ctx.arc(dropBaseX, dropY + 1, 1.4 * dropScale, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+
+            } else if (worldIdx === 2) {
+                // 🔮 World 3 (Spectral Void): Multi-Faceted Amethyst Crystals & Soul Wisps
+                for (let sx = 24; sx < p.width - 25; sx += 42) {
+                    const cLen = 10 + (sx % 8);
+                    const crystalX = px + sx;
+                    
+                    // Left Dark Facet
+                    this.ctx.fillStyle = '#7b1fa2';
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(crystalX - 4, py + p.height);
+                    this.ctx.lineTo(crystalX, py + p.height + cLen);
+                    this.ctx.lineTo(crystalX, py + p.height);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    // Right Luminous Specular Facet
+                    this.ctx.fillStyle = '#e040fb';
+                    this.ctx.shadowColor = '#d500f9';
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(crystalX, py + p.height);
+                    this.ctx.lineTo(crystalX, py + p.height + cLen);
+                    this.ctx.lineTo(crystalX + 4, py + p.height);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    // Specular Crystal Glint
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.fillRect(crystalX - 0.8, py + p.height + 2, 1.6, cLen * 0.4);
+                }
+
             } else if (worldIdx === 3) {
-                // World 4: Cyber LED Corner Bolts
+                // 🤖 World 4 (Cyber Metropolis): Heavy Fiber-Optic Cables & Traveling Data Packets
                 this.ctx.fillStyle = '#00f5d4';
                 this.ctx.fillRect(px + 3, py + 3, 3, 3);
                 this.ctx.fillRect(px + p.width - 6, py + 3, 3, 3);
+
+                // Hanging Catenary Cyber Cables with Metal Brackets
+                for (let cx = 22; cx < p.width - 38; cx += 58) {
+                    const cableX = px + cx;
+                    // Metal Cable Mount Brackets
+                    this.ctx.fillStyle = '#475569';
+                    this.ctx.fillRect(cableX - 2, py + p.height, 4, 3);
+                    this.ctx.fillRect(cableX + 34, py + p.height, 4, 3);
+
+                    // Outer Dark Cable Jacket
+                    this.ctx.strokeStyle = '#0f172a';
+                    this.ctx.lineWidth = 3.5;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(cableX, py + p.height + 2);
+                    this.ctx.quadraticCurveTo(cableX + 18, py + p.height + 14, cableX + 36, py + p.height + 2);
+                    this.ctx.stroke();
+
+                    // Inner Glowing Neon Fiber Wire
+                    this.ctx.strokeStyle = '#00f5d4';
+                    this.ctx.lineWidth = 1.6;
+                    this.ctx.shadowColor = '#00f5d4';
+                    this.ctx.shadowBlur = 8;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(cableX, py + p.height + 2);
+                    this.ctx.quadraticCurveTo(cableX + 18, py + p.height + 14, cableX + 36, py + p.height + 2);
+                    this.ctx.stroke();
+
+                    // Animated Traveling Data Packet Light
+                    const dataProgress = (time * 1.4 + (p.id * 25 + cx * 0.06)) % 1;
+                    const dataX = cableX + dataProgress * 36;
+                    const dataY = py + p.height + 2 + Math.sin(dataProgress * Math.PI) * 12;
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.beginPath();
+                    this.ctx.arc(dataX, dataY, 1.8, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+
+            } else if (worldIdx === 4) {
+                // 🌌 World 5 (Cosmic Galaxy): Celestial Diamond Veins & Orbiting Stardust
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.shadowColor = '#ffd700';
+                this.ctx.shadowBlur = 8;
+                for (let dx = 20; dx < p.width - 25; dx += 42) {
+                    const gemX = px + dx;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(gemX, py + 6);
+                    this.ctx.lineTo(gemX + 3, py + 3);
+                    this.ctx.lineTo(gemX + 6, py + 6);
+                    this.ctx.lineTo(gemX + 3, py + 9);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
             }
+
             this.ctx.restore();
         });
 
-        // Low Overhead Ceilings (Chapter 3+)
+        // 🦆 World-Customized Low Overhead Duck Ceilings (Chapter 3+)
         (this.overheadCeilings || []).forEach(oc => {
-            const cx = oc.x - this.camera.x;
-            const cy = oc.y - this.camera.y;
-            this.ctx.save();
-            this.ctx.fillStyle = '#263238';
-            this.ctx.beginPath();
-            this.ctx.roundRect(cx, cy, oc.width, oc.height, 6);
-            this.ctx.fill();
-            this.ctx.strokeStyle = '#ff9100';
-            this.ctx.lineWidth = 2;
-            this.ctx.stroke();
+            const cx = Math.round(oc.x - camX);
+            const cy = Math.round(oc.y - camY);
+            if (cx + oc.width < -30 || cx > w + 30) return;
 
-            // Hazard warning stripes ///
-            this.ctx.fillStyle = '#ff9100';
-            for (let s = 0; s < oc.width; s += 16) {
+            this.ctx.save();
+
+            // 1. Drop shadow below ceiling
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.40)';
+            this.ctx.beginPath();
+            this.ctx.roundRect(cx + 2, cy + 4, oc.width, oc.height, 8);
+            this.ctx.fill();
+
+            if (worldIdx === 0) {
+                // 🌸 World 1 (Emerald Meadow): Ancient Flowering Wood Canopy & Mossy Timber Bridge
+                const woodGrad = this.ctx.createLinearGradient(0, cy, 0, cy + oc.height);
+                woodGrad.addColorStop(0, '#5d4037');
+                woodGrad.addColorStop(1, '#3e2723');
+                this.ctx.fillStyle = woodGrad;
                 this.ctx.beginPath();
-                this.ctx.moveTo(cx + s, cy + oc.height);
-                this.ctx.lineTo(cx + s + 6, cy);
-                this.ctx.lineTo(cx + s + 10, cy);
-                this.ctx.lineTo(cx + s + 4, cy + oc.height);
+                this.ctx.roundRect(cx, cy, oc.width, oc.height, 8);
                 this.ctx.fill();
+
+                // Top Moss Trim
+                this.ctx.fillStyle = '#4caf50';
+                this.ctx.beginPath();
+                this.ctx.roundRect(cx, cy, oc.width, 5, [8, 8, 0, 0]);
+                this.ctx.fill();
+
+                // Hanging Ivy Tendrils along the bottom
+                this.ctx.fillStyle = '#2e7d32';
+                for (let vx = 10; vx < oc.width - 10; vx += 18) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(cx + vx, cy + oc.height + 2, 2.5, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+
+                // Cute Forest Badge
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.font = '900 12px "Fredoka One", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.shadowColor = '#000000';
+                this.ctx.shadowBlur = 4;
+                this.ctx.fillText('🌿 CRAWL ▼', cx + oc.width / 2, cy + 16);
+
+            } else if (worldIdx === 1) {
+                // 🌋 World 2 (Magma Caverns): Obsidian Basalt Arch with Glowing Molten Fissures
+                const rockGrad = this.ctx.createLinearGradient(0, cy, 0, cy + oc.height);
+                rockGrad.addColorStop(0, '#21100b');
+                rockGrad.addColorStop(1, '#100604');
+                this.ctx.fillStyle = rockGrad;
+                this.ctx.beginPath();
+                this.ctx.roundRect(cx, cy, oc.width, oc.height, 8);
+                this.ctx.fill();
+
+                // Glowing Molten Lava Core Fissure
+                this.ctx.strokeStyle = '#ff3d00';
+                this.ctx.shadowColor = '#ff3d00';
+                this.ctx.shadowBlur = 10;
+                this.ctx.lineWidth = 2.2;
+                this.ctx.beginPath();
+                this.ctx.moveTo(cx + 8, cy + 12);
+                this.ctx.lineTo(cx + oc.width * 0.45, cy + 13);
+                this.ctx.lineTo(cx + oc.width * 0.55, cy + 11);
+                this.ctx.lineTo(cx + oc.width - 8, cy + 12);
+                this.ctx.stroke();
+
+                // Fiery Crawl Badge
+                this.ctx.fillStyle = '#ffd600';
+                this.ctx.font = '900 12px "Fredoka One", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('🔥 DUCK ▼', cx + oc.width / 2, cy + 16);
+
+            } else if (worldIdx === 2) {
+                // 👻 World 3 (Spectral Void): Ethereal Astral Gate with Glowing Amethyst Crystal Trim
+                const voidGrad = this.ctx.createLinearGradient(0, cy, 0, cy + oc.height);
+                voidGrad.addColorStop(0, '#1a0933');
+                voidGrad.addColorStop(1, '#0d0221');
+                this.ctx.fillStyle = voidGrad;
+                this.ctx.beginPath();
+                this.ctx.roundRect(cx, cy, oc.width, oc.height, 8);
+                this.ctx.fill();
+
+                // Luminous Astral Cyan Trim
+                this.ctx.strokeStyle = '#00f5ff';
+                this.ctx.shadowColor = '#00f5ff';
+                this.ctx.shadowBlur = 12;
+                this.ctx.lineWidth = 1.8;
+                this.ctx.stroke();
+
+                // Amethyst Gemstones
+                this.ctx.fillStyle = '#e040fb';
+                this.ctx.beginPath();
+                this.ctx.arc(cx + 12, cy + 12, 3.5, 0, Math.PI * 2);
+                this.ctx.arc(cx + oc.width - 12, cy + 12, 3.5, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Mystic Rune Badge
+                this.ctx.fillStyle = '#00f5ff';
+                this.ctx.font = '900 12px "Fredoka One", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('✨ SLIDE ▼', cx + oc.width / 2, cy + 16);
+
+            } else if (worldIdx === 3) {
+                // 🤖 World 4 (Cyber Metropolis): Holographic Laser Security Barrier
+                const cyberGrad = this.ctx.createLinearGradient(0, cy, 0, cy + oc.height);
+                cyberGrad.addColorStop(0, '#0f172a');
+                cyberGrad.addColorStop(1, '#020617');
+                this.ctx.fillStyle = cyberGrad;
+                this.ctx.beginPath();
+                this.ctx.roundRect(cx, cy, oc.width, oc.height, 8);
+                this.ctx.fill();
+
+                // Neon Cyber Border & Strobe Lights
+                this.ctx.strokeStyle = '#00f5d4';
+                this.ctx.shadowColor = '#00f5d4';
+                this.ctx.shadowBlur = 10;
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+
+                // LED Corner Blinker Dots
+                this.ctx.fillStyle = '#ff007f';
+                this.ctx.shadowColor = '#ff007f';
+                this.ctx.beginPath();
+                this.ctx.arc(cx + 8, cy + 6, 2, 0, Math.PI * 2);
+                this.ctx.arc(cx + oc.width - 8, cy + 6, 2, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Digital HUD Badge
+                this.ctx.fillStyle = '#00f5d4';
+                this.ctx.font = '900 10px "Press Start 2P", monospace';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('LOW PASS ▼', cx + oc.width / 2, cy + 16);
+
+            } else {
+                // 🌌 World 5 (Cosmic Galaxy): Celestial Stardust Meteorite Tunnel
+                const cosmicGrad = this.ctx.createLinearGradient(0, cy, 0, cy + oc.height);
+                cosmicGrad.addColorStop(0, '#240046');
+                cosmicGrad.addColorStop(1, '#0f0022');
+                this.ctx.fillStyle = cosmicGrad;
+                this.ctx.beginPath();
+                this.ctx.roundRect(cx, cy, oc.width, oc.height, 8);
+                this.ctx.fill();
+
+                // Starlight Gold Trim & Stars
+                this.ctx.strokeStyle = '#ffd700';
+                this.ctx.shadowColor = '#ffd700';
+                this.ctx.shadowBlur = 12;
+                this.ctx.lineWidth = 1.8;
+                this.ctx.stroke();
+
+                // Diamond Sparkles on edges
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.beginPath();
+                this.ctx.arc(cx + 10, cy + 12, 2.5, 0, Math.PI * 2);
+                this.ctx.arc(cx + oc.width - 10, cy + 12, 2.5, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Cosmic Star Badge
+                this.ctx.fillStyle = '#ffd700';
+                this.ctx.font = '900 12px "Fredoka One", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('⭐ GLIDE ▼', cx + oc.width / 2, cy + 16);
             }
 
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '800 11px Outfit, sans-serif';
-            this.ctx.shadowColor = '#000';
-            this.ctx.shadowBlur = 4;
-            this.ctx.fillText('DUCK! ▼', cx + (oc.width / 2) - 22, cy + 16);
             this.ctx.restore();
         });
 
-        // Elevated 3D Metallic Hazard Spikes (Chapter 10+)
+        // Static & Timed Retractable Hazard Spikes
         (this.hazards || []).forEach(h => {
-            const hx = h.x - this.camera.x;
-            const hy = h.y - this.camera.y;
+            const hx = Math.round(h.x - camX);
+            const hy = Math.round(h.y - camY);
 
             this.ctx.save();
             this.ctx.translate(hx, hy);
-            // Glow shadow
-            this.ctx.shadowColor = '#ff1744';
-            this.ctx.shadowBlur = 10;
-
-            const spikeGradient = this.getCachedGradient('spike_metal_grad', (ctx) => {
-                const g = ctx.createLinearGradient(0, 18, 0, 0);
-                g.addColorStop(0, '#1a1a1a');
-                g.addColorStop(0.6, '#d50000');
-                g.addColorStop(1, '#ff5252');
-                return g;
-            });
-
-            this.ctx.fillStyle = spikeGradient;
-            this.ctx.strokeStyle = '#ffd600';
-            this.ctx.lineWidth = 1.5;
 
             const singleSpikeW = 22;
             const count = Math.max(1, Math.round(h.width / singleSpikeW));
-            for (let s = 0; s < count; s++) {
-                const sx = s * singleSpikeW;
+
+            if (h.isRetractable) {
+                // ⏰ TIMED RETRACTABLE TRAP BASE
+                const ext = (h.extensionRatio !== undefined) ? h.extensionRatio : 1.0;
+                const isExtended = ext > 0.35;
+                const isWarning = h.state === 'WARNING';
+                const isHidden = ext <= 0.05;
+
+                // 1. Trapdoor Plate Base
+                this.ctx.fillStyle = '#1e293b';
                 this.ctx.beginPath();
-                this.ctx.moveTo(sx, h.height);
-                this.ctx.lineTo(sx + singleSpikeW / 2, 0);
-                this.ctx.lineTo(sx + singleSpikeW, h.height);
-                this.ctx.closePath();
+                this.ctx.roundRect(-2, h.height - 4, h.width + 4, 6, 2);
                 this.ctx.fill();
+                this.ctx.strokeStyle = '#475569';
+                this.ctx.lineWidth = 1.2;
                 this.ctx.stroke();
+
+                // 2. LED Status Light Indicators (Left & Right)
+                const ledColor = isExtended ? '#ff1744' : (isWarning ? '#ffd600' : '#00e676');
+                this.ctx.shadowColor = ledColor;
+                this.ctx.shadowBlur = 8;
+                this.ctx.fillStyle = ledColor;
+                this.ctx.beginPath();
+                this.ctx.arc(1, h.height - 1, 2.2, 0, Math.PI * 2);
+                this.ctx.arc(h.width - 1, h.height - 1, 2.2, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // 3. Slot Openings in Floor
+                this.ctx.shadowBlur = 0;
+                this.ctx.fillStyle = '#090d16';
+                for (let k = 0; k < count; k++) {
+                    this.ctx.fillRect(k * singleSpikeW + 2, h.height - 3, singleSpikeW - 4, 3);
+                }
+
+                // 4. Retractable Animated Spike Teeth (Interpolated Height)
+                if (ext > 0.02) {
+                    for (let k = 0; k < count; k++) {
+                        const sx = k * singleSpikeW;
+                        const spikeTopY = (h.height - 3) - (h.height - 3) * ext;
+
+                        // Metallic Spike Gradient
+                        const spikeGrad = this.ctx.createLinearGradient(sx, spikeTopY, sx + singleSpikeW, h.height);
+                        spikeGrad.addColorStop(0, '#f8fafc');
+                        spikeGrad.addColorStop(0.35, '#ff1744');
+                        spikeGrad.addColorStop(0.7, '#64748b');
+                        spikeGrad.addColorStop(1, '#334155');
+
+                        this.ctx.fillStyle = spikeGrad;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(sx + 3, h.height - 2);
+                        this.ctx.lineTo(sx + singleSpikeW / 2, spikeTopY);
+                        this.ctx.lineTo(sx + singleSpikeW - 3, h.height - 2);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+
+                        // Glowing Red Tip when active
+                        if (isExtended) {
+                            this.ctx.fillStyle = '#ff1744';
+                            this.ctx.shadowColor = '#ff1744';
+                            this.ctx.shadowBlur = 6;
+                            this.ctx.beginPath();
+                            this.ctx.arc(sx + singleSpikeW / 2, spikeTopY + 2, 2.0, 0, Math.PI * 2);
+                            this.ctx.fill();
+                            this.ctx.shadowBlur = 0;
+                        }
+                    }
+                }
+            } else {
+                // Static Standard Spikes
+                for (let k = 0; k < count; k++) {
+                    const sx = k * singleSpikeW;
+                    const spikeGrad = this.ctx.createLinearGradient(sx, 0, sx + singleSpikeW, h.height);
+                    spikeGrad.addColorStop(0, '#ff1744');
+                    spikeGrad.addColorStop(0.5, '#b71c1c');
+                    spikeGrad.addColorStop(1, '#4a0000');
+
+                    this.ctx.fillStyle = spikeGrad;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(sx + 2, h.height);
+                    this.ctx.lineTo(sx + singleSpikeW / 2, 2);
+                    this.ctx.lineTo(sx + singleSpikeW - 2, h.height);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.strokeStyle = '#ff8a80';
+                    this.ctx.lineWidth = 1.2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(sx + 4, h.height);
+                    this.ctx.lineTo(sx + singleSpikeW / 2, 4);
+                    this.ctx.stroke();
+                }
             }
             this.ctx.restore();
         });

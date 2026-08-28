@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=65">
+    <link rel="stylesheet" href="style.css?v=90">
 </head>
 <body>
     <script>
@@ -26,57 +26,91 @@
             </div>
         </div>
 
-        <!-- SETOGI Studio Splash & Loading Screen 🚀 -->
+        <!-- SETOGI Studio Cinematic Splash & Loading Screen 🚀✨ -->
         <div id="screen-splash" class="ui-screen splash-screen">
+            <!-- Background Aurora & Stardust Canvas Layer -->
+            <div class="splash-aurora-glow"></div>
             <div class="splash-particles-bg" id="splash-particles"></div>
+            <div class="splash-scanlines"></div>
             
             <div class="splash-content">
-                <!-- Studio Brand Section -->
+                <!-- Studio Brand Section (Cinematic AAA Look) -->
                 <div class="studio-brand-box" id="studio-brand-box">
                     <div class="studio-logo-badge">
+                        <!-- Crown Crest on Top -->
+                        <div class="studio-crown-crest">👑</div>
                         <div class="studio-emblem-hex">
                             <span class="studio-emblem-letter">S</span>
+                            <div class="studio-emblem-shine"></div>
                         </div>
                         <div class="studio-glow-ring"></div>
+                        <div class="studio-glow-ring ring-secondary"></div>
+                        <div class="studio-orbit-dot dot-1"></div>
+                        <div class="studio-orbit-dot dot-2"></div>
                     </div>
+
                     <div class="studio-text-wrap">
                         <h1 class="studio-name-title">SETOGI</h1>
-                        <span class="studio-tagline">G A M E S</span>
+                        <div class="studio-tagline-wrap">
+                            <span class="studio-tagline-diamond">✦</span>
+                            <span class="studio-tagline">G A M E S</span>
+                            <span class="studio-tagline-diamond">✦</span>
+                        </div>
                     </div>
-                    <div class="studio-presents" data-i18n="studioPresents">GURURLA SUNAR</div>
+                    
+                    <div class="studio-presents-badge">
+                        <span class="presents-line left"></span>
+                        <span class="presents-text" data-i18n="studioPresents">GURURLA SUNAR</span>
+                        <span class="presents-line right"></span>
+                    </div>
                 </div>
 
                 <!-- Game Teaser & Loading Progress Section -->
                 <div class="splash-loading-box" id="splash-loading-box">
                     <div class="splash-game-tag">
                         <span class="splash-mascot">🐰🍓</span>
-                        <span class="splash-game-title">FRUIT LEAP</span>
+                        <div class="splash-game-title-wrap">
+                            <span class="splash-game-title">FRUIT LEAP</span>
+                            <span class="splash-game-subtitle">BUNNY & FRIENDS</span>
+                        </div>
+                        <span class="splash-sparkle-icon">✨</span>
                     </div>
 
-                    <!-- Modern Glassmorphic Loading Bar -->
+                    <!-- Modern High-Tech Glassmorphic Loading Bar -->
                     <div class="splash-bar-outer" id="splash-bar-outer">
                         <div class="splash-bar-track">
                             <div id="splash-bar-fill" class="splash-bar-fill" style="width: 0%;">
                                 <span class="splash-bar-glow-head"></span>
+                                <span class="splash-bar-laser-ray"></span>
                             </div>
                         </div>
                         <div class="splash-bar-meta">
-                            <span id="splash-loading-text" class="splash-tip-text" data-i18n="splashTip1">SETOGI dünyasına hoş geldiniz...</span>
+                            <div class="splash-tip-wrap">
+                                <span class="tip-icon">💡</span>
+                                <span id="splash-loading-text" class="splash-tip-text" data-i18n="splashTip1">SETOGI dünyasına hoş geldiniz...</span>
+                            </div>
                             <span id="splash-percent-val" class="splash-percent-text">0%</span>
                         </div>
                     </div>
 
-                    <!-- Tap To Start Button (Appears when 100% loaded) -->
+                    <!-- Tap To Start Button (Cinematic Pulsing Capsule) -->
                     <div id="splash-tap-container" class="splash-tap-container hidden">
                         <button id="btn-splash-start" class="btn-splash-tap">
-                            <span class="tap-icon">✨</span>
+                            <span class="tap-wings">✨</span>
                             <span class="tap-label" data-i18n="tapToStart">BAŞLAMAK İÇİN DOKUNUN</span>
-                            <span class="tap-icon">✨</span>
+                            <span class="tap-wings">✨</span>
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="splash-version-tag">SETOGI Mobile Engine • v0.7.28</div>
+            
+            <div class="splash-version-tag">
+                <span>⚡ SETOGI Mobile Arcade Engine</span>
+                <span class="version-dot">•</span>
+                <span>60 FPS</span>
+                <span class="version-dot">•</span>
+                <span>v0.7.71</span>
+            </div>
         </div>
 
         <!-- Main Menu Screen -->
@@ -118,10 +152,10 @@
                     <span class="game-subtitle">Bunny & Friends</span>
                 </div>
                 <div class="menu-buttons-independent">
-                    <button id="btn-play-game" class="btn btn-primary-play" data-i18n="playGame">▶ PLAY GAME</button>
-                    <button id="btn-story-intro" class="btn btn-story" data-i18n="storyQuest">📖 STORY & QUEST</button>
-                    <button id="btn-chapter-select" class="btn btn-chapters" data-i18n="chapters">🗺️ CHAPTERS</button>
-                    <button id="btn-character-shop" class="btn btn-shop-neon" data-i18n="shop">🛍️ CHARACTER SHOP</button>
+                    <button id="btn-play-game" class="btn btn-primary-play" data-i18n="playGame">▶ OYUNA BAŞLA</button>
+                    <button id="btn-story-intro" class="btn btn-story" data-i18n="storyQuest">📖 HİKAYE & GÖREV</button>
+                    <button id="btn-chapter-select" class="btn btn-chapters" data-i18n="chapters">🗺️ BÖLÜMLER</button>
+                    <button id="btn-character-shop" class="btn btn-shop-neon" data-i18n="shop">🛍️ KARAKTER MARKETİ</button>
                     <button id="btn-daily-spin" class="btn btn-daily-spin" data-i18n="dailySpin">🎁 GÜNLÜK ÇARK<span id="spin-notify" class="spin-badge-notify">FREE</span></button>
                 </div>
             </div>
@@ -227,30 +261,37 @@
                 </div>
             </div>
             
-            <!-- Story Intro Modal Screen -->
+            <!-- Progressive Boss Lore & Story Screen -->
             <div id="screen-story-intro" class="ui-screen hidden">
                 <div class="glass-panel modal-large story-modal">
-                    <h2 data-i18n="storyTitle">✨ THE LEGEND OF PIKO ✨</h2>
-                    <div class="story-cards-wrapper">
-                        <div class="story-card">
-                            <div class="story-icon">🌳✨</div>
-                            <h3 data-i18n="storyCard1Title">1. Fruit Valley</h3>
-                            <p data-i18n="storyCard1Text">Meyve Vadisi'nin neşesi ve yaşam kaynağı, gökyüzündeki Dev Saman Yolu Meyve Ağacı'ydı...</p>
-                        </div>
-                        <div class="story-card">
-                            <div class="story-icon">👾🔮</div>
-                            <h3 data-i18n="storyCard2Title">2. The Stolen Stars</h3>
-                            <p data-i18n="storyCard2Text">Bir gece kötü Gölge Balçıkları (Slime'lar) ağacın büyülü 25 Yıldız Anahtarını ve meyvelerini çalıp boyut portallarına saçtı!</p>
-                        </div>
-                        <div class="story-card">
-                            <div class="story-icon">🐰🏆</div>
-                            <h3 data-i18n="storyCard3Title">3. Brave Bunny Piko</h3>
-                            <p data-i18n="storyCard3Text">Tavşan Piko pelerinini taktı! Portallardan geçip 25 Yıldız Anahtarını toplamak ve vadisini kurtarmak için yola çıkıyor!</p>
+                    <div class="story-header-row">
+                        <h2 class="modal-title-neon" data-i18n="storyTitle">✨ PİKO'NUN EFSANESİ (HİKAYE PARŞÖMENLERİ) ✨</h2>
+                        <div class="header-stars-badge">
+                            <span class="badge-icon">📜</span>
+                            <span id="story-unlocked-count" class="badge-val">1/6</span>
+                            <span class="badge-label" data-i18n="storyUnlocked">AÇILDI</span>
                         </div>
                     </div>
-                    <div class="modal-buttons">
-                        <button id="btn-start-adventure" class="btn btn-primary" data-i18n="startAdventure">🚀 MACERAYA BAŞLA!</button>
-                        <button id="btn-story-back" class="btn btn-secondary" data-i18n="mainMenu">🏠 Ana Menü</button>
+
+                    <!-- Story Tomes Horizontal Navigation Tabs -->
+                    <div class="story-tabs-nav" id="story-tabs-nav">
+                        <!-- Generated Tome Tabs -->
+                    </div>
+
+                    <!-- Active Lore Scroll Stage -->
+                    <div class="story-scroll-stage" id="story-scroll-stage">
+                        <!-- Active Tome Content Generated dynamically -->
+                    </div>
+
+                    <div class="story-bottom-actions">
+                        <div class="story-nav-btns">
+                            <button id="btn-story-prev" class="btn btn-secondary-shop" data-i18n="storyPrev">◀ Önceki</button>
+                            <button id="btn-story-next" class="btn btn-secondary-shop" data-i18n="storyNext">Sonraki ▶</button>
+                        </div>
+                        <div class="modal-buttons" style="margin-top: 0; display: flex; gap: 8px;">
+                            <button id="btn-start-adventure" class="btn btn-primary" data-i18n="storyBackToGame">🚀 OYUNA DÖN</button>
+                            <button id="btn-story-back" class="btn btn-secondary" data-i18n="mainMenu">🏠 Ana Menü</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,13 +321,13 @@
                         💖 <span id="death-modal-lives">4/5</span> <span data-i18n="livesLeft">Kalan Can</span>
                     </div>
                     <div class="modal-actions" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%;">
-                        <button id="btn-death-revive-ad" class="btn btn-ad-gold" style="width: 100%; font-size: 0.86rem; padding: 10px 14px;">
+                        <button id="btn-death-revive-ad" class="btn btn-ad-gold" style="width: 100%; font-size: 0.86rem; padding: 10px 14px;" data-i18n="deathReviveAd">
                             🎬 Kaldığın Yerden Devam Et (Reklam)
                         </button>
-                        <button id="btn-death-retry" class="btn btn-primary-play" style="width: 100%; font-size: 0.82rem; padding: 8px 12px;">
+                        <button id="btn-death-retry" class="btn btn-primary-play" style="width: 100%; font-size: 0.82rem; padding: 8px 12px;" data-i18n="deathRetry">
                             🔄 Baştan Başla (-1 Can)
                         </button>
-                        <button id="btn-death-menu" class="btn btn-secondary" style="width: 100%; font-size: 0.78rem; padding: 6px 12px;">
+                        <button id="btn-death-menu" class="btn btn-secondary" style="width: 100%; font-size: 0.78rem; padding: 6px 12px;" data-i18n="mainMenu">
                             🏠 Ana Menü
                         </button>
                     </div>
@@ -464,7 +505,7 @@
                                     <div class="req-status-icon">⬜</div>
                                     <div class="req-text-wrap">
                                         <span class="req-title" data-i18n="winFinishLevel">Bölümü Bitir</span>
-                                        <span class="req-sub">Temel Seviye Hedefi</span>
+                                        <span class="req-sub" data-i18n="winFinishSub">Temel Seviye Hedefi</span>
                                     </div>
                                     <span class="req-star-pill">+⭐</span>
                                 </div>
@@ -473,7 +514,7 @@
                                     <div class="req-status-icon">⬜</div>
                                     <div class="req-text-wrap">
                                         <span class="req-title" data-i18n="winCollectFruits">Tüm Meyveleri Topla (🍓)</span>
-                                        <span class="req-sub"><strong id="win-fruits-count">0 / 0</strong> Meyve</span>
+                                        <span class="req-sub"><strong id="win-fruits-count">0 / 0</strong> <span data-i18n="winFruitsSub">Meyve</span></span>
                                     </div>
                                     <span class="req-star-pill">+⭐</span>
                                 </div>
@@ -482,7 +523,7 @@
                                     <div class="req-status-icon">⬜</div>
                                     <div class="req-text-wrap">
                                         <span class="req-title"><span data-i18n="winSpeedrun">Hızlı Koşu</span> (&lt;<span id="win-target-time">0</span>s)</span>
-                                        <span class="req-sub">Süren: <strong id="win-time">0.0s</strong></span>
+                                        <span class="req-sub"><span data-i18n="winYourTime">Süren:</span> <strong id="win-time">0.0s</strong></span>
                                     </div>
                                     <span class="req-star-pill">+⭐</span>
                                 </div>
@@ -502,7 +543,7 @@
                                 <button id="btn-next-level" class="btn btn-primary-play btn-win-main" data-i18n="winNextLevel">
                                     🚀 SONRAKİ BÖLÜM
                                 </button>
-                                <button id="btn-win-double-score" class="btn btn-ad-gold btn-win-ad">
+                                <button id="btn-win-double-score" class="btn btn-ad-gold btn-win-ad" data-i18n="winDoubleScore">
                                     🎬 2X SKOR KAZAN (+⭐)
                                 </button>
                                 <div class="win-actions-row">
@@ -537,16 +578,73 @@
                 </div>
             </div>
         </div>
+
+        <!-- Realistic Edge-to-Edge Full Screen Simulated AdMob Rewarded Video Overlay 🎬 -->
+        <div id="admob-test-overlay" class="admob-overlay hidden">
+            <!-- Top Edge Progress Bar -->
+            <div class="admob-top-progress-track">
+                <div id="admob-progress-bar" class="admob-progress-bar"></div>
+            </div>
+
+            <!-- Top Controls Bar -->
+            <div class="admob-fullscreen-header">
+                <div class="admob-test-badge">
+                    <span class="admob-google-icon">▲</span>
+                    <span class="admob-badge-text">Ad • Google AdMob Test</span>
+                </div>
+                <div id="admob-timer-badge" class="admob-timer-badge">
+                    <span id="admob-timer-txt">Reward in 5s</span>
+                    <button id="btn-admob-close" class="admob-close-btn hidden" aria-label="Close Ad">✕</button>
+                </div>
+            </div>
+
+            <!-- Full-Screen Interactive Video Center -->
+            <div class="admob-video-viewport">
+                <div class="admob-video-ambient-glow"></div>
+                <div class="admob-game-spotlight">
+                    <div class="admob-animated-piko">🐰⚡🍓</div>
+                    <h2 class="admob-preview-title">FRUIT LEAP: ULTRA RUNNER</h2>
+                    <p class="admob-preview-sub">Master double jumps, defeat slime bosses and rescue the Milky Way!</p>
+                    <div class="admob-rating-stars">
+                        <span>⭐⭐⭐⭐⭐</span>
+                        <span class="rating-num">4.9</span>
+                        <span class="review-count">(100K+ Reviews)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Google Play Store Call-to-Action Bar -->
+            <div class="admob-bottom-cta-card">
+                <div class="admob-cta-left">
+                    <div class="admob-app-icon">🐰</div>
+                    <div class="admob-app-details">
+                        <div class="admob-app-name">Fruit Leap: Bunny & Friends</div>
+                        <div class="admob-app-dev">SETOGI GAMES • Action & Arcade</div>
+                    </div>
+                </div>
+                <div class="admob-cta-right">
+                    <button class="admob-install-btn" tabindex="-1">
+                        <span>INSTALL NOW</span>
+                        <span class="admob-btn-arrow">➔</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Status Toast (Ad Playing Notice) -->
+            <div class="admob-live-toast">
+                <span id="admob-status-label" class="admob-status-label">📺 Ad is playing... Please wait for your reward.</span>
+            </div>
+        </div>
     </div>
 
     <!-- Background Music Elements -->
     <audio id="bgm-menu" src="audio/menu.wav" loop preload="auto"></audio>
     <audio id="bgm-game" src="audio/game.wav" loop preload="auto"></audio>
 
-    <script src="admob_manager.js" onerror="this.onerror=null;this.src='js/admob_manager.js'"></script>
-        <script src="audio.js?v=65" onerror="this.onerror=null;this.src='js/audio.js?v=65'"></script>
-    <script src="physics.js?v=65" onerror="this.onerror=null;this.src='js/physics.js?v=65'"></script>
-    <script src="levels.js?v=65" onerror="this.onerror=null;this.src='js/levels.js?v=65'"></script>
-    <script src="game.js?v=65" onerror="this.onerror=null;this.src='js/game.js?v=65'"></script>
+    <script src="admob_manager.js?v=90" onerror="this.onerror=null;this.src='js/admob_manager.js?v=90'"></script>
+        <script src="audio.js?v=90" onerror="this.onerror=null;this.src='js/audio.js?v=90'"></script>
+    <script src="physics.js?v=90" onerror="this.onerror=null;this.src='js/physics.js?v=90'"></script>
+    <script src="levels.js?v=90" onerror="this.onerror=null;this.src='js/levels.js?v=90'"></script>
+    <script src="game.js?v=90" onerror="this.onerror=null;this.src='js/game.js?v=90'"></script>
 </body>
 </html>
