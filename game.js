@@ -2130,12 +2130,22 @@ class Game {
         const prizeIdx = Math.floor(Math.random() * this.wheelPrizes.length);
         const prize = this.wheelPrizes[prizeIdx];
         const numSlices = this.wheelPrizes.length;
-        const sliceAngle = (360 / numSlices);
+        const sliceAngle = 360 / numSlices;
 
-        // Calculate rotation so top pointer lands on prizeIdx
-        // Ticker is at 270 deg (top)
-        const targetDeg = (360 * 5) + (270 - (prizeIdx * sliceAngle + sliceAngle / 2));
-        this.wheelRotation = (this.wheelRotation || 0) + targetDeg;
+        // Top pointer is located at 270 deg (top / 12 o'clock in standard canvas angle coordinates)
+        // Center angle of slice `prizeIdx` in canvas coordinates:
+        const sliceMidAngle = prizeIdx * sliceAngle + sliceAngle / 2;
+        // The rotation angle R such that (sliceMidAngle + R) % 360 === 270:
+        const targetOrientation = ((270 - sliceMidAngle) % 360 + 360) % 360;
+
+        const currentRot = this.wheelRotation || 0;
+        const currentRotMod = ((currentRot % 360) + 360) % 360;
+        let delta = targetOrientation - currentRotMod;
+        if (delta <= 0) delta += 360;
+
+        // Spin 5 complete 360-deg rounds plus the exact delta to land dead-center on prize
+        const spinRounds = 360 * 5;
+        this.wheelRotation = currentRot + spinRounds + delta;
 
         const canvas = document.getElementById('wheel-canvas');
         if (canvas) {
@@ -2148,6 +2158,7 @@ class Game {
             this.isSpinning = false;
             localStorage.setItem('fruit_leap_last_daily_spin', Date.now().toString());
 
+            const isEn = (this.lang === 'en');
             const lData = I18N[this.lang] || I18N.tr;
             let prizeMsg = '';
             if (prize.type === 'stars') {
@@ -2157,8 +2168,14 @@ class Game {
                 this.progress.globalLives = Math.min(5, (this.progress.globalLives || 0) + prize.val);
                 prizeMsg = (lData.spinPrizeLife || '❤️ +{val} CAN!').replace('{val}', prize.val);
             } else if (prize.type === 'power') {
-                this.progress.totalStars = (this.progress.totalStars || 0) + 30;
-                prizeMsg = lData.spinPrizePower || '🎁 BÜYÜLÜ ÖDÜL! +30 Yıldız!';
+                this.progress.totalStars = (this.progress.totalStars || 0) + 35;
+                if (prize.val === 'powerup_magnet') {
+                    prizeMsg = isEn ? '🧲 MAGNET POWER-UP! (+35 ⭐)' : '🧲 MIKNATIS GÜCÜ! (+35 ⭐)';
+                } else if (prize.val === 'powerup_shield') {
+                    prizeMsg = isEn ? '🫧 BUBBLE SHIELD! (+35 ⭐)' : '🫧 BALON KALKAN! (+35 ⭐)';
+                } else {
+                    prizeMsg = isEn ? '🎁 MAGIC POWER-UP! (+35 ⭐)' : '🎁 SÜRPRİZ GÜÇ! (+35 ⭐)';
+                }
             }
 
             this.saveProgress();
@@ -2211,7 +2228,7 @@ class Game {
         this.ctx.fillStyle = skyGradient;
         this.ctx.fillRect(0, 0, w, h);
 
-        // 2. Soft Drifting Clouds
+        // 2. Soft Drifting Clouds & Distant Soaring Birds
         const drawCloud = (cx, cy, scale, alpha) => {
             this.ctx.save();
             this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
@@ -2230,6 +2247,22 @@ class Game {
             let cy = 45 + (i % 2) * 35;
             drawCloud(cx, cy, 0.9, 0.45);
         }
+
+        // Soaring Birds in Distant Sky 🕊️
+        this.ctx.strokeStyle = 'rgba(74, 20, 140, 0.35)';
+        this.ctx.lineWidth = 1.8;
+        this.ctx.lineCap = 'round';
+        for (let b = 0; b < 3; b++) {
+            const bx = (b * 220 + time * 32) % (w + 120) - 60;
+            const by = 55 + b * 22 + Math.sin(time * 2 + b) * 8;
+            const flap = Math.sin(time * 8 + b * 2) * 4.5;
+            this.ctx.beginPath();
+            this.ctx.moveTo(bx - 8, by + flap);
+            this.ctx.quadraticCurveTo(bx - 4, by - 4, bx, by);
+            this.ctx.quadraticCurveTo(bx + 4, by - 4, bx + 8, by + flap);
+            this.ctx.stroke();
+        }
+
         // Closer mid clouds
         for (let i = 0; i < 3; i++) {
             let cx = (i * 380 + time * 18) % (w + 220) - 110;
@@ -2237,10 +2270,26 @@ class Game {
             drawCloud(cx, cy, 1.2, 0.65);
         }
 
-        // 3. Glowing Radiant Sun
+        // 3. Glowing Radiant Sun with Sunbeams ☀️
         const sunX = w * 0.82;
         const sunY = h * 0.32 + Math.sin(time * 0.6) * 8;
         
+        // Sunbeams / God-Rays
+        this.ctx.save();
+        this.ctx.translate(sunX, sunY);
+        this.ctx.rotate(time * 0.04);
+        for (let r = 0; r < 8; r++) {
+            const rayAngle = (r * Math.PI * 2) / 8;
+            const rayAlpha = 0.06 + Math.sin(time * 1.5 + r) * 0.03;
+            this.ctx.fillStyle = `rgba(254, 240, 138, ${rayAlpha})`;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, 0);
+            this.ctx.arc(0, 0, 260, rayAngle - 0.14, rayAngle + 0.14);
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+
         const sunGlow = this.getCachedGradient('menu_sun_glow_v2', (ctx) => {
             const g = ctx.createRadialGradient(0, 0, 10, 0, 0, 110);
             g.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
@@ -2345,7 +2394,6 @@ class Game {
             const fx = (i * 110 + time * 28) % (w + 100) - 50;
             const fy = h - 70 + Math.sin((fx + time * 28) * 0.009 + 2.5) * 16;
             
-            // Lush Clover Bush
             if (i % 2 === 0) {
                 this.ctx.fillStyle = '#059669';
                 this.ctx.beginPath();
@@ -2390,6 +2438,43 @@ class Game {
             }
         }
 
+        // Fluttering Colorful Meadow Butterflies 🦋
+        const bFlyColors = ['#ec4899', '#00e5ff', '#ffd600'];
+        for (let bf = 0; bf < 3; bf++) {
+            const bfx = (bf * 260 + time * 35) % (w + 80) - 40;
+            const bfy = h - 90 - bf * 20 + Math.sin(time * 3.5 + bf * 2) * 22;
+            const wingFlap = Math.sin(time * 18 + bf);
+
+            this.ctx.save();
+            this.ctx.translate(bfx, bfy);
+            this.ctx.fillStyle = bFlyColors[bf % bFlyColors.length];
+            this.ctx.beginPath();
+            this.ctx.ellipse(-3, 0, 4.5 * Math.abs(wingFlap), 6, 0.3, 0, Math.PI * 2);
+            this.ctx.ellipse(3, 0, 4.5 * Math.abs(wingFlap), 6, -0.3, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.fillStyle = '#212121';
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, 1.2, 5, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+
+        // Floating Wind-Blown Cherry Blossom Petals & Dandelion Fluff 🌸
+        for (let pt = 0; pt < 8; pt++) {
+            const ptx = (pt * 130 + time * (24 + pt * 3)) % (w + 40) - 20;
+            const pty = 60 + ((pt * 45 + time * 35) % (h - 90)) + Math.sin(time * 2 + pt) * 14;
+            const ptRot = time * 2.5 + pt;
+
+            this.ctx.save();
+            this.ctx.translate(ptx, pty);
+            this.ctx.rotate(ptRot);
+            this.ctx.fillStyle = pt % 2 === 0 ? 'rgba(255, 182, 193, 0.75)' : 'rgba(255, 255, 255, 0.7)';
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, 4.5, 2.5, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+
         // 7. Ambient Glowing Magic Spores / Fireflies
         this.ctx.save();
         for (let sp = 0; sp < 14; sp++) {
@@ -2407,22 +2492,20 @@ class Game {
         }
         this.ctx.restore();
 
-        // 8. Main Characters Running & Bouncing across the Meadow!
-        // We render Fluffy Bunny (the Hero with Cape), Foxy, and Kitty!
-        // 8. Main Characters Running, Flipping, Slidng & Gliding across the Meadow!
-        // All 5 Playable Heroes: Bunny, Fox, Kitty, Bear, and Unicorn with Unique Movement Styles!
+        // 8. ALL 6 PLAYABLE HEROES Running, Somersaulting & Gliding across the Meadow!
         const heroList = [
             { type: 'bunny', bodyColor: '#ffffff', earColor: '#ff80ab', cape: true, offset: 0, speed: 52, style: 'flip' },
-            { type: 'fox', bodyColor: '#ff5722', earColor: '#d84315', cape: true, offset: 95, speed: 70, style: 'dash' },
-            { type: 'kitty', bodyColor: '#ffa726', earColor: '#ffb300', cape: false, offset: 185, speed: 46, style: 'slide' },
-            { type: 'bear', bodyColor: '#5d4037', earColor: '#8d6e63', cape: false, offset: 275, speed: 38, style: 'thump' },
-            { type: 'unicorn', bodyColor: '#f3e5f5', earColor: '#ea80fc', cape: false, offset: 365, speed: 56, style: 'glide' }
+            { type: 'fox', bodyColor: '#ff5722', earColor: '#d84315', cape: true, offset: 80, speed: 70, style: 'dash' },
+            { type: 'kitty', bodyColor: '#ffa726', earColor: '#ffb300', cape: false, offset: 160, speed: 46, style: 'slide' },
+            { type: 'bear', bodyColor: '#5d4037', earColor: '#8d6e63', cape: false, offset: 240, speed: 38, style: 'thump' },
+            { type: 'panda', bodyColor: '#ffffff', earColor: '#212121', cape: false, offset: 320, speed: 44, style: 'roll' },
+            { type: 'unicorn', bodyColor: '#f3e5f5', earColor: '#ea80fc', cape: false, offset: 400, speed: 56, style: 'glide' }
         ];
 
         const tMs = Date.now();
 
         heroList.forEach((hero, index) => {
-            let hx = (w + 140 - (time * hero.speed + hero.offset) % (w + 280));
+            let hx = (w + 140 - (time * hero.speed + hero.offset) % (w + 340));
             const groundY = h - 70 + Math.sin((hx + time * 28) * 0.009 + 2.5) * 16;
             
             let hy = groundY - 14;
@@ -2462,13 +2545,11 @@ class Game {
                 // 🐱 Kitty: Playful Low Slide / Crawl followed by Springy Pounce
                 const cycle = (time * 1.8 + index) % 4;
                 if (cycle < 2) {
-                    // Low crawl slide
                     hy = groundY - 8;
                     squash = 1.35;
                     stretch = 0.70;
                     rot = 0.05;
                 } else {
-                    // High spring pounce!
                     const pounceProg = (cycle - 2) / 2;
                     const pounceY = Math.sin(pounceProg * Math.PI) * 32;
                     hy = groundY - 14 - pounceY;
@@ -2484,7 +2565,6 @@ class Game {
                 squash = 1.18 - bounce * 0.25;
                 stretch = 0.9 + bounce * 0.25;
 
-                // Dust puff on landing
                 if (bounce < 0.08 && Math.random() < 0.4) {
                     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
                     this.ctx.beginPath();
@@ -2492,15 +2572,33 @@ class Game {
                     this.ctx.arc(hx + 8, groundY + 2, 4, 0, Math.PI * 2);
                     this.ctx.fill();
                 }
+            } else if (hero.style === 'roll') {
+                // 🐼 Panda: Chubby Happy Somersault Roll & Bamboo Sparkles
+                const rollCycle = (time * 2.2 + index) % Math.PI;
+                const isRolling = Math.sin(rollCycle) > 0.35;
+                hy = groundY - 14 - Math.sin(rollCycle) * 28;
+                if (isRolling) {
+                    rot = -(time * 7.2) % (Math.PI * 2);
+                    squash = 1.1;
+                    stretch = 1.1;
+                } else {
+                    squash = 1.18;
+                    stretch = 0.88;
+                }
+                if (Math.random() < 0.25) {
+                    this.ctx.fillStyle = '#34d399';
+                    this.ctx.beginPath();
+                    this.ctx.arc(hx + 14, hy + 6, 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
             } else if (hero.style === 'glide') {
                 // 🦄 Unicorn: Elegant Floating Air Glide with Rainbow Sparkle Trail
                 const hoverWave = Math.sin(time * 3.5 + index) * 12;
-                hy = groundY - 36 + hoverWave; // Floats majestically in the air
+                hy = groundY - 36 + hoverWave;
                 squash = 0.95;
                 stretch = 1.05;
                 rot = Math.sin(time * 2) * 0.08;
 
-                // Shimmering Rainbow Sparkles Trail behind Unicorn
                 const rainbowColors = ['#ff4081', '#7c4dff', '#00e5ff', '#ffd600', '#69f0ae'];
                 for (let r = 0; r < 2; r++) {
                     const rX = hx + 16 + r * 10 + Math.random() * 6;
@@ -2558,8 +2656,12 @@ class Game {
                 this.ctx.beginPath();
                 this.ctx.arc(12, 6, 4, 0, Math.PI * 2);
                 this.ctx.fill();
+            } else if (hero.type === 'panda') {
+                this.ctx.fillStyle = '#212121';
+                this.ctx.beginPath();
+                this.ctx.arc(12, 6, 3.5, 0, Math.PI * 2);
+                this.ctx.fill();
             } else if (hero.type === 'unicorn') {
-                // Flowing Pastel Tail
                 this.ctx.fillStyle = '#ea80fc';
                 this.ctx.beginPath();
                 this.ctx.ellipse(14, 2, 8, 4, -0.3, 0, Math.PI * 2);
@@ -2568,7 +2670,6 @@ class Game {
 
             // 3. Ears & Horn
             if (hero.type === 'bunny') {
-                // Long Cute Bunny Ears
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.beginPath();
                 this.ctx.ellipse(-4, -22, 5, 13, -0.15, 0, Math.PI * 2);
@@ -2602,7 +2703,6 @@ class Game {
                 this.ctx.beginPath();
                 this.ctx.moveTo(4, -10); this.ctx.lineTo(9, -16); this.ctx.lineTo(10, -8); this.ctx.fill();
             } else if (hero.type === 'bear') {
-                // Round Teddy Ears
                 this.ctx.fillStyle = '#5d4037';
                 this.ctx.beginPath();
                 this.ctx.arc(-11, -12, 6, 0, Math.PI * 2);
@@ -2613,15 +2713,19 @@ class Game {
                 this.ctx.arc(-11, -12, 3.5, 0, Math.PI * 2);
                 this.ctx.arc(11, -12, 3.5, 0, Math.PI * 2);
                 this.ctx.fill();
+            } else if (hero.type === 'panda') {
+                this.ctx.fillStyle = '#212121';
+                this.ctx.beginPath();
+                this.ctx.arc(-11, -12, 6.5, 0, Math.PI * 2);
+                this.ctx.arc(11, -12, 6.5, 0, Math.PI * 2);
+                this.ctx.fill();
             } else if (hero.type === 'unicorn') {
-                // Cute Ears + Golden Spiral Horn
                 this.ctx.fillStyle = '#f3e5f5';
                 this.ctx.beginPath();
                 this.ctx.ellipse(-8, -16, 3.5, 7, -0.3, 0, Math.PI * 2);
                 this.ctx.ellipse(8, -16, 3.5, 7, 0.3, 0, Math.PI * 2);
                 this.ctx.fill();
 
-                // Golden Horn
                 this.ctx.fillStyle = '#ffd700';
                 this.ctx.shadowColor = '#ffd700';
                 this.ctx.shadowBlur = 8;
@@ -2637,7 +2741,7 @@ class Game {
             // 4. Main Body Round
             this.ctx.fillStyle = hero.bodyColor;
             this.ctx.beginPath();
-            this.ctx.arc(0, 0, (hero.type === 'bear' ? 16 : 14.5), 0, Math.PI * 2);
+            this.ctx.arc(0, 0, (hero.type === 'bear' || hero.type === 'panda' ? 15.5 : 14.5), 0, Math.PI * 2);
             this.ctx.fill();
 
             // 5. Muzzle / Tummy details
@@ -2662,6 +2766,12 @@ class Game {
                 this.ctx.beginPath();
                 this.ctx.ellipse(0, 4, 9, 8, 0, 0, Math.PI * 2);
                 this.ctx.fill();
+            } else if (hero.type === 'panda') {
+                this.ctx.fillStyle = '#212121';
+                this.ctx.beginPath();
+                this.ctx.arc(-11, 7, 5, 0, Math.PI * 2);
+                this.ctx.arc(11, 7, 5, 0, Math.PI * 2);
+                this.ctx.fill();
             } else if (hero.type === 'unicorn') {
                 this.ctx.fillStyle = '#ea80fc';
                 this.ctx.beginPath();
@@ -2676,7 +2786,15 @@ class Game {
             this.ctx.arc(8, 3.5, 3, 0, Math.PI * 2);
             this.ctx.fill();
 
-            // 7. Expressive Eyes (Looking left)
+            // 7. Expressive Eyes
+            if (hero.type === 'panda') {
+                this.ctx.fillStyle = '#212121';
+                this.ctx.beginPath();
+                this.ctx.ellipse(-5.5, -2, 5.2, 4.2, -0.22, 0, Math.PI * 2);
+                this.ctx.ellipse(5.5, -2, 5.2, 4.2, 0.22, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+
             this.ctx.fillStyle = '#212121';
             this.ctx.beginPath();
             this.ctx.ellipse(-5, -2, 3.2, 4.2, 0, 0, Math.PI * 2);
@@ -2693,18 +2811,18 @@ class Game {
             this.ctx.fill();
 
             // 8. Cute Nose
-            this.ctx.fillStyle = (hero.type === 'fox' || hero.type === 'bear') ? '#212121' : '#ff4081';
+            this.ctx.fillStyle = (hero.type === 'fox' || hero.type === 'bear' || hero.type === 'panda') ? '#212121' : '#ff4081';
             this.ctx.beginPath();
             this.ctx.ellipse(-1, 2, 1.8, 1.3, 0, 0, Math.PI * 2);
             this.ctx.fill();
 
             // 9. Running Cute Feet!
-            const footColor = (hero.type === 'fox' || hero.type === 'bear') ? '#212121' : (hero.type === 'unicorn' ? '#ffd700' : hero.bodyColor);
+            const footColor = (hero.type === 'fox' || hero.type === 'bear' || hero.type === 'panda') ? '#212121' : (hero.type === 'unicorn' ? '#ffd700' : hero.bodyColor);
             this.ctx.fillStyle = footColor;
             
             const footCycle = Math.sin(tMs * 0.02 + index);
-            const lFootY = (hero.type === 'bear' ? 14 : 12.5) + footCycle * 3;
-            const rFootY = (hero.type === 'bear' ? 14 : 12.5) - footCycle * 3;
+            const lFootY = (hero.type === 'bear' || hero.type === 'panda' ? 14 : 12.5) + footCycle * 3;
+            const rFootY = (hero.type === 'bear' || hero.type === 'panda' ? 14 : 12.5) - footCycle * 3;
             const lFootX = -6 - footCycle * 2;
             const rFootX = 6 + footCycle * 2;
 

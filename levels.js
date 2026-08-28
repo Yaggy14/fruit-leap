@@ -91,6 +91,27 @@ function createSeededRandom(seed) {
     };
 }
 
+function checkPlatformOverlap(pNew, existingPlatforms) {
+    const marginX = 6;
+    const marginY = 6;
+    const nMinX = pNew.x - (pNew.range || 0) - marginX;
+    const nMaxX = pNew.x + pNew.width + (pNew.range || 0) + marginX;
+    const nMinY = pNew.y - marginY;
+    const nMaxY = pNew.y + pNew.height + marginY;
+
+    for (const p of existingPlatforms) {
+        const pMinX = p.x - (p.range || 0);
+        const pMaxX = p.x + p.width + (p.range || 0);
+        const pMinY = p.y;
+        const pMaxY = p.y + p.height;
+
+        const overlapX = (nMinX < pMaxX) && (nMaxX > pMinX);
+        const overlapY = (nMinY < pMaxY) && (nMaxY > pMinY);
+        if (overlapX && overlapY) return true;
+    }
+    return false;
+}
+
 function generate25Chapters() {
     const chapters = [];
 
@@ -155,15 +176,15 @@ function generate25Chapters() {
             // NOTE: Starting platform (id 0) has NO FRUITS as requested by user.
 
             while (curX < mapWidth - (isBossLevel ? 1200 : 520)) {
-                // World-specific gap scaling (Gentler in World 1, agile in higher worlds)
-                const baseGap = (c <= 5) ? 45 : (c <= 15 ? 52 : 58);
-                const gap = baseGap + Math.round(rng() * 38);
+                // World-specific gap scaling (Balanced, smooth, and fun platforming range!)
+                const baseGap = (c <= 5) ? 34 : (c <= 15 ? 40 : 46);
+                const gap = baseGap + Math.round(rng() * 24); // 34px - 70px base gap range
                 let pWidth = 225 + Math.round(rng() * 150); // Comfortable baseline width
                 
-                // 🏔️ Upward Vertical Map Progression: Level climbs steadily upwards towards the sky/summit!
+                // 🏔️ Gentle Upward Vertical Map Progression: Level climbs smoothly upwards towards summit!
                 const mapProgress = Math.min(1.0, curX / mapWidth);
-                const targetSlopeY = 390 - (mapProgress * 210); // Smooth climb from Y=390 up to Y=180
-                const heightVariation = (l === 2) ? 35 : (l === 3 ? 45 : 25);
+                const targetSlopeY = 390 - (mapProgress * 150); // Smooth climb from Y=390 up to Y=240
+                const heightVariation = (l === 2) ? 18 : (l === 3 ? 24 : 14);
                 const pY = Math.max(150, Math.min(420, Math.round(targetSlopeY + (rng() - 0.5) * heightVariation))); 
 
                 // ❄️ 50% Icy Platforms in Glacial Frost (World 3) - ALWAYS strictly NO spikes & long platform length!
@@ -204,12 +225,12 @@ function generate25Chapters() {
                     pWidth = 115 + Math.round(rng() * 30); // 115px - 145px
                 }
 
-                // 🚀 MOVING PLATFORMS: Clear Dedicate Air Buffer to NEVER overlap/collide with neighbors!
+                // 🚀 MOVING PLATFORMS: Controlled movement buffer keeping jumps balanced and reachable!
                 let moveRange = 0;
                 let actualGap = gap;
                 if (isMoving) {
-                    moveRange = 35 + Math.min(30, l * 5 + c * 1.0);
-                    actualGap = gap + moveRange + 25; // Extra left clearance
+                    moveRange = 18 + Math.min(12, l * 2 + c * 0.3);
+                    actualGap = gap + moveRange;
                 }
 
                 const platformObj = {
@@ -226,13 +247,16 @@ function generate25Chapters() {
                 platforms.push(platformObj);
 
                 // Advance curX past rightmost moving swing
-                curX = platformObj.x + platformObj.width + (isMoving ? (moveRange + 25) : 0);
+                curX = platformObj.x + platformObj.width + (isMoving ? moveRange : 0);
 
-                // 🪜 VERTICAL TIERED JUMPING PLATFORMS (Zıplayarak Çıkılan Yüksek Basamak Adaları)
+                // 🪜 Check secondary platform features (Mutually exclusive: only 1 feature per ground platform!)
+                const nextCheckpoint = portalCheckpoints[portalCount];
+                const shouldSpawnPortal = (targetPortals > 0 && portalCount < targetPortals && nextCheckpoint !== undefined && mapProgress >= nextCheckpoint);
+
+                // 🪜 1. VERTICAL TIERED JUMPING PLATFORMS (Zıplayarak Çıkılan Yüksek Basamak Adaları)
                 let hasTieredLedge = false;
-                if (!isMoving && !isCrumbling && !hasEnemy && !hasSpikes && rng() > 0.32) {
-                    hasTieredLedge = true;
-                    const stepY = Math.max(110, pY - 75 - Math.round(rng() * 25));
+                if (!shouldSpawnPortal && !isMoving && !isCrumbling && !hasEnemy && !hasSpikes && rng() > 0.32) {
+                    const stepY = Math.max(110, pY - 70 - Math.round(rng() * 15));
                     const stepIsIcy = (isIceThemeWorld && rng() < icyChance);
                     const stepWidth = stepIsIcy ? (190 + Math.round(rng() * 60)) : (145 + Math.round(rng() * 60));
                     const stepPlat = {
@@ -243,37 +267,38 @@ function generate25Chapters() {
                         height: 24,
                         ...(stepIsIcy ? { isIcy: true } : {})
                     };
-                    platforms.push(stepPlat);
 
-                    // 2-3 Fruits on high tiered ledge
-                    const numStepFruits = (stepWidth > 175) ? 3 : 2;
-                    for (let sfi = 0; sfi < numStepFruits; sfi++) {
-                        const fType = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
-                        fruitCollectibles.push({
-                            type: fType,
-                            x: stepPlat.x + 28 + sfi * 44,
-                            y: stepY - 32,
-                            width: 24,
-                            height: 24,
-                            platformId: stepPlat.id,
-                            offsetX: 28 + sfi * 44
-                        });
+                    // Only push if it does NOT overlap with any existing platform
+                    if (!checkPlatformOverlap(stepPlat, platforms)) {
+                        platforms.push(stepPlat);
+                        hasTieredLedge = true;
+
+                        // 2-3 Fruits on high tiered ledge
+                        const numStepFruits = (stepWidth > 175) ? 3 : 2;
+                        for (let sfi = 0; sfi < numStepFruits; sfi++) {
+                            const fType = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
+                            fruitCollectibles.push({
+                                type: fType,
+                                x: stepPlat.x + 28 + sfi * 44,
+                                y: stepY - 32,
+                                width: 24,
+                                height: 24,
+                                platformId: stepPlat.id,
+                                offsetX: 28 + sfi * 44
+                            });
+                        }
                     }
                 }
 
-                // 🔮 PORTALS: Guaranteed starting from Chapter 2 and scaling with chapters
+                // 🔮 2. PORTALS: Guaranteed starting from Chapter 2 and scaling with chapters
                 let hasPortalOnThisPlatform = false;
-                const nextCheckpoint = portalCheckpoints[portalCount];
-                const shouldSpawnPortal = (targetPortals > 0 && portalCount < targetPortals && nextCheckpoint !== undefined && mapProgress >= nextCheckpoint);
-
-                if (shouldSpawnPortal && !isMoving && !isCrumbling) {
-                    hasPortalOnThisPlatform = true;
-                    const portExitX = curX + 130 + Math.round(rng() * 50);
-                    const portExitY = Math.max(150, pY - 80 - Math.round(rng() * 25));
+                if (shouldSpawnPortal && !hasTieredLedge && !isMoving && !isCrumbling) {
+                    const portExitX = platformObj.x + Math.round(pWidth * 0.35);
+                    const portExitY = Math.max(120, pY - 85);
                     
-                    // Sturdy portal destination island
+                    // Sturdy portal destination elevated island
                     const portIsIcy = (isIceThemeWorld && rng() < icyChance);
-                    const portWidth = portIsIcy ? 260 : 210;
+                    const portWidth = portIsIcy ? 240 : 190;
                     const portPlat = {
                         id: platformIndex++,
                         x: portExitX,
@@ -282,23 +307,26 @@ function generate25Chapters() {
                         height: 24,
                         ...(portIsIcy ? { isIcy: true } : {})
                     };
-                    platforms.push(portPlat);
 
-                    portals.push({
-                        entrancePlatformId: platformObj.id,
-                        exitPlatformId: portPlat.id,
-                        entrance: { x: platformObj.x + pWidth - 55, y: pY - 45, width: 30, height: 45, offsetX: pWidth - 55, offsetY: -45 },
-                        exit: { x: portPlat.x + 35, y: portPlat.y - 45, width: 30, height: 45, offsetX: 35, offsetY: -45 }
-                    });
+                    if (!checkPlatformOverlap(portPlat, platforms)) {
+                        platforms.push(portPlat);
+                        hasPortalOnThisPlatform = true;
 
-                    portalCount++;
-                    curX = Math.max(curX, portPlat.x + portPlat.width);
+                        portals.push({
+                            entrancePlatformId: platformObj.id,
+                            exitPlatformId: portPlat.id,
+                            entrance: { x: platformObj.x + pWidth - 55, y: pY - 45, width: 30, height: 45, offsetX: pWidth - 55, offsetY: -45 },
+                            exit: { x: portPlat.x + 35, y: portPlat.y - 45, width: 30, height: 45, offsetX: 35, offsetY: -45 }
+                        });
+
+                        portalCount++;
+                    }
                 }
 
-                // 🔽 DUCK CROUCHING CEILINGS (Platform length is guaranteed to be 2X the duck ceiling length!)
+                // 🔽 3. DUCK CROUCHING CEILINGS (Platform length is guaranteed to be 2X the duck ceiling length!)
                 let hasDuckCeilingOnThisPlatform = false;
 
-                if (c >= 3 && !hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && !isCrumbling && !hasTieredLedge && ceilingCount < maxCeilings && rng() > 0.40) {
+                if (c >= 3 && !hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && !hasTieredLedge && !isCrumbling && ceilingCount < maxCeilings && rng() > 0.40) {
                     const ceilingWidth = 90;
                     // Ground platform length is at least 2x the duck ceiling length (180px+)
                     const requiredPlatWidth = ceilingWidth * 2;
@@ -308,7 +336,7 @@ function generate25Chapters() {
                     }
                     
                     const ceilingOffsetX = Math.round((platformObj.width - ceilingWidth) / 2);
-                    overheadCeilings.push({
+                    const ceilingObj = {
                         id: platformIndex++,
                         x: platformObj.x + ceilingOffsetX,
                         y: pY - 48,
@@ -316,19 +344,23 @@ function generate25Chapters() {
                         height: 24,
                         platformId: platformObj.id,
                         offsetX: ceilingOffsetX
-                    });
-                    ceilingCount++;
-                    hasDuckCeilingOnThisPlatform = true;
-                    // Never allow crumbling platforms beneath a DUCK ceiling!
-                    delete platformObj.isCrumbling;
-                    delete platformObj.crumbleTimer;
-                    delete platformObj.maxCrumble;
-                    delete platformObj.respawnTimer;
-                    delete platformObj.isBroken;
+                    };
+
+                    if (!checkPlatformOverlap(ceilingObj, platforms)) {
+                        overheadCeilings.push(ceilingObj);
+                        ceilingCount++;
+                        hasDuckCeilingOnThisPlatform = true;
+                        // Never allow crumbling platforms beneath a DUCK ceiling!
+                        delete platformObj.isCrumbling;
+                        delete platformObj.crumbleTimer;
+                        delete platformObj.maxCrumble;
+                        delete platformObj.respawnTimer;
+                        delete platformObj.isBroken;
+                    }
                 }
 
-                // 🦘 TRAMPOLINES: Only spawn if there is NO duck ceiling, NO tiered ledge, and NOT crumbling on this platform!
-                if (!hasDuckCeilingOnThisPlatform && !hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && !isCrumbling && !hasTieredLedge && bouncyCount < maxBouncy && rng() > 0.25) {
+                // 🦘 4. TRAMPOLINES: Only spawn if there is NO duck ceiling, NO tiered ledge, NO portal, and NOT crumbling!
+                if (!hasDuckCeilingOnThisPlatform && !hasEnemy && !hasSpikes && !hasPortalOnThisPlatform && !hasTieredLedge && !isCrumbling && bouncyCount < maxBouncy && rng() > 0.25) {
                     const highY = Math.max(120, pY - 130 - Math.round(rng() * 25));
                     const highIsIcy = (isIceThemeWorld && rng() < icyChance);
                     const highWidth = highIsIcy ? 260 : 210;
@@ -340,30 +372,33 @@ function generate25Chapters() {
                         height: 24,
                         ...(highIsIcy ? { isIcy: true } : {})
                     };
-                    platforms.push(highPlat);
 
-                    bouncyPads.push({
-                        id: platformIndex++,
-                        x: platformObj.x + 20,
-                        y: pY - 12,
-                        width: 45,
-                        height: 12,
-                        platformId: platformObj.id
-                    });
-                    bouncyCount++;
+                    if (!checkPlatformOverlap(highPlat, platforms)) {
+                        platforms.push(highPlat);
 
-                    // 2 to 3 Fruits on trampoline bonus platform
-                    for (let tf = 0; tf < 3; tf++) {
-                        const fruitType1 = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
-                        fruitCollectibles.push({
-                            type: fruitType1,
-                            x: highPlat.x + 30 + tf * 55,
-                            y: highY - 26,
-                            width: 24,
-                            height: 24,
-                            platformId: highPlat.id,
-                            offsetX: 30 + tf * 55
+                        bouncyPads.push({
+                            id: platformIndex++,
+                            x: platformObj.x + 20,
+                            y: pY - 12,
+                            width: 45,
+                            height: 12,
+                            platformId: platformObj.id
                         });
+                        bouncyCount++;
+
+                        // 2 to 3 Fruits on trampoline bonus platform
+                        for (let tf = 0; tf < 3; tf++) {
+                            const fruitType1 = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
+                            fruitCollectibles.push({
+                                type: fruitType1,
+                                x: highPlat.x + 30 + tf * 55,
+                                y: highY - 26,
+                                width: 24,
+                                height: 24,
+                                platformId: highPlat.id,
+                                offsetX: 30 + tf * 55
+                            });
+                        }
                     }
                 }
 
@@ -485,10 +520,11 @@ function generate25Chapters() {
                 }
             }
 
-            // 👑 Exit Platform & Boss Arena Setup: Positioned high up at the celestial summit!
-            const exitPlatY = isBossLevel ? 260 : 180; // High in altitude compared to start (Y=420)
+            // 👑 Exit Platform & Boss Arena Setup: Seamless, comfortable gap
+            const lastPlat = platforms[platforms.length - 1];
+            const exitPlatY = isBossLevel ? 260 : Math.max(160, (lastPlat ? lastPlat.y - 20 : 200));
             const exitPlatWidth = isBossLevel ? 980 : 450;
-            const exitPlat = { id: platformIndex++, x: curX + 80, y: exitPlatY, width: exitPlatWidth, height: 120 };
+            const exitPlat = { id: platformIndex++, x: curX + 35, y: exitPlatY, width: exitPlatWidth, height: 120 };
             platforms.push(exitPlat);
 
             // Door at the very end of the final elevated summit platform
@@ -538,42 +574,29 @@ function generate25Chapters() {
                 });
             }
 
-            // 🍓 HER HARİTADA EN AZ 15 MEYVE: Üstte Zıplanarak Çıkılan Yeni Basamak Adacıkları ile!
+            // 🍓 HER HARİTADA EN AZ 15 MEYVE: Temiz zeminler üzerine zengin meyve yerleşimi
             let realFruitsCount = fruitCollectibles.filter(f => FRUIT_TYPES.includes(f.type)).length;
             let platWalkIdx = 1;
             let loopSafety = 0;
-            while (realFruitsCount < 15 && platforms.length > 2 && loopSafety < 35) {
+            while (realFruitsCount < 15 && platforms.length > 2 && loopSafety < 40) {
                 loopSafety++;
                 const basePlat = platforms[platWalkIdx % (platforms.length - 1)];
                 platWalkIdx++;
                 if (basePlat && basePlat.id !== 0 && basePlat.id !== exitPlat.id && !basePlat.isCrumbling) {
-                    // Check if basePlat has any spikes/hazards
                     const hasSpikeOnBase = hazards.some(h => h.platformId === basePlat.id);
                     if (!hasSpikeOnBase) {
-                        const extraStepY = Math.max(110, basePlat.y - 75 - Math.round(rng() * 20));
-                        const extraStepIsIcy = (isIceThemeWorld && rng() < icyChance);
-                        const extraStepW = extraStepIsIcy ? 190 : 145;
-                        const extraPlat = {
-                            id: platformIndex++,
-                            x: basePlat.x + Math.round(basePlat.width * 0.25),
-                            y: extraStepY,
-                            width: extraStepW,
-                            height: 24,
-                            ...(extraStepIsIcy ? { isIcy: true } : {})
-                        };
-                        platforms.push(extraPlat);
-
-                        // Place 2 fruits on this new clean elevated stepping platform
-                        for (let efi = 0; efi < 2 && realFruitsCount < 15; efi++) {
-                            const fType = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
+                        const fType = FRUIT_TYPES[Math.floor(rng() * FRUIT_TYPES.length)];
+                        const fruitX = basePlat.x + 20 + Math.round(rng() * Math.max(10, basePlat.width - 40));
+                        const alreadyNear = fruitCollectibles.some(fc => Math.abs(fc.x - fruitX) < 28 && Math.abs(fc.y - (basePlat.y - 32)) < 28);
+                        if (!alreadyNear) {
                             fruitCollectibles.push({
                                 type: fType,
-                                x: extraPlat.x + 32 + efi * 50,
-                                y: extraStepY - 32,
+                                x: fruitX,
+                                y: basePlat.y - 32,
                                 width: 24,
                                 height: 24,
-                                platformId: extraPlat.id,
-                                offsetX: 32 + efi * 50
+                                platformId: basePlat.id,
+                                offsetX: fruitX - basePlat.x
                             });
                             realFruitsCount++;
                         }

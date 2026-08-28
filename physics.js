@@ -274,11 +274,16 @@ class Player {
     jump(particles, floatingTexts = null) {
         if (this.isDead || this.isEnteringDoor || this.isCrouching) return;
         
-        if (this.grounded) {
+        // Grounded Jump OR Coyote Time Jump (Allows jumping within 8 frames after walking off ledge!)
+        const canGroundJump = this.grounded || ((this.coyoteTimer || 0) > 0 && this.jumpCount === 0);
+
+        if (canGroundJump) {
             this.vy = this.jumpForce;
             this.grounded = false;
+            this.coyoteTimer = 0;
             this.jumpCount = 1;
             this.isGroundPounding = false;
+            this.jumpSquashStretch = 1.25;
             audio.playJump();
 
             if (this.currentSkinId === 'panda') {
@@ -294,6 +299,7 @@ class Player {
             this.jumpCount++;
             this.vy = this.jumpForce * 0.92;
             this.isGroundPounding = false;
+            this.jumpSquashStretch = 1.20;
             audio.playJump();
 
             if (this.currentSkinId === 'kitty' && this.jumpCount === 3) {
@@ -303,9 +309,14 @@ class Player {
                 }
             } else if (this.currentSkinId === 'unicorn') {
                 this.createDust(particles, 10, '#00e5ff');
+            } else if (this.currentSkinId === 'panda') {
+                this.createDust(particles, 10, '#34d399');
             } else {
                 this.createDust(particles, 8, '#81d4fa');
             }
+        } else {
+            // Buffer jump if pressed just before touching the ground
+            this.jumpBufferTimer = 8;
         }
     }
 
@@ -560,6 +571,21 @@ class Player {
                     this.jumpCount = 0;
                     this.isGroundPounding = false;
                     this.canDoubleJump = true;
+                    this.coyoteTimer = 8;
+
+                    // Landing compression squash & landing dust
+                    if (fallVel > 3.0) {
+                        this.landingSquashTimer = Math.min(10, Math.floor(fallVel * 1.3));
+                        if (fallVel > 6.0 && particles) {
+                            this.createDust(particles, 4, '#e2e8f0');
+                        }
+                    }
+
+                    // Execute buffered jump if pressed just before landing!
+                    if ((this.jumpBufferTimer || 0) > 0) {
+                        this.jumpBufferTimer = 0;
+                        this.jump(particles, floatingTexts);
+                    }
 
                     if (p.isIcy) {
                         this.isOnIce = true;
@@ -950,12 +976,28 @@ class Player {
 
         let scaleX = 1;
         let scaleY = 1;
-        if (!this.grounded) {
-            if (this.vy < 0) { scaleX = 0.88; scaleY = 1.12; }
-            else { scaleX = 1.10; scaleY = 0.90; }
+        if ((this.landingSquashTimer || 0) > 0) {
+            const squashRatio = (this.landingSquashTimer / 10) * 0.22;
+            scaleX = 1 + squashRatio;
+            scaleY = 1 - squashRatio;
+            this.landingSquashTimer--;
+        } else if (!this.grounded) {
+            if (this.vy < 0) { 
+                scaleX = 0.86; 
+                scaleY = 1.15 * (this.jumpSquashStretch || 1.0); 
+                if (this.jumpSquashStretch > 1.0) this.jumpSquashStretch -= 0.03;
+            } else { 
+                scaleX = 1.08; 
+                scaleY = 0.92; 
+            }
         } else if (Math.abs(this.vx) > 0.5) {
-            scaleX = 1 + Math.sin(Date.now() * 0.02) * 0.06;
-            scaleY = 1 - Math.sin(Date.now() * 0.02) * 0.06;
+            scaleX = 1 + Math.sin(Date.now() * 0.022) * 0.07;
+            scaleY = 1 - Math.sin(Date.now() * 0.022) * 0.07;
+        } else {
+            // Idle cute breathing when standing still
+            const breathe = Math.sin(Date.now() * 0.004) * 0.03;
+            scaleX = 1 - breathe;
+            scaleY = 1 + breathe;
         }
         ctx.scale(scaleX, scaleY);
 
@@ -2176,10 +2218,13 @@ class BossEnemy {
             ));
         }
 
-        // 🚨 SON 2 BOSS (Ch 20 Mecha & Ch 25 Titan) SADECE 3 CANA VE 1 CANA DÜŞTÜĞÜNDE 2 DÜŞMAN YARATIR!
-        if (enemies && this.platformRef && (bType === 20 || bType === 25) && (this.hp === 3 || this.hp === 1)) {
-            const minionWorldType = (bType === 20) ? 4 : 5;
-            const minionText = (bType === 20) ? '🚨 2X CYBER DRONE SPAWN!' : '⭐ 2X STAR GUARDIAN SPAWN!';
+        // 🚨 TÜM BOSSLAR (Ch 5, 10, 15, 20, 25): 3 CANA VE 1 CANA DÜŞTÜĞÜNDE 2 DÜŞMAN YARATIR!
+        if (enemies && this.platformRef && (this.hp === 3 || this.hp === 1)) {
+            const minionWorldType = (bType === 5) ? 1 : ((bType === 10) ? 2 : ((bType === 15) ? 3 : ((bType === 20) ? 4 : 5)));
+            const minionText = (bType === 5) ? '🍄 2X SHROOMIE SPAWN!' :
+                               (bType === 10) ? '🦀 2X MAGMA CRAB SPAWN!' :
+                               (bType === 15) ? '👻 2X SPECTRAL PHANTOM SPAWN!' :
+                               (bType === 20) ? '🤖 2X CYBER DRONE SPAWN!' : '⭐ 2X STAR GUARDIAN SPAWN!';
             
             if (floatingTexts) {
                 floatingTexts.push(new FloatingText(this.x + this.width / 2, this.y - 36, minionText, '#ff007f', 20, 65));
